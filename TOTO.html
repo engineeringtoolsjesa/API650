@@ -275,7 +275,7 @@
             K_d = H / Math.sqrt(D * t1d);
 
             if (K_d <= 1.375) {
-                x_mm_d = 0.61 * Math.sqrt(D * t1d);
+                x_mm_d = 0.61 * Math.sqrt(D/2 * t1d);
             } else if (K_d >= 2.625) {
                 x_mm_d = 0.38 * t1d;
             } else {
