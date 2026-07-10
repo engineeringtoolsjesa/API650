@@ -279,7 +279,7 @@
             } else if (K_d >= 2.625) {
                 x_mm_d = 0.38 * t1d;
             } else {
-                let x1 = 0.61 * Math.sqrt(D * t1d);
+                let x1 = 0.61 * Math.sqrt((D/2)*1000 * t1d);
                 let x2 = 0.38 * t1d;
                 x_mm_d = x1 + ((K_d - 1.375) / (2.625 - 1.375)) * (x2 - x1);
             }
