@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pro Tank Calc - API 650 1-Foot Method</title>
+<link rel="icon" type="image/avif" href="JESA.avif">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+  :root {
+    --blue: #2563eb;
+    --blue-dark: #1d4ed8;
+    --blue-light: #eff6ff;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-400: #9ca3af;
+    --gray-600: #4b5563;
+    --gray-800: #1f2937;
+    --gray-900: #111827;
+    --green: #16a34a;
+    --green-light: #dcfce7;
+    --orange: #ea580c;
+    --orange-light: #fff7ed;
+    --red: #dc2626;
+    --red-light: #fef2f2;
+    --white: #ffffff;
+    --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.06);
+    --radius: 8px;
+    --radius-lg: 12px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--gray-50); color: var(--gray-800); min-height: 100vh; }
+
+  /* NAV */
+  nav { background: var(--white); border-bottom: 1px solid var(--gray-200); padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 60px; position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow); }
+  .nav-logo { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 700; color: var(--blue); }
+  .nav-logo svg { width: 32px; height: 32px; }
+  .nav-badge { background: var(--blue-light); color: var(--blue); font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 20px; }
+  .nav-links { display: flex; gap: 1.5rem; }
+  .nav-links a { color: var(--gray-600); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--blue); }
+
+  /* HERO */
+  .hero { background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 50%, #3b82f6 100%); color: white; padding: 2.5rem 2rem; text-align: center; }
+  .hero h1 { font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem; }
+  .hero p { font-size: 0.95rem; opacity: 0.85; max-width: 600px; margin: 0 auto 1.25rem; line-height: 1.5; }
+  .hero-badges { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+  .hero-badge { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 4px 14px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+
+  /* MAIN LAYOUT */
+  .container { max-width: 1280px; margin: 0 auto; padding: 2rem; }
+  .main-grid { display: grid; grid-template-columns: 400px 1fr; gap: 1.5rem; align-items: start; }
+
+  /* PANEL */
+  .panel { background: var(--white); border: 1px solid var(--gray-200); border-radius: var(--radius-lg); box-shadow: var(--shadow); overflow: hidden; }
+  .panel-header { background: var(--gray-50); border-bottom: 1px solid var(--gray-200); padding: 1rem 1.25rem; display: flex; align-items: center; justify-content: space-between; }
+  .panel-header h2 { font-size: 14px; font-weight: 600; color: var(--gray-800); display: flex; align-items: center; gap: 8px; }
+  .panel-header .icon { width: 24px; height: 24px; background: var(--blue-light); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; }
+  .panel-body { padding: 1.25rem; }
+
+  /* FORM */
+  .section-label { font-size: 11px; font-weight: 700; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.75rem; margin-top: 1.25rem; border-bottom: 1px dashed var(--gray-200); padding-bottom: 4px; }
+  .section-label:first-child { margin-top: 0; }
+  .field { margin-bottom: 0.875rem; }
+  .field label { display: flex; justify-content: space-between; font-size: 13px; color: var(--gray-600); margin-bottom: 4px; font-weight: 500; }
+  .field label span.hint { font-size: 11px; color: var(--gray-400); font-weight: normal; }
+  .field-row { display: flex; gap: 6px; }
+  .field-row input, .field-row select { flex: 1; height: 38px; padding: 0 10px; border: 1px solid var(--gray-200); border-radius: var(--radius); font-size: 13px; color: var(--gray-800); outline: none; background: var(--white); transition: all 0.2s; }
+  .field-row input:focus, .field-row select:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+  .field-row input.input-error { border-color: var(--red); box-shadow: 0 0 0 3px rgba(220,38,38,0.12); }
+  .field-row input[readonly] { background: var(--gray-100); color: var(--gray-600); cursor: not-allowed; }
+  .unit-tag { display: flex; align-items: center; padding: 0 10px; background: var(--gray-100); border: 1px solid var(--gray-200); border-radius: var(--radius); font-size: 12px; color: var(--gray-600); font-weight: 500; white-space: nowrap; height: 38px; min-width: 45px; justify-content: center; }
+  
+  .error-msg { color: var(--red); font-size: 12px; margin-top: 4px; display: none; font-weight: 500; }
+
+  /* RED WARNING SIGN */
+  .error-banner { display: none; align-items: flex-start; gap: 10px; background: var(--red-light); border: 1px solid #fca5a5; border-left: 4px solid var(--red); border-radius: var(--radius); padding: 10px 12px; margin-top: 6px; }
+  .error-banner .sign { flex: none; width: 26px; height: 26px; border-radius: 6px; background: var(--red); color: white; font-weight: 800; font-size: 15px; display: flex; align-items: center; justify-content: center; }
+  .error-banner .msg { font-size: 12px; color: var(--red); font-weight: 600; line-height: 1.4; }
+  .error-banner .msg small { display: block; font-weight: 500; color: #991b1b; margin-top: 2px; }
+  .vdpm-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; background: var(--red); color: #fff !important; padding: 7px 14px; border-radius: 6px; text-decoration: none; font-weight: 700; font-size: 12px; transition: background 0.2s; }
+  .vdpm-link:hover { background: #b91c1c; }
+
+  /* MANUAL OVERRIDE CHECKBOX */
+  .manual-toggle { display: inline-flex; align-items: center; gap: 4px; font-weight: normal; font-size: 11px; color: var(--gray-400); cursor: pointer; }
+  .manual-toggle input { width: auto !important; height: auto !important; margin: 0; cursor: pointer; }
+
+  /* BUTTONS */
+  .btn-group { display: flex; gap: 8px; margin-top: 1.25rem; }
+  .calc-btn { flex: 2; height: 42px; background: var(--blue); color: white; border: none; border-radius: var(--radius); font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .calc-btn:hover { background: var(--blue-dark); }
+  .calc-btn:disabled { background: var(--gray-400); cursor: not-allowed; }
+  .reset-btn { flex: 1; height: 42px; background: transparent; color: var(--gray-600); border: 1px solid var(--gray-200); border-radius: var(--radius); font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+  .reset-btn:hover { background: var(--gray-100); color: var(--gray-900); }
+  .export-btn { background: transparent; border: 1px solid var(--gray-300); color: var(--gray-600); padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.2s; }
+  .export-btn:hover { background: var(--gray-50); color: var(--gray-900); border-color: var(--gray-400); }
+
+  /* RIGHT PANEL */
+  .right-col { display: flex; flex-direction: column; gap: 1.5rem; }
+
+  /* 3D VIEWER */
+  .viewer-panel { background: var(--gray-900); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-md); }
+  .viewer-header { background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.08); padding: 0.875rem 1.25rem; display: flex; align-items: center; justify-content: space-between; }
+  .viewer-header h2 { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.8); }
+  .viewer-controls { display: flex; gap: 6px; }
+  .view-btn { background: rgba(255,255,255,0.08); border: none; color: rgba(255,255,255,0.7); padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+  .view-btn:hover, .view-btn.active { background: var(--blue); color: white; }
+  #canvas3d { width: 100%; height: 300px; display: block; cursor: grab; }
+  #canvas3d:active { cursor: grabbing; }
+  .viewer-info { padding: 0.75rem 1.25rem; background: rgba(255,255,255,0.02); border-top: 1px solid rgba(255,255,255,0.05); display: flex; gap: 1.5rem; flex-wrap: wrap; }
+  .vi-item { font-size: 12px; color: rgba(255,255,255,0.4) }
+  .vi-item span { color: rgba(255,255,255,0.9); font-weight: 600; margin-left: 4px; }
+
+  /* METRICS */
+  .metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .metric-card { background: var(--white); border: 1px solid var(--gray-200); border-radius: var(--radius); padding: 1rem; text-align: center; box-shadow: var(--shadow); position: relative; overflow: hidden; }
+  .metric-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--gray-200); }
+  .metric-card.primary::before { background: var(--blue); }
+  .metric-val { font-size: 20px; font-weight: 700; color: var(--gray-900); letter-spacing: -0.02em; }
+  .metric-lbl { font-size: 11px; color: var(--gray-400); margin-top: 4px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.02em; }
+  .metric-unit { font-size: 11px; color: var(--blue); font-weight: 600; margin-top: 2px; }
+
+  /* TABLE */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
+  th { background: var(--gray-50); color: var(--gray-600); font-weight: 600; padding: 12px 14px; border-bottom: 1px solid var(--gray-200); font-size: 12px; }
+  td { padding: 12px 14px; border-bottom: 1px solid var(--gray-100); color: var(--gray-800); }
+  tr:hover td { background: var(--gray-50); }
+  tr:last-child td { border-bottom: none; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+  .badge-ok { background: var(--green-light); color: var(--green); }
+  .badge-warn { background: var(--orange-light); color: var(--orange); }
+
+  /* EMPTY STATE */
+  .empty-state { text-align: center; padding: 4rem 1rem; color: var(--gray-400); }
+  .empty-state svg { width: 48px; height: 48px; margin-bottom: 1rem; opacity: 0.4; color: var(--gray-400); }
+  .empty-state p { font-size: 13px; font-weight: 500; }
+
+  /* FOOTER */
+  footer { background: var(--gray-900); color: rgba(255,255,255,0.4); text-align: center; padding: 1.5rem; font-size: 12px; margin-top: 4rem; border-top: 4px solid var(--blue); }
+  footer strong { color: rgba(255,255,255,0.8); }
+
+  /* PRINT REPORT LAYOUT */
+  @media print {
+    body { background: white; color: black; }
+    nav, .hero, .panel-header .icon, .btn-group, .viewer-panel, .viewer-controls { display: none !important; }
+    .container { max-width: 100%; padding: 0; }
+    .main-grid { grid-template-columns: 1fr; gap: 0; }
+    .panel { border: none; box-shadow: none; }
+    .panel-body { padding: 0; }
+    .metrics-grid { grid-template-columns: repeat(4, 1fr); margin-bottom: 2rem; page-break-inside: avoid; }
+    .metric-card { border: 1px solid #ccc; box-shadow: none; }
+    table { border: 1px solid #aaa; page-break-inside: avoid; }
+    th { background: #f0f0f0 !important; color: black; border-bottom: 2px solid black; }
+    td, th { padding: 8px 10px; }
+    .section-label { margin-top: 2rem; color: black; border-bottom: 2px solid black; font-size: 14px; }
+    .field { display: inline-block; width: 32%; margin-bottom: 10px; vertical-align: top; }
+    .field-row input, .field-row select { border: none; padding: 0; font-weight: bold; background: transparent; }
+    .unit-tag { display: inline; padding: 0 2px; background: transparent; border: none; font-weight: normal; }
+    .badge { border: 1px solid #000; background: transparent !important; color: black !important; }
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 960px) {
+    .main-grid { grid-template-columns: 1fr; }
+    .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">
+    <svg viewBox="0 0 32 32" fill="none">
+      <rect x="6" y="4" width="20" height="24" rx="3" fill="#2563eb" opacity="0.15" stroke="#2563eb" stroke-width="1.5"/>
+      <ellipse cx="16" cy="4" rx="10" ry="3.5" fill="#2563eb" opacity="0.4"/>
+      <ellipse cx="16" cy="28" rx="10" ry="3.5" fill="#2563eb"/>
+    </svg>
+    JESA TANK CALCULATION TOOL
+  </div>
+  <div class="nav-links">
+    <a href="#">API 650</a>
+    <a href="#">Materials DB</a>
+    <a href="#">Documentation</a>
+  </div>
+  <div class="nav-badge">v1.3 · API 650 Ed.13 Compliant</div>
+</nav>
+
+<div class="hero">
+  <h1>Professional API 650 Tank Sizing</h1>
+  <p>Engineering verification tool executing the <strong>1-Foot Method (Sec. 5.6.3)</strong>. Computes design and hydrostatic test shell thicknesses with dynamic variable $t_{min}$ validation.</p>
+  <div class="hero-badges">
+    <span class="hero-badge">API 650 Sec 5.6.3</span>
+    <span class="hero-badge">Dynamic Min. Thickness</span>
+    <span class="hero-badge">Auto Shell Courses</span>
+    <span class="hero-badge">Report Printing</span>
+  </div>
+</div>
+
+<div class="container">
+  <div class="main-grid">
+
+    <div class="panel">
+      <div class="panel-header">
+        <h2><div class="icon">⚙️</div> Design Inputs</h2>
+      </div>
+      <div class="panel-body">
+
+        <div class="section-label">Geometry & Shell Layout</div>
+        <div class="field">
+          <label>Nominal Diameter (D) <span class="hint">Inside shell · max 61 m</span></label>
+          <div class="field-row">
+            <input type="number" id="D" value="24" min="1" max="61" step="0.1" oninput="checkDiameter()">
+            <div class="unit-tag">m</div>
+          </div>
+          <div class="error-msg" id="err-D">Diameter must be between 1 and 61m.</div>
+          <div class="error-banner" id="err-D-banner">
+            <div class="sign">!</div>
+            <div class="msg">Diameter exceeds the 61 m limit
+              <small>Calculation blocked — the 1-Foot Method does not apply above 61 m. Use the Variable Design Point Method instead.</small>
+              <br>
+              <a class="vdpm-link" id="link-vdpm" href="point-variable.html" target="_blank" rel="noopener">
+                Ouvrir le calculateur Point Variable (VDPM) →
+              </a>
+            </div>
+          </div>
+        </div>
+        
+        <div class="field">
+          <label>Design Liquid Height (H)</label>
+          <div class="field-row">
+            <input type="number" id="H" value="14.5" min="1" max="50" step="0.1" oninput="autoCalcCourses()">
+            <div class="unit-tag">m</div>
+          </div>
+          <div class="error-msg" id="err-H">Height must be between 1 and 50m.</div>
+        </div>
+
+        <div class="field">
+          <label>Standard Plate Width <span class="hint">Mill course height</span></label>
+          <div class="field-row">
+            <select id="plateWidth" onchange="autoCalcCourses()">
+              <option value="1.5">1.5 m</option>
+              <option value="1.8">1.8 m (6 ft)</option>
+              <option value="2.0" selected>2.0 m</option>
+              <option value="2.44">2.44 m (8 ft)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Number of Courses (Shell Rows)
+            <span class="hint">
+              <label class="manual-toggle">
+                <input type="checkbox" id="ncManual" onchange="toggleManualCourses()">
+                Manual override
+              </label>
+            </span>
+          </label>
+          <div class="field-row">
+            <input type="number" id="nc" value="6" min="1" max="15" step="1" readonly>
+            <div class="unit-tag">—</div>
+          </div>
+        </div>
+
+        <div class="section-label">Joints & Product Properties</div>
+        <div class="field">
+          <label>Joint Efficiency Factor (E) <span class="hint">Ref. only — see note</span></label>
+          <div class="field-row">
+            <select id="E_factor">
+              <option value="1.00">Fully Radiographed (E = 1.00)</option>
+              <option value="0.85" selected>Spot Radiographed (E = 0.85)</option>
+              <option value="0.70">Not Radiographed (E = 0.70)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Product Specific Gravity (G)</label>
+          <div class="field-row">
+            <input type="number" id="G" value="0.85" min="0.4" max="3.0" step="0.01">
+            <div class="unit-tag">—</div>
+          </div>
+        </div>
+        
+        <div class="field">
+          <label>Corrosion Allowance (CA)</label>
+          <div class="field-row">
+            <input type="number" id="CA" value="2.0" min="0" max="12" step="0.5">
+            <div class="unit-tag">mm</div>
+          </div>
+        </div>
+
+        <div class="section-label">Material Selection</div>
+        <div class="field">
+          <label>Shell Carbon Steel Grade</label>
+          <div class="field-row">
+            <select id="mat" onchange="updateMatInfo()">
+              <optgroup label="ASTM Specifications">
+                <option value="A283M-C">ASTM A283M Gr.C</option>
+                <option value="A285M-C">ASTM A285M Gr.C</option>
+                <option value="A131M-AB">ASTM A131M Gr.A/B</option>
+                <option value="A36M" selected>ASTM A36M</option>
+                <option value="A131M-EH36">ASTM A131M Gr.EH36</option>
+                <option value="A573M-400">ASTM A573M Gr.400</option>
+                <option value="A573M-450">ASTM A573M Gr.450</option>
+                <option value="A573M-485">ASTM A573M Gr.485</option>
+                <option value="A516M-380">ASTM A516M Gr.380</option>
+                <option value="A516M-415">ASTM A516M Gr.415</option>
+                <option value="A516M-450">ASTM A516M Gr.450</option>
+                <option value="A516M-485">ASTM A516M Gr.485</option>
+                <option value="A662M-B">ASTM A662M Gr.B</option>
+                <option value="A662M-C">ASTM A662M Gr.C</option>
+                <option value="A537M-1">ASTM A537M Cl.1</option>
+                <option value="A537M-2">ASTM A537M Cl.2</option>
+                <option value="A633M-CD">ASTM A633M Gr.C/D</option>
+                <option value="A737M-B">ASTM A737M Gr.B</option>
+                <option value="A841M-1AB">ASTM A841M Cl.1 Gr.A/B</option>
+                <option value="A841M-2AB">ASTM A841M Cl.2 Gr.A/B</option>
+              </optgroup>
+              <optgroup label="CSA Specifications">
+                <option value="G40.21M-260W">CSA G40.21M 260W</option>
+                <option value="G40.21M-260WT">CSA G40.21M 260WT</option>
+                <option value="G40.21M-300W">CSA G40.21M 300W</option>
+                <option value="G40.21M-300WT">CSA G40.21M 300WT</option>
+                <option value="G40.21M-350W">CSA G40.21M 350W</option>
+                <option value="G40.21M-350WT">CSA G40.21M 350WT</option>
+              </optgroup>
+              <optgroup label="National Standards">
+                <option value="NS-235">National Std. 235</option>
+                <option value="NS-250">National Std. 250</option>
+                <option value="NS-275">National Std. 275</option>
+              </optgroup>
+              <optgroup label="ISO Specifications">
+                <option value="ISO630-S275CD-t16">ISO 630 S275C,D (t ≤ 16mm)</option>
+                <option value="ISO630-S275CD-t40">ISO 630 S275C,D (16–40mm)</option>
+                <option value="ISO630-S355CD-t16">ISO 630 S355C,D (t ≤ 16mm)</option>
+                <option value="ISO630-S355CD-t40">ISO 630 S355C,D (16–40mm)</option>
+                <option value="ISO630-S355CD-t50">ISO 630 S355C,D (40–50mm)</option>
+              </optgroup>
+              <optgroup label="EN Specifications">
+                <option value="EN10025-S275J0J2-t16">EN 10025 S275J0/J2 (t ≤ 16mm)</option>
+                <option value="EN10025-S275J0J2-t40">EN 10025 S275J0/J2 (16–40mm)</option>
+                <option value="EN10025-S355J0J2K2-t16">EN 10025 S355J0/J2/K2 (t ≤ 16mm)</option>
+                <option value="EN10025-S355J0J2K2-t40">EN 10025 S355J0/J2/K2 (16–40mm)</option>
+                <option value="EN10025-S355J0J2K2-t50">EN 10025 S355J0/J2/K2 (40–50mm)</option>
+              </optgroup>
+            </select>
+          </div>
+        </div>
+        <div id="mat-info" style="background:var(--blue-light); border-radius:var(--radius); padding:10px 12px; font-size:12px; color:var(--blue); font-weight:500; margin-bottom:1rem; line-height:1.4;">
+          Loading properties...
+        </div>
+
+        <div class="btn-group">
+          <button class="calc-btn" id="calc-btn" onclick="calculate()">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/><path d="M2 1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H2zm1 2h10v10H3V3z"/></svg>
+            Run Calculation
+          </button>
+          <button class="reset-btn" onclick="resetForm()">Reset</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="right-col">
+
+      <div class="viewer-panel">
+        <div class="viewer-header">
+          <h2>3D Dynamic Spatial Render</h2>
+          <div class="viewer-controls">
+            <button class="view-btn active" onclick="setView('perspective')">3D Perspective</button>
+            <button class="view-btn" onclick="setView('top')">Top Plan</button>
+            <button class="view-btn" onclick="setView('front')">Elevation</button>
+            <button class="view-btn" onclick="toggleWire()">Wireframe</button>
+          </div>
+        </div>
+        <canvas id="canvas3d"></canvas>
+        <div class="viewer-info">
+          <div class="vi-item">D_nom: <span id="vi-d">—</span></div>
+          <div class="vi-item">H_total: <span id="vi-h">—</span></div>
+          <div class="vi-item">Calc Vol: <span id="vi-v">—</span></div>
+          <div class="vi-item">Courses: <span id="vi-n">—</span></div>
+          <div class="vi-item">Governing t_min: <span id="vi-tmin" style="color:var(--orange);">—</span></div>
+        </div>
+      </div>
+
+      <div class="metrics-grid">
+        <div class="metric-card primary">
+          <div class="metric-val" id="r-vol">—</div>
+          <div class="metric-unit">m³</div>
+          <div class="metric-lbl">Nominal Volume</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-val" id="r-mass">—</div>
+          <div class="metric-unit">Metric Tons</div>
+          <div class="metric-lbl">Product Mass</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-val" id="r-pbot">—</div>
+          <div class="metric-unit">kPa</div>
+          <div class="metric-lbl">Max Hydrostatic Head</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-val" id="r-tmax" style="color:var(--red);">—</div>
+          <div class="metric-unit">mm</div>
+          <div class="metric-lbl">Governing Thickness</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <h2>📋 Shell Calculations Data Record (Method 1-Foot)</h2>
+          <button class="export-btn" onclick="window.print()">
+            <svg width="12" height="12" fill="currentColor" viewBox="0 0 16 16"><path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/><path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2H5zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4V3zm1 5a2.5 2.5 0 1 1 5 0 2.5 2.5 0 0 1-5 0z"/></svg>
+            Print Report
+          </button>
+        </div>
+        <div class="panel-body" style="padding:0">
+          <div class="table-wrap">
+            <div id="table-content">
+              <div class="empty-state">
+                <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="12" y="8" width="40" height="48" rx="4" stroke="currentColor" stroke-width="1.5"/>
+                  <line x1="20" y1="24" x2="44" y2="24" stroke="currentColor" stroke-width="1.5"/>
+                  <line x1="20" y1="32" x2="44" y2="32" stroke="currentColor" stroke-width="1.5"/>
+                </svg>
+                <p>Define design inputs and process calculation execution.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<footer>
+  <strong>JESA DESIGN ENGINEERING GROUP</strong> · API STANDARD 650 COMPLIANT DESIGN VERIFICATION VERIFICATION REPORT · PRO-CALC DIVISION · SUITABLE FOR PRODUCTION INTERMEDIATE EVALUATION PRE-CHECK BY SASNI ELMEHDI
+</footer>
+
+<script>
+/* ===== DESIGN MATERIAL METADATA DB (API 650 Table 5-2a / 5-2b) =====
+   Sd = Product Design Stress, St = Hydrostatic Test Stress (MPa)
+   Values taken from API 650 Table 5-2a/5-2b. Grades with two thickness
+   ranges (t ≤ 65mm vs 65 < t ≤ 100mm) default to the t ≤ 65mm value. */
+const MATS = {
+  // ASTM Specifications
+  'A283M-C':      { Sd: 137, St: 154 },
+  'A285M-C':      { Sd: 137, St: 154 },
+  'A131M-AB':     { Sd: 157, St: 171 },
+  'A36M':         { Sd: 160, St: 171 },
+  'A131M-EH36':   { Sd: 196, St: 210 },
+  'A573M-400':    { Sd: 147, St: 165 },
+  'A573M-450':    { Sd: 160, St: 180 },
+  'A573M-485':    { Sd: 193, St: 208 },
+  'A516M-380':    { Sd: 137, St: 154 },
+  'A516M-415':    { Sd: 147, St: 165 },
+  'A516M-450':    { Sd: 160, St: 180 },
+  'A516M-485':    { Sd: 173, St: 195 },
+  'A662M-B':      { Sd: 180, St: 193 },
+  'A662M-C':      { Sd: 194, St: 208 },
+  'A537M-1':      { Sd: 194, St: 208 },  // t ≤ 65mm (65<t≤100: Sd 180, St 193)
+  'A537M-2':      { Sd: 220, St: 236 },  // t ≤ 65mm (65<t≤100: Sd 206, St 221)
+  'A633M-CD':     { Sd: 194, St: 208 },  // t ≤ 65mm (65<t≤100: Sd 180, St 193)
+  'A737M-B':      { Sd: 194, St: 208 },
+  'A841M-1AB':    { Sd: 194, St: 208 },  // Class 1, Grades A and B
+  'A841M-2AB':    { Sd: 220, St: 236 },  // Class 2, Grades A and B
+
+  // CSA Specifications
+  'G40.21M-260W':  { Sd: 164, St: 176 },
+  'G40.21M-260WT': { Sd: 164, St: 176 },
+  'G40.21M-300W':  { Sd: 176, St: 189 },
+  'G40.21M-300WT': { Sd: 176, St: 189 },
+  'G40.21M-350W':  { Sd: 180, St: 193 },
+  'G40.21M-350WT': { Sd: 180, St: 193 }, // t ≤ 65mm
+
+  // National Standards (generic grades)
+  'NS-235': { Sd: 137, St: 154 },
+  'NS-250': { Sd: 157, St: 171 },
+  'NS-275': { Sd: 167, St: 184 },
+
+  // ISO Specifications (ISO 630)
+  'ISO630-S275CD-t16':   { Sd: 164, St: 176 }, // t ≤ 16mm
+  'ISO630-S275CD-t40':   { Sd: 164, St: 176 }, // 16 < t ≤ 40mm
+  'ISO630-S355CD-t16':   { Sd: 188, St: 201 }, // t ≤ 16mm
+  'ISO630-S355CD-t40':   { Sd: 188, St: 201 }, // 16 < t ≤ 40mm
+  'ISO630-S355CD-t50':   { Sd: 188, St: 201 }, // 40 < t ≤ 50mm
+
+  // EN Specifications (EN 10025)
+  'EN10025-S275J0J2-t16':   { Sd: 164, St: 176 }, // t ≤ 16mm
+  'EN10025-S275J0J2-t40':   { Sd: 164, St: 176 }, // 16 < t ≤ 40mm
+  'EN10025-S355J0J2K2-t16': { Sd: 188, St: 201 }, // t ≤ 16mm
+  'EN10025-S355J0J2K2-t40': { Sd: 188, St: 201 }, // 16 < t ≤ 40mm
+  'EN10025-S355J0J2K2-t50': { Sd: 188, St: 201 }  // 40 < t ≤ 50mm
+};
+
+/* Hard cap: diameters over 61 m are out of scope for this tool */
+const D_MAX = 61;
+
+/* ===== EVALUATE VARIABLE T_MIN VIA API 650 CLAUSE 5.6.1.1 ===== */
+function getMinimumAllowedThickness(diameter) {
+  if (diameter < 15) return 5.0;
+  if (diameter >= 15 && diameter < 36) return 6.0;
+  if (diameter >= 36 && diameter <= 60) return 8.0;
+  return 10.0; // Diameter > 60m
+}
+
+/* ===== BUILD THE CROSS-LINK TO THE VDPM (POINT VARIABLE) TOOL =====
+   Carries the currently entered inputs over as URL query parameters so
+   the user doesn't have to retype anything on the other page. The VDPM
+   tool expects a single shell course height (h); we pass the height of
+   the bottom course (H / nc) as a sensible starting value. */
+function updateVdpmLink() {
+  const D  = parseFloat(document.getElementById('D').value);
+  const H  = parseFloat(document.getElementById('H').value);
+  const G  = parseFloat(document.getElementById('G').value);
+  const CA = parseFloat(document.getElementById('CA').value);
+  const nc = parseInt(document.getElementById('nc').value) || 1;
+  const m  = MATS[document.getElementById('mat').value];
+
+  const h_course = (!isNaN(H) && nc > 0) ? (H / nc) : '';
+
+  const params = new URLSearchParams();
+  if (!isNaN(D))  params.set('D', D);
+  if (!isNaN(H))  params.set('H', H);
+  if (!isNaN(G))  params.set('G', G);
+  if (!isNaN(CA)) params.set('CA', CA);
+  if (m) { params.set('Sd', m.Sd); params.set('St', m.St); }
+  if (h_course !== '') params.set('h', h_course.toFixed(2));
+
+  document.getElementById('link-vdpm').href = 'point-variable.html?' + params.toString();
+}
+
+/* ===== LIVE DIAMETER GUARD: 61m THRESHOLD ===== */
+function checkDiameter() {
+  const input = document.getElementById('D');
+  const D = parseFloat(input.value);
+  const banner = document.getElementById('err-D-banner');
+  const calcBtn = document.getElementById('calc-btn');
+  const overLimit = !isNaN(D) && D > D_MAX;
+
+  if (overLimit) {
+    banner.style.display = 'flex';
+    input.classList.add('input-error');
+    calcBtn.disabled = true;
+    updateVdpmLink();
+  } else {
+    banner.style.display = 'none';
+    input.classList.remove('input-error');
+    calcBtn.disabled = false;
+  }
+  return !overLimit;
+}
+
+/* ===== AUTO SHELL COURSE COUNT =====
+   Derives the minimum number of shell courses from the total design
+   liquid height and the selected standard mill plate width, so course
+   count reflects real fabrication constraints instead of a guess. */
+function autoCalcCourses() {
+  const ncField = document.getElementById('nc');
+  if (!ncField.readOnly) return; // manual override active, don't touch it
+
+  const H = parseFloat(document.getElementById('H').value);
+  const plateWidth = parseFloat(document.getElementById('plateWidth').value);
+
+  if (!isNaN(H) && H > 0 && plateWidth > 0) {
+    const nc = Math.ceil(H / plateWidth);
+    ncField.value = Math.min(Math.max(nc, 1), 15); // clamp to field's min/max
+  }
+  checkDiameter();
+}
+
+function toggleManualCourses() {
+  const manual = document.getElementById('ncManual').checked;
+  const ncField = document.getElementById('nc');
+  ncField.readOnly = !manual;
+  if (!manual) autoCalcCourses(); // snap back to the auto value when unchecked
+  checkDiameter();
+}
+
+function updateMatInfo() {
+  const m = MATS[document.getElementById('mat').value];
+  const D = parseFloat(document.getElementById('D').value) || 10;
+  const tmin = getMinimumAllowedThickness(D);
+  document.getElementById('mat-info').innerHTML =
+    `• Allowed Design Stress (S<sub>d</sub>): <strong>${m.Sd} MPa</strong><br>` +
+    `• Hydrotest Stress (S<sub>t</sub>): <strong>${m.St} MPa</strong><br>` +
+    `• Standard Governing min thickness (t<sub>min</sub>): <strong>${tmin} mm</strong>`;
+  checkDiameter();
+}
+
+function resetForm() {
+  document.getElementById('D').value  = 24;
+  document.getElementById('H').value  = 14.5;
+  document.getElementById('plateWidth').value = "2.0";
+  document.getElementById('ncManual').checked = false;
+  document.getElementById('nc').readOnly = true;
+  document.getElementById('G').value  = 0.85;
+  document.getElementById('CA').value = 2.0;
+  document.getElementById('E_factor').value = "0.85";
+  document.getElementById('mat').value = 'A36M';
+  checkDiameter();
+  autoCalcCourses();
+  updateMatInfo();
+}
+
+/* ===== MAIN DESIGN COMPUTATION LOGIC ===== */
+function calculate() {
+  const D  = parseFloat(document.getElementById('D').value);
+  const H  = parseFloat(document.getElementById('H').value);
+  const G  = parseFloat(document.getElementById('G').value);
+  const CA = parseFloat(document.getElementById('CA').value);
+  const nc = parseInt(document.getElementById('nc').value);
+  const m  = MATS[document.getElementById('mat').value];
+  // NOTE: Joint efficiency (E) is kept as a reference/reporting field only.
+  // Per API 650 Sec. 5.6.3.2, the 1-Foot Method equations (5.6.3.2-1 / -2)
+  // do NOT divide by E: Sd/St from Table 5-2a already govern the design
+  // condition. E is only used elsewhere (e.g. Annex A thin-shell tanks,
+  // Table 5.6.1.1 min thickness selection), not in this formula.
+
+  // Simple Front-End Validation Guards
+  let valid = true;
+
+  // Diameter: only execute if D is within 1–61m. Over 61m -> block + red sign.
+  if (!checkDiameter() || D < 1) {
+    document.getElementById('err-D').style.display = D < 1 ? 'block' : 'none';
+    valid = false;
+  } else {
+    document.getElementById('err-D').style.display = 'none';
+  }
+
+  if(H < 1 || H > 50) { document.getElementById('err-H').style.display='block'; valid=false; } else { document.getElementById('err-H').style.display='none'; }
+  if(!valid) return;
+
+  const V    = (Math.PI * Math.pow(D,2) / 4) * H;
+  const mass = V * G;
+  const Pbot = G * 9.80665 * H; // Strict grav acceleration constant
+  const cH   = H / nc; // Shell course structural interval height
+  const tmin = getMinimumAllowedThickness(D);
+
+  const rows = [];
+  let maxThicknessCalculated = 0;
+
+  // Compute sequentially from bottom course (Course 1) up to top course
+  for (let i = 0; i < nc; i++) {
+    const courseIndex = i + 1; // 1 = Bottom Course
+    
+    // Design hydrostatic liquid head height for specific shell course (H_i)
+    // For 1-Foot Method, compute pressure plane exactly 0.3m above the bottom edge of each specific course
+    const h_course = H - (i * cH);
+    const h_pressure_head = Math.max(h_course - 0.3, 0);
+
+    let td = 0;
+    let tt = 0;
+
+    if (h_pressure_head > 0) {
+      // API 650 Equation 5.6.3.2-1 — Design Shell Thickness (no E in denominator)
+      td = ((4.9 * D * h_pressure_head * G) / m.Sd) + CA;
+      // API 650 Equation 5.6.3.2-2 — Hydrostatic Test Shell Thickness (no E in denominator)
+      tt = (4.9 * D * h_pressure_head) / m.St;
+    }
+
+    // Evaluate governing thickness comparing calculated against dynamic t_min limit requirements
+    const t_governing = Math.max(td, tt, tmin);
+    if(t_governing > maxThicknessCalculated) maxThicknessCalculated = t_governing;
+
+    rows.push({
+      course: courseIndex,
+      hFrom: (i * cH).toFixed(2),
+      hTo: ((i + 1) * cH).toFixed(2),
+      td: td.toFixed(2),
+      tt: tt.toFixed(2),
+      tA: t_governing.toFixed(2),
+      ok: t_governing <= 45 // Flag atypical extreme thickness for structural check
+    });
+  }
+
+  /* Set Metrics Screen Readouts */
+  document.getElementById('r-vol').textContent  = V.toLocaleString('en-US', {maximumFractionDigits:1});
+  document.getElementById('r-mass').textContent = mass.toLocaleString('en-US', {maximumFractionDigits:1});
+  document.getElementById('r-pbot').textContent = Pbot.toFixed(1);
+  document.getElementById('r-tmax').textContent = maxThicknessCalculated.toFixed(2);
+
+  /* Set 3D Status Readouts */
+  document.getElementById('vi-d').textContent = ' ' + D + ' m';
+  document.getElementById('vi-h').textContent = ' ' + H + ' m';
+  document.getElementById('vi-v').textContent = ' ' + V.toFixed(0) + ' m³';
+  document.getElementById('vi-n').textContent = ' ' + nc;
+  document.getElementById('vi-tmin').textContent = ' ' + tmin + ' mm';
+
+  /* Construct Engineering Output Data Grid */
+  let html = `<table><thead><tr>
+    <th>Shell Course</th>
+    <th>Elevation From (m)</th>
+    <th>Elevation To (m)</th>
+    <th>t_design (mm)</th>
+    <th>t_hydrotest (mm)</th>
+    <th>Governing t (mm)</th>
+    <th>Compliance Status</th>
+  </tr></thead><tbody>`;
+  
+  // Display inverted array view matrix profile (Top course visually displayed on top row)
+  const displayRows = [...rows].reverse();
+  displayRows.forEach(r => {
+    html += `<tr>
+      <td><strong>Course ${r.course}</strong> (Shell Segment)</td>
+      <td>${r.hFrom}</td>
+      <td>${r.hTo}</td>
+      <td>${r.td}</td>
+      <td>${r.tt}</td>
+      <td style="font-weight:700; color:var(--gray-900);">${r.tA}</td>
+      <td><span class="badge ${r.ok?'badge-ok':'badge-warn'}">${r.ok?'✓ API Pass':'⚠ Review Thickness'}</span></td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+  document.getElementById('table-content').innerHTML = html;
+
+  update3D(D, H, nc);
+}
+
+/* ===== THREE.JS CORE 3D VISUALIZATION ENGINE ===== */
+let scene, camera, renderer, tankGroup, wireMode=false;
+let isDragging = false;
+
+function initThree() {
+  const canvas = document.getElementById('canvas3d');
+  renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(canvas.clientWidth, 300);
+  renderer.setClearColor(0x111827, 1);
+
+  scene = new THREE.Scene();
+  scene.add(new THREE.AmbientLight(0xffffff, 0.4));
+  
+  const dl1 = new THREE.DirectionalLight(0xffffff, 0.8);
+  dl1.position.set(10, 20, 10);
+  scene.add(dl1);
+  const dl2 = new THREE.DirectionalLight(0x3b82f6, 0.3);
+  dl2.position.set(-10, -5, -10);
+  scene.add(dl2);
+
+  camera = new THREE.PerspectiveCamera(40, canvas.clientWidth / 300, 0.1, 1000);
+  camera.position.set(35, 20, 35);
+  camera.lookAt(0, 4, 0);
+
+  tankGroup = new THREE.Group();
+  scene.add(tankGroup);
+  
+  buildTankGeometry(24, 14.5, 6);
+
+  let isDrag=false, prevX=0, prevY=0;
+  canvas.addEventListener('mousedown', e=>{ isDrag=true; isDragging=true; prevX=e.clientX; prevY=e.clientY; });
+  window.addEventListener('mouseup', ()=>{ isDrag=false; isDragging=false; });
+  canvas.addEventListener('mousemove', e=>{
+    if(!isDrag) return;
+    const dx=e.clientX-prevX, dy=e.clientY-prevY;
+    tankGroup.rotation.y += dx*0.007;
+    tankGroup.rotation.x += dy*0.007;
+    prevX=e.clientX; prevY=e.clientY;
+  });
+  
+  canvas.addEventListener('wheel', e=>{
+    camera.position.multiplyScalar(e.deltaY > 0 ? 1.05 : 0.95);
+    e.preventDefault();
+  }, {passive:false});
+
+  animate();
+}
+
+function buildTankGeometry(D, H, nc) {
+  while(tankGroup.children.length) tankGroup.remove(tankGroup.children[0]);
+  
+  const R = D / 2;
+  const cH = H / nc;
+  
+  // Distinct visual engineering layout gradient colors 
+  const colors = [0x1e3a8a, 0x1d4ed8, 0x2563eb, 0x3b82f6, 0x60a5fa, 0x93c5fd];
+
+  // Scale visualization down to manageable spatial coordinate bounds
+  const scaleFactor = 10 / D; 
+  const sR = R * scaleFactor;
+  const sH = H * scaleFactor;
+  const scH = cH * scaleFactor;
+
+  for(let i=0; i<nc; i++){
+    const y = i * scH;
+    const color = colors[i % colors.length];
+    const mat = new THREE.MeshPhongMaterial({
+      color, 
+      transparent: true, 
+      opacity: 0.85,
+      side: THREE.DoubleSide,
+      wireframe: wireMode
+    });
+    
+    const geo = new THREE.CylinderGeometry(sR, sR, scH, 48, 1, true);
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.position.y = y + scH/2;
+    tankGroup.add(mesh);
+
+    // Structural weld ring indicator borders
+    const edgeMat = new THREE.LineBasicMaterial({color:0xffffff, opacity:0.25, transparent:true});
+    const edgeGeo = new THREE.EdgesGeometry(geo);
+    const edge = new THREE.LineSegments(edgeGeo, edgeMat);
+    edge.position.y = y + scH/2;
+    if(!wireMode) tankGroup.add(edge);
+  }
+
+  /* Bottom Base Annular Ring Plate Graphic representation */
+  const botGeo = new THREE.CircleGeometry(sR * 1.03, 48);
+  const botMat = new THREE.MeshPhongMaterial({color:0x374151, side:THREE.DoubleSide});
+  const bot = new THREE.Mesh(botGeo, botMat);
+  bot.rotation.x = -Math.PI/2;
+  bot.position.y = 0.005;
+  tankGroup.add(bot);
+
+  /* Fixed Cone Roof Graphic Profile representation */
+  const topGeo = new THREE.ConeGeometry(sR * 1.03, sH * 0.1, 48, 1, false);
+  const topMat = new THREE.MeshPhongMaterial({color:0x4b5563, side:THREE.DoubleSide});
+  const top = new THREE.Mesh(topGeo, topMat);
+  top.position.y = sH + (sH * 0.05);
+  tankGroup.add(top);
+
+  tankGroup.position.y = -sH / 2;
+}
+
+function update3D(D, H, nc) {
+  buildTankGeometry(D, H, nc);
+  tankGroup.rotation.set(0,0,0);
+}
+
+function animate() {
+  requestAnimationFrame(animate);
+  if(!isDragging) tankGroup.rotation.y += 0.0015; // Slow ambient diagnostic drift rotation
+  renderer.render(scene, camera);
+}
+
+function setView(v) {
+  document.querySelectorAll('.view-btn').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+  if(v==='perspective') camera.position.set(35, 20, 35);
+  if(v==='top')         camera.position.set(0, 45, 0);
+  if(v==='front')       camera.position.set(0, 0, 45);
+  camera.lookAt(0, 0, 0);
+  tankGroup.rotation.set(0,0,0);
+}
+
+function toggleWire() {
+  wireMode = !wireMode;
+  const D = parseFloat(document.getElementById('D').value)||24;
+  const H = parseFloat(document.getElementById('H').value)||14.5;
+  const nc = parseInt(document.getElementById('nc').value)||6;
+  buildTankGeometry(D, H, nc);
+}
+
+window.addEventListener('load', ()=>{ initThree(); checkDiameter(); autoCalcCourses(); updateMatInfo(); calculate(); });
+window.addEventListener('resize', ()=>{
+  const canvas = document.getElementById('canvas3d');
+  renderer.setSize(canvas.clientWidth, 300);
+  camera.aspect = canvas.clientWidth / 300;
+  camera.updateProjectionMatrix();
+});
+</script>
+</body>
+</html>
