@@ -275,7 +275,7 @@
             K_d = H / Math.sqrt(D * t1d);
 
             if (K_d <= 1.375) {
-                x_mm_d = 0.61 * Math.sqrt(D/2 * t1d);
+                x_mm_d = 0.61 * Math.sqrt((D/2)*1000 * t1d);
             } else if (K_d >= 2.625) {
                 x_mm_d = 0.38 * t1d;
             } else {
@@ -314,11 +314,11 @@
             K_t = H / Math.sqrt(D * t1t);
 
             if (K_t <= 1.375) {
-                x_mm_t = 0.61 * Math.sqrt(D * t1t);
+                x_mm_t = 0.61 * Math.sqrt((D/2)*1000 * t1t);
             } else if (K_t >= 2.625) {
                 x_mm_t = 0.38 * t1t;
             } else {
-                let x1 = 0.61 * Math.sqrt(D * t1t);
+                let x1 = 0.61 * Math.sqrt((D/2)*1000 * t1t);
                 let x2 = 0.38 * t1t;
                 x_mm_t = x1 + ((K_t - 1.375) / (2.625 - 1.375)) * (x2 - x1);
             }
