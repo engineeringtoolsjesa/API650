@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculateur API 650 - Point Variable</title>
-    <link rel="icon" type="image/avif" href="JESA.avif">
+    <title>Calculateur API 650 - Méthode du Point Variable (VDPM) - Toutes viroles</title>
     <style>
         :root {
             --primary-color: #0056b3;
@@ -13,6 +12,8 @@
             --text-color: #333333;
             --border-color: #dddddd;
             --accent-color: #17a2b8;
+            --green: #28a745;
+            --orange: #ea580c;
         }
 
         body {
@@ -24,7 +25,7 @@
         }
 
         .calc-container {
-            max-width: 700px;
+            max-width: 980px;
             margin: 0 auto;
             background: var(--box-bg);
             padding: 30px;
@@ -35,7 +36,7 @@
         .calc-container h2 {
             text-align: center;
             color: var(--primary-color);
-            margin-bottom: 25px;
+            margin-bottom: 5px;
             border-bottom: 2px solid var(--primary-color);
             padding-bottom: 10px;
         }
@@ -61,9 +62,29 @@
             color: #003d80;
         }
 
+        .norm-ref {
+            font-size: 0.78em;
+            color: #888;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        fieldset {
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            margin-bottom: 15px;
+            padding: 12px 15px 15px;
+        }
+        legend {
+            font-size: 0.85em;
+            font-weight: 700;
+            color: var(--primary-color);
+            padding: 0 6px;
+        }
+
         .form-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr;
             gap: 15px;
         }
 
@@ -72,31 +93,37 @@
             flex-direction: column;
         }
 
-        .input-group.full-width {
-            grid-column: span 2;
-        }
+        .input-group.full-width { grid-column: 1 / -1; }
+        .input-group.span2 { grid-column: span 2; }
 
         label {
             font-weight: 600;
             margin-bottom: 5px;
-            font-size: 0.9em;
+            font-size: 0.88em;
         }
+        label .hint { font-weight: normal; font-size: 0.85em; color: #888; }
 
-        input {
-            padding: 10px;
+        input, select {
+            padding: 9px 10px;
             border: 1px solid var(--border-color);
             border-radius: 5px;
-            font-size: 1em;
+            font-size: 0.95em;
             transition: border-color 0.3s;
+            font-family: inherit;
+            width: 100%;
         }
+        input[readonly] { background:#f0f0f0; color:#666; }
 
-        input:focus {
+        input:focus, select:focus {
             border-color: var(--primary-color);
             outline: none;
         }
 
+        .manual-toggle { display:inline-flex; align-items:center; gap:4px; font-weight:normal; font-size:0.78em; color:#888; cursor:pointer; }
+        .manual-toggle input { width:auto; }
+
         button.calc-btn {
-            grid-column: span 2;
+            width: 100%;
             background-color: var(--primary-color);
             color: white;
             border: none;
@@ -104,47 +131,39 @@
             font-size: 1.1em;
             border-radius: 5px;
             cursor: pointer;
-            margin-top: 15px;
+            margin-top: 5px;
             transition: background-color 0.3s;
         }
+        button.calc-btn:hover { background-color: #004494; }
 
-        button.calc-btn:hover {
-            background-color: #004494;
-        }
-
-        .result-box {
-            margin-top: 25px;
-            padding: 20px;
-            background-color: #f8f9fa;
-            border-left: 5px solid #28a745;
-            border-radius: 4px;
+        .warning-box {
+            background-color: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 12px 15px;
+            margin-top: 15px;
             display: none;
+            font-size: 0.9em;
+            border-radius: 4px;
         }
 
-        .result-box h3 {
-            margin-top: 0;
-            color: #28a745;
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 5px;
-        }
+        .result-box { margin-top: 25px; display: none; }
 
-        .result-section {
-            margin-bottom: 15px;
-            padding: 10px;
-            background: #fff;
-            border: 1px solid #e3e6f0;
-            border-radius: 5px;
-        }
+        .metrics-grid { display:grid; grid-template-columns: repeat(4,1fr); gap:10px; margin-bottom:18px; }
+        .metric-card { background:#f8f9fa; border:1px solid #e3e6f0; border-radius:6px; padding:12px; text-align:center; }
+        .metric-val { font-size:1.3em; font-weight:700; color:var(--primary-color); }
+        .metric-lbl { font-size:0.72em; color:#888; text-transform:uppercase; font-weight:600; margin-top:3px; }
 
-        .result-section h4 {
-            margin: 0 0 8px 0;
-            color: var(--accent-color);
-        }
+        table { width:100%; border-collapse: collapse; font-size: 0.85em; margin-top: 10px; }
+        th { background:#f0f4f8; color:#444; font-weight:600; padding:9px 10px; border-bottom:2px solid #ddd; text-align:left; }
+        td { padding:9px 10px; border-bottom:1px solid #eee; }
+        tr:hover td { background:#fafbfc; }
+        .badge { padding:2px 8px; border-radius:12px; font-size:0.75em; font-weight:700; }
+        .badge-design { background:#e7f1ff; color:var(--primary-color); }
+        .badge-test { background:#fff3cd; color:#997404; }
 
-        .result-section p {
-            margin: 4px 0;
-            font-size: 0.95em;
-        }
+        details { margin-top:6px; }
+        summary { cursor:pointer; font-size:0.8em; color:var(--accent-color); font-weight:600; padding:4px 0; }
+        .iter-detail { font-size: 0.78em; color: #666; margin: 2px 0 2px 8px; font-family: 'Consolas', monospace; }
 
         .final-highlight {
             background-color: #e9f5e9;
@@ -152,15 +171,7 @@
             border-radius: 5px;
             text-align: center;
             border: 1px dashed #28a745;
-            margin-top: 15px;
-        }
-
-        .warning-box {
-            background-color: #fff3cd;
-            border-left: 5px solid #ffc107;
-            padding: 15px;
-            margin-top: 15px;
-            display: none;
+            margin-top: 18px;
         }
     </style>
 </head>
@@ -168,221 +179,376 @@
 
 <div class="calc-container">
     <a class="back-link" href="index.html">&larr; Retour au calculateur (méthode du pied fixe)</a>
-    <h2>API 650 - Méthode du Point Variable (VDPM)</h2>
-    <p style="font-size: 0.9em; text-align: center; color: #666;">
-        Calcul itératif détaillé de la première virole (SI Units)
+    <h2>API 650 - Méthode du Point Variable (VDPM) — Toutes les viroles</h2>
+    <p class="norm-ref">
+        Calcul enchaîné conforme à API 650 (Ed. 13, 2020) — Sections 5.6.4.3 à 5.6.4.8.
+        Chaque virole utilise la hauteur de liquide restante au-dessus d'elle : H₂ = H − h₁, H₃ = H − h₁ − h₂, etc.
     </p>
 
     <div id="prefill-banner" class="prefill-banner">
-        Les valeurs de D, H, G, CA, S<sub>d</sub>, S<sub>t</sub> et hauteur de virole ont été reprises automatiquement depuis le calculateur du pied fixe. Vous pouvez les ajuster avant de recalculer.
+        Les valeurs D, H, G, CA, S<sub>d</sub>, S<sub>t</sub> ont été reprises automatiquement depuis le calculateur du pied fixe.
     </div>
 
-    <div class="form-grid">
-        <div class="input-group">
-            <label>Diamètre D (m) :</label>
-            <input type="number" id="tankD" step="0.1" placeholder="Ex: 65" required>
+    <fieldset>
+        <legend>Géométrie & Découpage des viroles</legend>
+        <div class="form-grid">
+            <div class="input-group">
+                <label>Diamètre D (m) :</label>
+                <input type="number" id="tankD" step="0.1" value="85" oninput="autoFillRadius(); autoCalcCourses();">
+            </div>
+            <div class="input-group">
+                <label>Rayon nominal r (mm) <span class="hint">= D/2 en mm</span></label>
+                <input type="number" id="tankR" step="1" value="42500">
+            </div>
+            <div class="input-group">
+                <label>Hauteur totale de liquide H (m) :</label>
+                <input type="number" id="tankH" step="0.1" value="19.2" oninput="autoCalcCourses();">
+            </div>
+            <div class="input-group">
+                <label>Hauteur standard des tôles <span class="hint">= hauteur de chaque virole</span></label>
+                <select id="plateWidth" onchange="autoCalcCourses();">
+                    <option value="1.5">1.5 m</option>
+                    <option value="1.8">1.8 m (6 ft)</option>
+                    <option value="2.0">2.0 m</option>
+                    <option value="2.4" selected>2.4 m (8 ft)</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Nombre de viroles
+                    <span class="hint">
+                        <label class="manual-toggle"><input type="checkbox" id="ncManual" onchange="toggleManualCourses()"> Manuel</label>
+                    </span>
+                </label>
+                <input type="number" id="nc" value="8" min="1" max="20" step="1" readonly>
+            </div>
+            <div class="input-group">
+                <label>Hauteur virole de fond h₁ (mm) <span class="hint">auto-calculée</span></label>
+                <input type="number" id="h1mm" step="1" readonly>
+            </div>
         </div>
-        <div class="input-group">
-            <label>Hauteur liquide H (m) :</label>
-            <input type="number" id="tankH" step="0.1" placeholder="Ex: 18" required>
-        </div>
-        <div class="input-group">
-            <label>Gravité spécifique G :</label>
-            <input type="number" id="tankG" step="0.01" placeholder="Ex: 1.0" required>
-        </div>
-        <div class="input-group">
-            <label>Corrosion (CA) (mm) :</label>
-            <input type="number" id="tankCA" step="0.1" placeholder="Ex: 3.0" required>
-        </div>
-        <div class="input-group">
-            <label>Contrainte Design Sd (MPa) :</label>
-            <input type="number" id="tankSd" step="1" placeholder="Ex: 160" required>
-        </div>
-        <div class="input-group">
-            <label>Contrainte Test St (MPa) :</label>
-            <input type="number" id="tankSt" step="1" placeholder="Ex: 171" required>
-        </div>
-        <div class="input-group full-width">
-            <label>Hauteur de la virole h (m) :</label>
-            <input type="number" id="tank_h" step="0.1" placeholder="Ex: 2.5" required>
-        </div>
+    </fieldset>
 
-        <button type="button" class="calc-btn" onclick="calculerVDPM()">Calculer et Afficher les Détails</button>
-    </div>
+    <fieldset>
+        <legend>Produit & Matériau</legend>
+        <div class="form-grid">
+            <div class="input-group">
+                <label>Gravité spécifique G :</label>
+                <input type="number" id="tankG" step="0.01" value="1.0">
+            </div>
+            <div class="input-group">
+                <label>Corrosion CA (mm) :</label>
+                <input type="number" id="tankCA" step="0.1" value="0">
+            </div>
+            <div class="input-group">
+                <label>Contrainte Design Sd (MPa) :</label>
+                <input type="number" id="tankSd" step="1" value="208">
+            </div>
+            <div class="input-group">
+                <label>Contrainte Test St (MPa) :</label>
+                <input type="number" id="tankSt" step="1" value="208">
+            </div>
+        </div>
+    </fieldset>
+
+    <button type="button" class="calc-btn" onclick="calculerToutesLesViroles()">Calculer toutes les viroles</button>
 
     <div id="warning-msg" class="warning-box"></div>
-    
+
     <div id="result-msg" class="result-box">
-        <h3>Résultats de la Note de Calcul</h3>
-        
-        <div class="result-section">
-            <h4>1. Condition de Conception (Design)</h4>
-            <p id="det_K_d"></p>
-            <p id="det_x_d"></p>
-            <p id="det_t_d"></p>
+
+        <div class="metrics-grid">
+            <div class="metric-card"><div class="metric-val" id="m-nc">—</div><div class="metric-lbl">Viroles</div></div>
+            <div class="metric-card"><div class="metric-val" id="m-tmax">—</div><div class="metric-lbl">Épaisseur max (mm)</div></div>
+            <div class="metric-card"><div class="metric-val" id="m-course-tmax">—</div><div class="metric-lbl">Virole gouvernante</div></div>
+            <div class="metric-card"><div class="metric-val" id="m-cas">—</div><div class="metric-lbl">Cas gouvernant</div></div>
         </div>
 
-        <div class="result-section">
-            <h4>2. Condition de Test Hydrostatique</h4>
-            <p id="det_K_t"></p>
-            <p id="det_x_t"></p>
-            <p id="det_t_t"></p>
-        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Virole</th>
+                    <th>De (m)</th>
+                    <th>À (m)</th>
+                    <th>H restant (m)</th>
+                    <th>t design (mm)</th>
+                    <th>t test (mm)</th>
+                    <th>t gouvernant (mm)</th>
+                    <th>Détail</th>
+                </tr>
+            </thead>
+            <tbody id="courses-tbody"></tbody>
+        </table>
 
         <div class="final-highlight" id="t_final"></div>
     </div>
 </div>
 
 <script>
-    function calculerVDPM() {
-        let D = parseFloat(document.getElementById('tankD').value);
-        let H = parseFloat(document.getElementById('tankH').value);
-        let G = parseFloat(document.getElementById('tankG').value);
-        let CA = parseFloat(document.getElementById('tankCA').value);
-        let Sd = parseFloat(document.getElementById('tankSd').value);
-        let St = parseFloat(document.getElementById('tankSt').value);
-        let h = parseFloat(document.getElementById('tank_h').value);
+    const TOLERANCE = 0.0001;
+    const MAX_ITER = 30;
 
-        let warnBox = document.getElementById('warning-msg');
-        let resBox = document.getElementById('result-msg');
+    function autoFillRadius() {
+        const D = parseFloat(document.getElementById('tankD').value);
+        if (!isNaN(D)) document.getElementById('tankR').value = (D * 500).toFixed(0);
+    }
 
-        if (!D || !H || !G || !Sd || !St || !h) {
+    function autoCalcCourses() {
+        const ncField = document.getElementById('nc');
+        const H = parseFloat(document.getElementById('tankH').value);
+        const plateWidth = parseFloat(document.getElementById('plateWidth').value);
+
+        if (!ncField.readOnly) {
+            // manuel : on recalcule juste h1
+        } else if (!isNaN(H) && H > 0 && plateWidth > 0) {
+            ncField.value = Math.min(Math.max(Math.ceil(H / plateWidth), 1), 20);
+        }
+
+        const nc = parseInt(ncField.value) || 1;
+        if (!isNaN(H) && nc > 0) {
+            document.getElementById('h1mm').value = ((H / nc) * 1000).toFixed(0);
+        }
+    }
+
+    function toggleManualCourses() {
+        const manual = document.getElementById('ncManual').checked;
+        document.getElementById('nc').readOnly = !manual;
+        autoCalcCourses();
+    }
+
+    /* ===== 5.6.4.6 - 5.6.4.8 : itération pour une virole supérieure ===== */
+    function iterateUpperCourse(D, r, H, tL, useDesign, G, Sd, CA, St) {
+        let tu = useDesign
+            ? (4.9 * D * (H - 0.3) * G / Sd) + CA
+            : (4.9 * D * (H - 0.3) / St);
+
+        let log = [];
+        let diff = 1.0;
+        let iter = 0;
+        let x = 0, tx = tu;
+
+        while (diff > TOLERANCE && iter < MAX_ITER) {
+            const K = tL / tu;
+            const C = (Math.sqrt(K) * (K - 1)) / (1 + Math.pow(K, 1.5));
+            const sqrt_r_tu = Math.sqrt(r * tu);
+
+            const x1 = 0.61 * sqrt_r_tu + 320 * C * H;
+            const x2 = 1000 * C * H;
+            const x3 = 1.22 * sqrt_r_tu;
+            x = Math.min(x1, x2, x3);
+
+            tx = useDesign
+                ? (4.9 * D * (H - x / 1000) * G / Sd) + CA
+                : (4.9 * D * (H - x / 1000) / St);
+
+            diff = Math.abs(tx - tu);
+            iter++;
+            log.push({ iter, tu: tu.toFixed(2), K: K.toFixed(3), C: C.toFixed(4), x1: x1.toFixed(1), x2: x2.toFixed(1), x3: x3.toFixed(1), x: x.toFixed(1), tx: tx.toFixed(2) });
+            tu = tx;
+        }
+        return { thickness: tx, log, iterations: iter };
+    }
+
+    function renderIterLog(log) {
+        let html = '';
+        log.forEach(row => {
+            html += `<p class="iter-detail">Essai ${row.iter}: t<sub>u</sub>=${row.tu} → K=${row.K}, C=${row.C} | x₁=${row.x1}, x₂=${row.x2}, x₃=${row.x3} → x=<strong>${row.x}</strong> → t<sub>x</sub>=<strong>${row.tx}</strong> mm</p>`;
+        });
+        return html || '<p class="iter-detail">Aucune itération (formule directe).</p>';
+    }
+
+    function calculerToutesLesViroles() {
+        const D  = parseFloat(document.getElementById('tankD').value);
+        const r  = parseFloat(document.getElementById('tankR').value);
+        const H  = parseFloat(document.getElementById('tankH').value);
+        const G  = parseFloat(document.getElementById('tankG').value);
+        const CA = parseFloat(document.getElementById('tankCA').value);
+        const Sd = parseFloat(document.getElementById('tankSd').value);
+        const St = parseFloat(document.getElementById('tankSt').value);
+        const nc = parseInt(document.getElementById('nc').value);
+
+        const warnBox = document.getElementById('warning-msg');
+        const resBox  = document.getElementById('result-msg');
+
+        if (!D || !r || !H || !G || !Sd || !St || !nc) {
             alert("Veuillez remplir tous les champs correctement.");
             return;
         }
 
         warnBox.style.display = 'none';
-        resBox.style.display = 'none';
-
         if (D < 60) {
-            warnBox.innerHTML = "<strong>Remarque règlementaire :</strong> L'API 650 préconise la VDPM pour les réservoirs D ≥ 60m. Le calcul reste valide et applicable ici.";
+            warnBox.innerHTML = "<strong>Remarque règlementaire :</strong> l'API 650 (5.6.4.1) réserve normalement la VDPM aux réservoirs où L/H ≥ 1000/6 (SI). Le calcul reste mathématiquement valide et applicable pour les autres cas.";
             warnBox.style.display = 'block';
         }
 
-        let TOLERANCE = 0.0001; 
-        let MAX_ITER = 100;
-        
-        // -------------------------------------------------------------
-        // CALCUL ITÉRATIF : CAS DESIGN (CONCEPTION)
-        // -------------------------------------------------------------
-        let t1d = (4.9 * D * (H - 0.3) * G) / Sd + CA; // Épaisseur initiale (1-foot method)
-        let diff_d = 1.0;
-        let iter_d = 0;
-        let K_d = 0, x_mm_d = 0, x_m_d = 0;
-        let x_bridage_d = false;
+        const cH = H / nc;          // hauteur uniforme de chaque virole (m)
+        const h1_mm = cH * 1000;    // hauteur de la virole de fond, en mm (utilisée pour le critère 5.6.4.5)
 
-        while (diff_d > TOLERANCE && iter_d < MAX_ITER) {
-            K_d = H / Math.sqrt(D * t1d);
+        const courses = [];
+        let prevTd, prevTt, prevDetail;
 
-            if (K_d <= 1.375) {
-                x_mm_d = 0.61 * Math.sqrt((D/2)*1000 * t1d);
-            } else if (K_d >= 2.625) {
-                x_mm_d = 0.38 * t1d;
+        for (let i = 1; i <= nc; i++) {
+            const elevFrom = (i - 1) * cH;
+            const elevTo   = i * cH;
+            const H_i = H - elevFrom; // hauteur de liquide restante au-dessus du bas de cette virole
+
+            if (i === 1) {
+                // ===== 5.6.4.3 / 5.6.4.4 : Virole de fond — formule directe =====
+                const tpd = (4.9 * D * (H_i - 0.3) * G / Sd) + CA;
+                const tpt = (4.9 * D * (H_i - 0.3) / St);
+
+                // --- Détail du calcul t1d (étape par étape) ---
+                // Formule (même style que t1t) : t1d = [1.06 - (0.0696D/H)√(HG/Sd)] × [(4.9HDG)/Sd] + CA
+                // (2ème terme SANS racine carrée — simple fraction)
+                const DoverH_d   = D / H_i;
+                const coef_d     = 0.0696 * DoverH_d;
+                const sqrtHGSd   = Math.sqrt(H_i * G / Sd);
+                const bracket_d  = 1.06 - (coef_d * sqrtHGSd);
+                const term49_d   = (4.9 * H_i * D * G) / Sd;
+                let t1d_raw      = bracket_d * term49_d;
+                let t1d          = t1d_raw + CA;
+
+                // --- Détail du calcul t1t (étape par étape) ---
+                // Formule : t1t = [1.06 - (0.0696D/H)√(H/St)] × [(4.9HD)/St]
+                // (2ème terme SANS racine carrée — simple fraction)
+                const DoverH_t   = D / H_i;
+                const coef_t     = 0.0696 * DoverH_t;
+                const sqrtHSt    = Math.sqrt(H_i / St);
+                const bracket_t  = 1.06 - (coef_t * sqrtHSt);
+                const term49_t   = (4.9 * H_i * D) / St;
+                let t1t          = bracket_t * term49_t;
+
+                const cappedD = t1d > tpd;
+                const cappedT = t1t > tpt;
+                if (cappedD) t1d = tpd;
+                if (cappedT) t1t = tpt;
+
+                const detailD = `<p class="iter-detail"><strong>t1d</strong> (5.6.4.4, design) :
+                    D/H=${DoverH_d.toFixed(4)} &rarr; 0.0696&times;D/H=${coef_d.toFixed(4)} &times; &radic;(HG/Sd)=${sqrtHGSd.toFixed(4)}
+                    &rarr; [1.06 &minus; ${(coef_d*sqrtHGSd).toFixed(4)}] = <strong>${bracket_d.toFixed(4)}</strong>
+                    ; (4.9HDG)/Sd = <strong>${term49_d.toFixed(3)}</strong>
+                    &rarr; t1d(brut) = ${bracket_d.toFixed(4)} &times; ${term49_d.toFixed(3)} = ${t1d_raw.toFixed(2)} mm ; + CA(${CA}) = <strong>${(t1d_raw+CA).toFixed(2)} mm</strong>
+                    ${cappedD ? `&rarr; plafonn&eacute; par t_pd = ${tpd.toFixed(2)} mm` : `(&le; t_pd = ${tpd.toFixed(2)} mm, OK)`}
+                </p>`;
+
+                const detailT = `<p class="iter-detail"><strong>t1t</strong> (5.6.4.4, test) :
+                    D/H=${DoverH_t.toFixed(4)} &rarr; 0.0696&times;D/H=${coef_t.toFixed(4)} &times; &radic;(H/St)=${sqrtHSt.toFixed(4)}
+                    &rarr; [1.06 &minus; ${(coef_t*sqrtHSt).toFixed(4)}] = <strong>${bracket_t.toFixed(4)}</strong>
+                    ; (4.9HD)/St = <strong>${term49_t.toFixed(3)}</strong>
+                    &rarr; t1t = ${bracket_t.toFixed(4)} &times; ${term49_t.toFixed(3)} = <strong>${(bracket_t*term49_t).toFixed(2)} mm</strong>
+                    ${cappedT ? `&rarr; plafonn&eacute; par t_pt = ${tpt.toFixed(2)} mm` : `(&le; t_pt = ${tpt.toFixed(2)} mm, OK)`}
+                </p>`;
+
+                const detailHandoff = `<p class="iter-detail" style="color:#0056b3;">
+                    <strong>&rarr; Transmis &agrave; la virole 2 comme t_L :</strong>
+                    t_L,design = t1d = <strong>${t1d.toFixed(2)} mm</strong> ;
+                    t_L,test = t1t = <strong>${t1t.toFixed(2)} mm</strong>
+                </p>`;
+
+                courses.push({
+                    course: 1, elevFrom, elevTo, H_i,
+                    td: t1d, tt: t1t, governing: Math.max(t1d, t1t),
+                    detail: detailD + detailT + detailHandoff
+                });
+
+                prevTd = t1d; prevTt = t1t;
+
             } else {
-                let x1 = 0.61 * Math.sqrt((D/2)*1000 * t1d);
-                let x2 = 0.38 * t1d;
-                x_mm_d = x1 + ((K_d - 1.375) / (2.625 - 1.375)) * (x2 - x1);
-            }
+                // ===== 5.6.4.6 - 5.6.4.8 : virole supérieure, itérative =====
+                const resD = iterateUpperCourse(D, r, H_i, prevTd, true, G, Sd, CA, St);
+                const resT = iterateUpperCourse(D, r, H_i, prevTt, false, G, Sd, CA, St);
 
-            x_m_d = x_mm_d / 1000;
-            
-            // Limitation réglementaire à 0.75 * h
-            if (x_m_d > 0.75 * h) {
-                x_m_d = 0.75 * h;
-                x_mm_d = x_m_d * 1000;
-                x_bridage_d = true;
-            } else {
-                x_bridage_d = false;
-            }
+                let td = resD.thickness;
+                let tt = resT.thickness;
+                let extraDetail = '';
 
-            let new_t1d = (4.9 * D * (H - x_m_d) * G) / Sd + CA;
-            diff_d = Math.abs(new_t1d - t1d);
-            t1d = new_t1d;
-            iter_d++;
+                if (i === 2) {
+                    // ===== 5.6.4.5 : critère de transition pour la 2ème virole =====
+                    const ratio_d = h1_mm / Math.sqrt(r * prevTd);
+                    const ratio_t = h1_mm / Math.sqrt(r * prevTt);
+
+                    if (ratio_d <= 1.375) td = prevTd;
+                    else if (ratio_d >= 2.625) td = resD.thickness;
+                    else td = resD.thickness + (prevTd - resD.thickness) * (2.1 - h1_mm / (1.25 * Math.sqrt(r * prevTd)));
+
+                    if (ratio_t <= 1.375) tt = prevTt;
+                    else if (ratio_t >= 2.625) tt = resT.thickness;
+                    else tt = resT.thickness + (prevTt - resT.thickness) * (2.1 - h1_mm / (1.25 * Math.sqrt(r * prevTt)));
+
+                    extraDetail = `<p class="iter-detail" style="color:#0056b3;"><strong>Critère 5.6.4.5 :</strong> ratio design=${ratio_d.toFixed(3)}, ratio test=${ratio_t.toFixed(3)} → t2d=${td.toFixed(2)} mm, t2t=${tt.toFixed(2)} mm</p>`;
+                }
+
+                const detailHandoffUpper = `<p class="iter-detail" style="color:#0056b3;">
+                    <strong>&rarr; t_L utilis&eacute; (issu de la virole ${i - 1}) :</strong>
+                    t_L,design = ${prevTd.toFixed(2)} mm ; t_L,test = ${prevTt.toFixed(2)} mm
+                </p>`;
+
+                courses.push({
+                    course: i, elevFrom, elevTo, H_i,
+                    td, tt, governing: Math.max(td, tt),
+                    detail: detailHandoffUpper +
+                             `<strong>Design (t_L=${prevTd.toFixed(2)} mm) :</strong>${renderIterLog(resD.log)}
+                             <strong>Test (t_L=${prevTt.toFixed(2)} mm) :</strong>${renderIterLog(resT.log)}
+                             ${extraDetail}
+                             <p class="iter-detail" style="color:#0056b3;"><strong>&rarr; Transmis &agrave; la virole ${i + 1} comme t_L :</strong> t_L,design=${td.toFixed(2)} mm ; t_L,test=${tt.toFixed(2)} mm</p>`
+                });
+
+                prevTd = td; prevTt = tt;
+            }
         }
 
-        // -------------------------------------------------------------
-        // CALCUL ITÉRATIF : CAS TEST (HYDROSTATIQUE)
-        // -------------------------------------------------------------
-        let t1t = (4.9 * D * (H - 0.3)) / St; // Épaisseur initiale (1-foot method)
-        let diff_t = 1.0;
-        let iter_t = 0;
-        let K_t = 0, x_mm_t = 0, x_m_t = 0;
-        let x_bridage_t = false;
-
-        while (diff_t > TOLERANCE && iter_t < MAX_ITER) {
-            K_t = H / Math.sqrt(D * t1t);
-
-            if (K_t <= 1.375) {
-                x_mm_t = 0.61 * Math.sqrt((D/2)*1000 * t1t);
-            } else if (K_t >= 2.625) {
-                x_mm_t = 0.38 * t1t;
-            } else {
-                let x1 = 0.61 * Math.sqrt((D/2)*1000 * t1t);
-                let x2 = 0.38 * t1t;
-                x_mm_t = x1 + ((K_t - 1.375) / (2.625 - 1.375)) * (x2 - x1);
+        // ===== Rendu du tableau (virole du haut affichée en premier) =====
+        let maxGoverning = 0, maxCourseNum = 0, maxCase = '';
+        let html = '';
+        [...courses].reverse().forEach(c => {
+            if (c.governing > maxGoverning) {
+                maxGoverning = c.governing;
+                maxCourseNum = c.course;
+                maxCase = c.td >= c.tt ? 'Design' : 'Test';
             }
+            html += `<tr>
+                <td><strong>Virole ${c.course}</strong></td>
+                <td>${c.elevFrom.toFixed(2)}</td>
+                <td>${c.elevTo.toFixed(2)}</td>
+                <td>${c.H_i.toFixed(2)}</td>
+                <td><span class="badge badge-design">${c.td.toFixed(2)}</span></td>
+                <td><span class="badge badge-test">${c.tt.toFixed(2)}</span></td>
+                <td style="font-weight:700;">${c.governing.toFixed(2)}</td>
+                <td><details><summary>voir</summary>${c.detail}</details></td>
+            </tr>`;
+        });
+        document.getElementById('courses-tbody').innerHTML = html;
 
-            x_m_t = x_mm_t / 1000;
+        document.getElementById('m-nc').textContent = nc;
+        document.getElementById('m-tmax').textContent = maxGoverning.toFixed(2);
+        document.getElementById('m-course-tmax').textContent = 'Virole ' + maxCourseNum;
+        document.getElementById('m-cas').textContent = maxCase;
 
-            if (x_m_t > 0.75 * h) {
-                x_m_t = 0.75 * h;
-                x_mm_t = x_m_t * 1000;
-                x_bridage_t = true;
-            } else {
-                x_bridage_t = false;
-            }
-
-            let new_t1t = (4.9 * D * (x_m_t ? (H - x_m_t) : (H - 0.3))) / St;
-            diff_t = Math.abs(new_t1t - t1t);
-            t1t = new_t1t;
-            iter_t++;
-        }
-
-        // -------------------------------------------------------------
-        // MISE À JOUR DE L'INTERFACE UTILISATEUR (UI)
-        // -------------------------------------------------------------
-        
-        // 1. Textes du bloc Design
-        document.getElementById('det_K_d').innerHTML = `Facteur de forme <strong>K<sub>d</sub></strong> = H / √(D × t) = <strong>${K_d.toFixed(4)}</strong>`;
-        let txt_x_d = `Distance de calcul <strong>x<sub>d</sub></strong> = <strong>${x_mm_d.toFixed(1)} mm</strong> (${x_m_d.toFixed(3)} m)`;
-        if (x_bridage_d) txt_x_d += ` <span style="color:#dc3545; font-size:0.85em;">(Bridé à 0.75 × h)</span>`;
-        document.getElementById('det_x_d').innerHTML = txt_x_d;
-        document.getElementById('det_t_d').innerHTML = `Épaisseur calculée t<sub>1d</sub> (avec CA) = <strong>${t1d.toFixed(2)} mm</strong> (en ${iter_d} itérations)`;
-
-        // 2. Textes du bloc Test
-        document.getElementById('det_K_t').innerHTML = `Facteur de forme <strong>K<sub>t</sub></strong> = H / √(D × t) = <strong>${K_t.toFixed(4)}</strong>`;
-        let txt_x_t = `Distance de calcul <strong>x<sub>t</sub></strong> = <strong>${x_mm_t.toFixed(1)} mm</strong> (${x_m_t.toFixed(3)} m)`;
-        if (x_bridage_t) txt_x_t += ` <span style="color:#dc3545; font-size:0.85em;">(Bridé à 0.75 × h)</span>`;
-        document.getElementById('det_x_t').innerHTML = txt_x_t;
-        document.getElementById('det_t_t').innerHTML = `Épaisseur calculée t<sub>1t</sub> = <strong>${t1t.toFixed(2)} mm</strong> (en ${iter_t} itérations)`;
-
-        // 3. Épaisseur Finale Maximale
-        let epaisseur_finale = Math.max(t1d, t1t);
-        let cas_critique = (t1d >= t1t) ? "Condition de Conception (Design)" : "Condition de Test Hydrostatique";
-        
         document.getElementById('t_final').innerHTML = `
-            <p style="margin:0 0 5px 0; font-size:0.95em; color:#555;">Épaisseur nominale minimale requise (Max) :</p>
-            <strong style="font-size:1.5em; color:#0056b3;">${epaisseur_finale.toFixed(2)} mm</strong>
-            <p style="margin:5px 0 0 0; font-size:0.85em; color:#28a745;">Gouverné par le cas : <strong>${cas_critique}</strong></p>
+            <p style="margin:0 0 5px 0; font-size:0.95em; color:#555;">Épaisseur nominale maximale requise (toutes viroles confondues) :</p>
+            <strong style="font-size:1.5em; color:#0056b3;">${maxGoverning.toFixed(2)} mm</strong>
+            <p style="margin:5px 0 0 0; font-size:0.85em; color:#28a745;">Virole gouvernante : <strong>Virole ${maxCourseNum}</strong> — Cas : <strong>${maxCase}</strong></p>
         `;
-        
+
         resBox.style.display = 'block';
     }
 
     /* ===== RÉCUPÉRATION AUTOMATIQUE DES VALEURS DEPUIS L'URL =====
-       Si l'utilisateur arrive depuis le calculateur du pied fixe (D > 61m),
-       les paramètres D, H, G, CA, Sd, St et h sont transmis en query string
-       et pré-remplissent le formulaire, puis le calcul est lancé automatiquement. */
+       Arrivée depuis le calculateur du pied fixe (D > 61m) : pré-remplit
+       D, H, G, CA, Sd, St puis lance le calcul complet automatiquement. */
     window.addEventListener('load', () => {
+        autoFillRadius();
+        autoCalcCourses();
+
         const params = new URLSearchParams(window.location.search);
         if (params.has('D')) {
-            const map = { D:'tankD', H:'tankH', G:'tankG', CA:'tankCA', Sd:'tankSd', St:'tankSt', h:'tank_h' };
+            const map = { D:'tankD', H:'tankH', G:'tankG', CA:'tankCA', Sd:'tankSd', St:'tankSt' };
             for (const [key, id] of Object.entries(map)) {
                 if (params.has(key)) document.getElementById(id).value = params.get(key);
             }
+            autoFillRadius();
+            autoCalcCourses();
             document.getElementById('prefill-banner').style.display = 'block';
-            calculerVDPM();
+            calculerToutesLesViroles();
         }
     });
 </script>
