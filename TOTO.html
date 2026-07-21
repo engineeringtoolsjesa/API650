@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculateur API 650 - Méthode du Point Variable (VDPM) - Toutes viroles</title>
-    <link rel="icon" type="image/avif" href="JESA.avif">
+    <title>Calculateur API 650 - Note de Calcul Professionnelle (VDPM & Wind Girder)</title>
     <style>
         :root {
             --primary-color: #0056b3;
@@ -15,6 +14,7 @@
             --accent-color: #17a2b8;
             --green: #28a745;
             --orange: #ea580c;
+            --danger: #dc3545;
         }
 
         body {
@@ -26,7 +26,7 @@
         }
 
         .calc-container {
-            max-width: 980px;
+            max-width: 1100px;
             margin: 0 auto;
             background: var(--box-bg);
             padding: 30px;
@@ -85,7 +85,7 @@
 
         .form-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 15px;
         }
 
@@ -93,9 +93,6 @@
             display: flex;
             flex-direction: column;
         }
-
-        .input-group.full-width { grid-column: 1 / -1; }
-        .input-group.span2 { grid-column: span 2; }
 
         label {
             font-weight: 600;
@@ -112,6 +109,7 @@
             transition: border-color 0.3s;
             font-family: inherit;
             width: 100%;
+            box-sizing: border-box;
         }
         input[readonly] { background:#f0f0f0; color:#666; }
 
@@ -149,7 +147,41 @@
 
         .result-box { margin-top: 25px; display: none; }
 
-        .metrics-grid { display:grid; grid-template-columns: repeat(4,1fr); gap:10px; margin-bottom:18px; }
+        /* Grille d'ingénierie (Analyse de conformité) */
+        .eng-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .eng-card {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .eng-card h4 {
+            margin-top: 0;
+            color: var(--primary-color);
+            font-size: 0.95em;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 8px;
+            margin-bottom: 10px;
+        }
+        .status-pill {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .status-ok { background-color: #d1e7dd; color: #0f5132; }
+        .status-warn { background-color: #fff3cd; color: #664d03; }
+        .status-danger { background-color: #f8d7da; color: #842029; }
+
+        .metrics-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:10px; margin-bottom:18px; }
         .metric-card { background:#f8f9fa; border:1px solid #e3e6f0; border-radius:6px; padding:12px; text-align:center; }
         .metric-val { font-size:1.3em; font-weight:700; color:var(--primary-color); }
         .metric-lbl { font-size:0.72em; color:#888; text-transform:uppercase; font-weight:600; margin-top:3px; }
@@ -161,6 +193,7 @@
         .badge { padding:2px 8px; border-radius:12px; font-size:0.75em; font-weight:700; }
         .badge-design { background:#e7f1ff; color:var(--primary-color); }
         .badge-test { background:#fff3cd; color:#997404; }
+        .badge-warning { background:#fef3c7; color:#d97706; border: 1px solid #f59e0b; }
 
         details { margin-top:6px; }
         summary { cursor:pointer; font-size:0.8em; color:var(--accent-color); font-weight:600; padding:4px 0; }
@@ -174,39 +207,104 @@
             border: 1px dashed #28a745;
             margin-top: 18px;
         }
+
+        /* Schéma SVG */
+        .tank-visualization-container {
+            background: #fcfcfc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+        .tank-visualization-container h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+            font-size: 1.1em;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        #tank-sketch {
+            background-color: #f8fafc;
+            border-radius: 6px;
+            display: block;
+            margin: 0 auto;
+            max-width: 500px;
+        }
+        .shell-plate { fill: #475569; stroke: #1e293b; stroke-width: 1; transition: fill 0.3s; cursor: pointer; }
+        .shell-plate:hover { fill: var(--primary-color); }
+        .center-line { stroke: #94a3b8; stroke-dasharray: 5,5; }
+        .ground-line { stroke: #334155; stroke-width: 3; }
+        .dimension-text { font-size: 11px; fill: #334155; font-weight: 600; }
+        .shell-label { font-size: 12px; fill: #ffffff; text-anchor: middle; font-weight: bold; pointer-events: none; }
+
+        /* Actions de sortie (PDF / Excel) */
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            justify-content: flex-end;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            font-size: 0.9em;
+            font-weight: 600;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-secondary:hover { background-color: #5a6268; }
+        .btn-success { background-color: #28a745; color: white; }
+        .btn-success:hover { background-color: #218838; }
+
+        /* RÈGLES POUR L'IMPRESSION PDF */
+        @media print {
+            body { background: white; color: black; padding: 0; }
+            .calc-container { box-shadow: none; padding: 0; max-width: 100%; }
+            .back-link, fieldset, .calc-btn, .prefill-banner, .action-buttons, details, th:last-child, td:last-child {
+                display: none !important;
+            }
+            .result-box { display: block !important; }
+            .tank-visualization-container { page-break-inside: avoid; border: 1px solid #ccc; }
+            table { page-break-inside: avoid; }
+            tr { page-break-inside: avoid; }
+        }
+
     </style>
 </head>
 <body>
 
 <div class="calc-container">
     <a class="back-link" href="index.html">&larr; Retour au calculateur (méthode du pied fixe)</a>
-    <h2>API 650 - Méthode du Point Variable (VDPM) — Toutes les viroles</h2>
+    <h2>API 650 - Dimensionnement de la Robe (Point Variable & Ceinture de vent)</h2>
     <p class="norm-ref">
-        Calcul enchaîné conforme à API 650 (Ed. 13, 2020) — Sections 5.6.4.3 à 5.6.4.8.
-        Chaque virole utilise la hauteur de liquide restante au-dessus d'elle : H₂ = H − h₁, H₃ = H − h₁ − h₂, etc.
+        Note de Calcul Automatisée conforme à l'API 650 (Ed. 13, 2020) — Sections 5.6.4, 5.6.3.2 et 5.9.7.
     </p>
 
     <div id="prefill-banner" class="prefill-banner">
-        Les valeurs D, H, G, CA, S<sub>d</sub>, S<sub>t</sub> ont été reprises automatiquement depuis le calculateur du pied fixe.
+        Les valeurs de géométrie de base et de matériaux ont été reprises depuis le calculateur précédent.
     </div>
 
     <fieldset>
-        <legend>Géométrie & Découpage des viroles</legend>
+        <legend>Géométrie & Calepinage</legend>
         <div class="form-grid">
             <div class="input-group">
                 <label>Diamètre D (m) :</label>
                 <input type="number" id="tankD" step="0.1" value="85" oninput="autoFillRadius(); autoCalcCourses();">
             </div>
             <div class="input-group">
-                <label>Rayon nominal r (mm) <span class="hint">= D/2 en mm</span></label>
+                <label>Rayon nominal r (mm) :</label>
                 <input type="number" id="tankR" step="1" value="42500">
             </div>
             <div class="input-group">
-                <label>Hauteur totale de liquide H (m) :</label>
+                <label>Hauteur liquide H (m) :</label>
                 <input type="number" id="tankH" step="0.1" value="19.2" oninput="autoCalcCourses();">
             </div>
             <div class="input-group">
-                <label>Hauteur standard des tôles <span class="hint">= hauteur de chaque virole</span></label>
+                <label>Hauteur standard des tôles :</label>
                 <select id="plateWidth" onchange="autoCalcCourses();">
                     <option value="1.5">1.5 m</option>
                     <option value="1.8">1.8 m (6 ft)</option>
@@ -215,7 +313,7 @@
                 </select>
             </div>
             <div class="input-group">
-                <label>Nombre de viroles
+                <label>Nombre de viroles :
                     <span class="hint">
                         <label class="manual-toggle"><input type="checkbox" id="ncManual" onchange="toggleManualCourses()"> Manuel</label>
                     </span>
@@ -223,18 +321,26 @@
                 <input type="number" id="nc" value="8" min="1" max="20" step="1" readonly>
             </div>
             <div class="input-group">
-                <label>Hauteur virole de fond h₁ (mm) <span class="hint">auto-calculée</span></label>
-                <input type="number" id="h1mm" step="1" readonly>
+                <label>Longueur de tôle standard (m) :</label>
+                <input type="number" id="plateLength" step="0.5" value="8.0">
             </div>
         </div>
     </fieldset>
 
     <fieldset>
-        <legend>Produit & Matériau</legend>
+        <legend>Spécifications de Conception & Sollicitations</legend>
         <div class="form-grid">
             <div class="input-group">
                 <label>Gravité spécifique G :</label>
                 <input type="number" id="tankG" step="0.01" value="1.0">
+            </div>
+            <div class="input-group">
+                <label>Pression de conception P (kPa) : <span class="hint">(Section 5.6.3.2)</span></label>
+                <input type="number" id="tankP" step="0.1" value="2.5">
+            </div>
+            <div class="input-group">
+                <label>Vitesse du vent V (km/h) :</label>
+                <input type="number" id="windV" step="5" value="190">
             </div>
             <div class="input-group">
                 <label>Corrosion CA (mm) :</label>
@@ -248,33 +354,75 @@
                 <label>Contrainte Test St (MPa) :</label>
                 <input type="number" id="tankSt" step="1" value="208">
             </div>
+            <div class="input-group" style="display:none;">
+                <input type="number" id="steelDensity" value="7850">
+            </div>
         </div>
     </fieldset>
 
-    <button type="button" class="calc-btn" onclick="calculerToutesLesViroles()">Calculer toutes les viroles</button>
+    <button type="button" class="calc-btn" onclick="calculerToutesLesViroles()">Calculer & Générer la note de calcul</button>
 
     <div id="warning-msg" class="warning-box"></div>
 
     <div id="result-msg" class="result-box">
 
+        <!-- Zone d'Analyse Réglementaire Experte -->
+        <div class="eng-cards-grid">
+            
+            <!-- Carte 1 : Validation de la méthode réglementaire -->
+            <div class="eng-card">
+                <h4>Vérification Méthode de Calcul</h4>
+                <div id="status-method-container"></div>
+                <p id="status-method-desc" style="font-size: 0.8em; margin-top: 8px; color: #555;"></p>
+            </div>
+
+            <!-- Carte 2 : Analyse Wind Girder -->
+            <div class="eng-card">
+                <h4>Calcul de la Ceinture de Vent (Intermediate Wind Girder)</h4>
+                <div id="status-wind-container"></div>
+                <p id="status-wind-desc" style="font-size: 0.8em; margin-top: 8px; color: #555;"></p>
+            </div>
+
+            <!-- Carte 3 : Résumé MTO / Devis Matière -->
+            <div class="eng-card">
+                <h4>Quantités Estimatives (MTO)</h4>
+                <div id="status-mto-container" style="font-size: 0.85em; color: #333;"></div>
+            </div>
+
+        </div>
+
+        <!-- Schéma SVG -->
+        <div class="tank-visualization-container">
+            <h3>Visualisation de l'empilement (Profil de la robe)</h3>
+            <svg id="tank-sketch" viewBox="0 0 500 450" width="100%" height="450px"></svg>
+        </div>
+
+        <!-- Boutons d'export d'Ingénierie -->
+        <div class="action-buttons">
+            <button class="btn-secondary btn-success" onclick="exportToCSV()">Exporter vers Excel (CSV)</button>
+            <button class="btn-secondary" onclick="window.print()">Exporter en PDF (Note de calcul)</button>
+        </div>
+
         <div class="metrics-grid">
-            <div class="metric-card"><div class="metric-val" id="m-nc">—</div><div class="metric-lbl">Viroles</div></div>
-            <div class="metric-card"><div class="metric-val" id="m-tmax">—</div><div class="metric-lbl">Épaisseur max (mm)</div></div>
-            <div class="metric-card"><div class="metric-val" id="m-course-tmax">—</div><div class="metric-lbl">Virole gouvernante</div></div>
-            <div class="metric-card"><div class="metric-val" id="m-cas">—</div><div class="metric-lbl">Cas gouvernant</div></div>
+            <div class="metric-card"><div class="metric-val" id="m-nc">—</div><div class="metric-lbl">Viroles totales</div></div>
+            <div class="metric-card"><div class="metric-val" id="m-tmax">—</div><div class="metric-lbl">Épaisseur Max (mm)</div></div>
+            <div class="metric-card"><div class="metric-val" id="m-course-tmax">—</div><div class="metric-lbl">Virole la plus sollicitée</div></div>
+            <div class="metric-card"><div class="metric-val" id="m-cas">—</div><div class="metric-lbl">Cas critique</div></div>
         </div>
 
         <table>
             <thead>
                 <tr>
                     <th>Virole</th>
-                    <th>De (m)</th>
-                    <th>À (m)</th>
+                    <th>Altitude Bas (m)</th>
+                    <th>Altitude Haut (m)</th>
                     <th>H restant (m)</th>
-                    <th>t design (mm)</th>
+                    <th>t design (+P) (mm)</th>
                     <th>t test (mm)</th>
                     <th>t gouvernant (mm)</th>
-                    <th>Détail</th>
+                    <th>Masse estimée</th>
+                    <th>Nbre Tôles</th>
+                    <th>Détails de calcul</th>
                 </tr>
             </thead>
             <tbody id="courses-tbody"></tbody>
@@ -287,6 +435,7 @@
 <script>
     const TOLERANCE = 0.0001;
     const MAX_ITER = 30;
+    let cachedResultsForExport = [];
 
     function autoFillRadius() {
         const D = parseFloat(document.getElementById('tankD').value);
@@ -299,14 +448,15 @@
         const plateWidth = parseFloat(document.getElementById('plateWidth').value);
 
         if (!ncField.readOnly) {
-            // manuel : on recalcule juste h1
+            // Manuel
         } else if (!isNaN(H) && H > 0 && plateWidth > 0) {
             ncField.value = Math.min(Math.max(Math.ceil(H / plateWidth), 1), 20);
         }
 
         const nc = parseInt(ncField.value) || 1;
         if (!isNaN(H) && nc > 0) {
-            document.getElementById('h1mm').value = ((H / nc) * 1000).toFixed(0);
+            // On calcule la hauteur réelle de la première virole de fond (h1)
+            // (ici l'empilement est homogène)
         }
     }
 
@@ -316,10 +466,87 @@
         autoCalcCourses();
     }
 
-    /* ===== 5.6.4.6 - 5.6.4.8 : itération pour une virole supérieure ===== */
-    function iterateUpperCourse(D, r, H, tL, useDesign, G, Sd, CA, St) {
+    // Épaisseur Minimale API 650 (Clause 5.6.1.1)
+    function getMinThicknessAPI(D) {
+        if (D < 15) return 5.0;
+        if (D < 36) return 6.0;
+        if (D <= 60) return 8.0;
+        return 10.0;
+    }
+
+    // Dessin SVG Dynamique
+    function drawTankSketch(viroles) {
+        const svg = document.getElementById('tank-sketch');
+        if (!svg) return;
+
+        svg.innerHTML = ''; 
+
+        const width = 500;
+        const height = 450;
+        const paddingY = 50;
+        const centerX = width / 2;
+        const tankVisualRadius = 90; 
+
+        const totalHeight = viroles.reduce((sum, v) => sum + v.height, 0);
+        const maxThickness = Math.max(...viroles.map(v => v.t));
+        
+        const scaleY = (height - (2 * paddingY)) / totalHeight;
+        const scaleThickness = 30 / maxThickness; 
+
+        const groundY = height - paddingY;
+        svg.innerHTML += `<line x1="40" y1="${groundY}" x2="${width - 40}" y2="${groundY}" class="ground-line" />`;
+        svg.innerHTML += `<line x1="${centerX}" y1="${paddingY - 20}" x2="${centerX}" y2="${groundY + 10}" class="center-line" />`;
+
+        let currentY = groundY;
+        let currentElevation = 0;
+
+        viroles.forEach((v) => {
+            const blockHeight = v.height * scaleY;
+            const thicknessW = v.t * scaleThickness;
+            const yPos = currentY - blockHeight;
+
+            // Côté gauche
+            const leftX = centerX - tankVisualRadius - thicknessW;
+            svg.innerHTML += `
+                <rect x="${leftX}" y="${yPos}" width="${thicknessW}" height="${blockHeight}" class="shell-plate">
+                    <title>Virole ${v.num}&#10;Épaisseur calculée : ${v.t.toFixed(2)} mm</title>
+                </rect>`;
+
+            // Côté droit
+            const rightX = centerX + tankVisualRadius;
+            svg.innerHTML += `
+                <rect x="${rightX}" y="${yPos}" width="${thicknessW}" height="${blockHeight}" class="shell-plate">
+                    <title>Virole ${v.num}&#10;Épaisseur calculée : ${v.t.toFixed(2)} mm</title>
+                </rect>`;
+
+            svg.innerHTML += `<text x="${centerX}" y="${yPos + (blockHeight / 2) + 4}" class="shell-label">V${v.num}</text>`;
+            svg.innerHTML += `<text x="${centerX + tankVisualRadius + thicknessW + 10}" y="${yPos + (blockHeight / 2) + 4}" class="dimension-text" text-anchor="start">${v.t.toFixed(2)} mm</text>`;
+
+            currentElevation += v.height;
+            svg.innerHTML += `<text x="${centerX - tankVisualRadius - thicknessW - 15}" y="${yPos + 4}" class="dimension-text" text-anchor="end">+${currentElevation.toFixed(2)} m</text>`;
+
+            currentY = yPos; 
+        });
+    }
+
+    function updateURLParams() {
+        const url = new URL(window.location);
+        url.searchParams.set('D', document.getElementById('tankD').value);
+        url.searchParams.set('H', document.getElementById('tankH').value);
+        url.searchParams.set('G', document.getElementById('tankG').value);
+        url.searchParams.set('CA', document.getElementById('tankCA').value);
+        url.searchParams.set('Sd', document.getElementById('tankSd').value);
+        url.searchParams.set('St', document.getElementById('tankSt').value);
+        url.searchParams.set('P', document.getElementById('tankP').value);
+        url.searchParams.set('V_wind', document.getElementById('windV').value);
+        window.history.replaceState({}, '', url);
+    }
+
+    // Algorithme Itératif VDPM sous pression d'après Clause 5.6.3.2 & 5.6.4
+    function iterateUpperCourse(D, r, H, tL, useDesign, G, Sd, CA, St, P) {
+        // En présence de pression interne P (kPa), l'épaisseur du réservoir est sollicitée par l'équivalent hydrostatique + la contrainte hoop de pression
         let tu = useDesign
-            ? (4.9 * D * (H - 0.3) * G / Sd) + CA
+            ? (((4.9 * D * (H - 0.3) * G) + (0.5 * D * P)) / Sd) + CA
             : (4.9 * D * (H - 0.3) / St);
 
         let log = [];
@@ -338,12 +565,12 @@
             x = Math.min(x1, x2, x3);
 
             tx = useDesign
-                ? (4.9 * D * (H - x / 1000) * G / Sd) + CA
+                ? (((4.9 * D * (H - x / 1000) * G) + (0.5 * D * P)) / Sd) + CA
                 : (4.9 * D * (H - x / 1000) / St);
 
             diff = Math.abs(tx - tu);
             iter++;
-            log.push({ iter, tu: tu.toFixed(2), K: K.toFixed(3), C: C.toFixed(4), x1: x1.toFixed(1), x2: x2.toFixed(1), x3: x3.toFixed(1), x: x.toFixed(1), tx: tx.toFixed(2) });
+            log.push({ iter, tu: tu.toFixed(2), K: K.toFixed(3), C: C.toFixed(4), x: x.toFixed(1), tx: tx.toFixed(2) });
             tu = tx;
         }
         return { thickness: tx, log, iterations: iter };
@@ -352,9 +579,9 @@
     function renderIterLog(log) {
         let html = '';
         log.forEach(row => {
-            html += `<p class="iter-detail">Essai ${row.iter}: t<sub>u</sub>=${row.tu} → K=${row.K}, C=${row.C} | x₁=${row.x1}, x₂=${row.x2}, x₃=${row.x3} → x=<strong>${row.x}</strong> → t<sub>x</sub>=<strong>${row.tx}</strong> mm</p>`;
+            html += `<p class="iter-detail">Itération ${row.iter}: t<sub>u</sub>=${row.tu} &rarr; K=${row.K}, C=${row.C} | x=<strong>${row.x}</strong> &rarr; t<sub>x</sub>=<strong>${row.tx}</strong> mm</p>`;
         });
-        return html || '<p class="iter-detail">Aucune itération (formule directe).</p>';
+        return html || '<p class="iter-detail">Aucune itération nécessaire (Formule directe).</p>';
     }
 
     function calculerToutesLesViroles() {
@@ -365,105 +592,98 @@
         const CA = parseFloat(document.getElementById('tankCA').value);
         const Sd = parseFloat(document.getElementById('tankSd').value);
         const St = parseFloat(document.getElementById('tankSt').value);
+        const P  = parseFloat(document.getElementById('tankP').value) || 0;
+        const windV = parseFloat(document.getElementById('windV').value) || 190;
         const nc = parseInt(document.getElementById('nc').value);
+        const steelDensity = parseFloat(document.getElementById('steelDensity').value) || 7850;
+        const plateLength = parseFloat(document.getElementById('plateLength').value) || 8.0;
 
         const warnBox = document.getElementById('warning-msg');
         const resBox  = document.getElementById('result-msg');
 
         if (!D || !r || !H || !G || !Sd || !St || !nc) {
-            alert("Veuillez remplir tous les champs correctement.");
+            alert("Erreur de calcul : Veuillez vérifier vos paramètres d'entrée.");
             return;
         }
 
-        warnBox.style.display = 'none';
-        if (D < 60) {
-            warnBox.innerHTML = "<strong>Remarque règlementaire :</strong> l'API 650 (5.6.4.1) réserve normalement la VDPM aux réservoirs où L/H ≥ 1000/6 (SI). Le calcul reste mathématiquement valide et applicable pour les autres cas.";
-            warnBox.style.display = 'block';
+        const tMinAPI = getMinThicknessAPI(D);
+
+        // 1. DYNAMIC COMPLIANCE : ONE-FOOT VS VDPM LIMIT
+        const statusMethodCont = document.getElementById('status-method-container');
+        const statusMethodDesc = document.getElementById('status-method-desc');
+        if (D > 60) {
+            statusMethodCont.innerHTML = `<span class="status-pill status-danger">VDPM OBLIGATOIRE (D > 60m)</span>`;
+            statusMethodDesc.innerHTML = `<strong>Raison d'ingénierie :</strong> Le diamètre est de <strong>${D} m</strong>. La méthode du "One-Foot" n'est plus valable (Clause 5.6.3.1). L'emploi de la méthode du point de conception variable est une exigence réglementaire absolue.`;
+        } else {
+            statusMethodCont.innerHTML = `<span class="status-pill status-ok">One-Foot & VDPM Autorise</span>`;
+            statusMethodDesc.innerHTML = `Le diamètre est de <strong>${D} m</strong> (&le; 60m). La méthode simplifiée du pied fixe est légalement applicable, mais l'utilisation de la méthode VDPM permet de réduire les épaisseurs de robe de façon optimale.`;
         }
 
-        const cH = H / nc;          // hauteur uniforme de chaque virole (m)
-        const h1_mm = cH * 1000;    // hauteur de la virole de fond, en mm (utilisée pour le critère 5.6.4.5)
+        const cH = H / nc;          
+        const h1_mm = cH * 1000;    
 
         const courses = [];
-        let prevTd, prevTt, prevDetail;
+        let prevTd, prevTt;
 
         for (let i = 1; i <= nc; i++) {
             const elevFrom = (i - 1) * cH;
             const elevTo   = i * cH;
-            const H_i = H - elevFrom; // hauteur de liquide restante au-dessus du bas de cette virole
+            const H_i = H - elevFrom; 
 
             if (i === 1) {
-                // ===== 5.6.4.3 / 5.6.4.4 : Virole de fond — formule directe =====
-                const tpd = (4.9 * D * (H_i - 0.3) * G / Sd) + CA;
+                // Formule de la virole 1 intégrant la pression interne (Clause 5.6.3.2)
+                const tpd = (((4.9 * D * (H_i - 0.3) * G) + (0.5 * D * P)) / Sd) + CA;
                 const tpt = (4.9 * D * (H_i - 0.3) / St);
 
-                // --- Détail du calcul t1d (étape par étape) ---
-                // Formule (même style que t1t) : t1d = [1.06 - (0.0696D/H)√(HG/Sd)] × [(4.9HDG)/Sd] + CA
-                // (2ème terme SANS racine carrée — simple fraction)
                 const DoverH_d   = D / H_i;
                 const coef_d     = 0.0696 * DoverH_d;
                 const sqrtHGSd   = Math.sqrt(H_i * G / Sd);
                 const bracket_d  = 1.06 - (coef_d * sqrtHGSd);
                 const term49_d   = (4.9 * H_i * D * G) / Sd;
                 let t1d_raw      = bracket_d * term49_d;
-                let t1d          = t1d_raw + CA;
+                
+                // On additionne la pression interne à la résistance hydrostatique
+                let t1d          = t1d_raw + ((0.5 * D * P) / Sd) + CA;
+                let t1t          = (1.06 - (0.0696 * (D/H_i) * Math.sqrt(H_i / St))) * ((4.9 * H_i * D) / St);
 
-                // --- Détail du calcul t1t (étape par étape) ---
-                // Formule : t1t = [1.06 - (0.0696D/H)√(H/St)] × [(4.9HD)/St]
-                // (2ème terme SANS racine carrée — simple fraction)
-                const DoverH_t   = D / H_i;
-                const coef_t     = 0.0696 * DoverH_t;
-                const sqrtHSt    = Math.sqrt(H_i / St);
-                const bracket_t  = 1.06 - (coef_t * sqrtHSt);
-                const term49_t   = (4.9 * H_i * D) / St;
-                let t1t          = bracket_t * term49_t;
+                // Limitation par l'équation 1-Foot de garde
+                if (t1d > tpd) t1d = tpd;
+                if (t1t > tpt) t1t = tpt;
 
-                const cappedD = t1d > tpd;
-                const cappedT = t1t > tpt;
-                if (cappedD) t1d = tpd;
-                if (cappedT) t1t = tpt;
+                // Application de l'épaisseur nominale minimale d'après l'API 650
+                let noteMinTd = '';
+                let noteMinTt = '';
+                if (t1d < tMinAPI) {
+                    t1d = tMinAPI;
+                    noteMinTd = ` <span class="badge badge-warning">Forcé au minimum API (${tMinAPI}mm)</span>`;
+                }
+                if (t1t < tMinAPI) {
+                    t1t = tMinAPI;
+                    noteMinTt = ` <span class="badge badge-warning">Forcé au minimum API (${tMinAPI}mm)</span>`;
+                }
 
-                const detailD = `<p class="iter-detail"><strong>t1d</strong> (5.6.4.4, design) :
-                    D/H=${DoverH_d.toFixed(4)} &rarr; 0.0696&times;D/H=${coef_d.toFixed(4)} &times; &radic;(HG/Sd)=${sqrtHGSd.toFixed(4)}
-                    &rarr; [1.06 &minus; ${(coef_d*sqrtHGSd).toFixed(4)}] = <strong>${bracket_d.toFixed(4)}</strong>
-                    ; (4.9HDG)/Sd = <strong>${term49_d.toFixed(3)}</strong>
-                    &rarr; t1d(brut) = ${bracket_d.toFixed(4)} &times; ${term49_d.toFixed(3)} = ${t1d_raw.toFixed(2)} mm ; + CA(${CA}) = <strong>${(t1d_raw+CA).toFixed(2)} mm</strong>
-                    ${cappedD ? `&rarr; plafonn&eacute; par t_pd = ${tpd.toFixed(2)} mm` : `(&le; t_pd = ${tpd.toFixed(2)} mm, OK)`}
-                </p>`;
-
-                const detailT = `<p class="iter-detail"><strong>t1t</strong> (5.6.4.4, test) :
-                    D/H=${DoverH_t.toFixed(4)} &rarr; 0.0696&times;D/H=${coef_t.toFixed(4)} &times; &radic;(H/St)=${sqrtHSt.toFixed(4)}
-                    &rarr; [1.06 &minus; ${(coef_t*sqrtHSt).toFixed(4)}] = <strong>${bracket_t.toFixed(4)}</strong>
-                    ; (4.9HD)/St = <strong>${term49_t.toFixed(3)}</strong>
-                    &rarr; t1t = ${bracket_t.toFixed(4)} &times; ${term49_t.toFixed(3)} = <strong>${(bracket_t*term49_t).toFixed(2)} mm</strong>
-                    ${cappedT ? `&rarr; plafonn&eacute; par t_pt = ${tpt.toFixed(2)} mm` : `(&le; t_pt = ${tpt.toFixed(2)} mm, OK)`}
-                </p>`;
-
-                const detailHandoff = `<p class="iter-detail" style="color:#0056b3;">
-                    <strong>&rarr; Transmis &agrave; la virole 2 comme t_L :</strong>
-                    t_L,design = t1d = <strong>${t1d.toFixed(2)} mm</strong> ;
-                    t_L,test = t1t = <strong>${t1t.toFixed(2)} mm</strong>
-                </p>`;
+                const detailD = `<p class="iter-detail"><strong>t1d (design)</strong>: D/H=${DoverH_d.toFixed(4)} &rarr; Hydrostatique=${t1d_raw.toFixed(2)}mm + Pression P=${(((0.5*D*P)/Sd)).toFixed(2)}mm + CA(${CA}mm) = <strong>${t1d.toFixed(2)} mm</strong>${noteMinTd}</p>`;
+                const detailT = `<p class="iter-detail"><strong>t1t (test)</strong>: t1t = <strong>${t1t.toFixed(2)} mm</strong>${noteMinTt}</p>`;
 
                 courses.push({
-                    course: 1, elevFrom, elevTo, H_i,
+                    course: 1, height: cH, elevFrom, elevTo, H_i,
                     td: t1d, tt: t1t, governing: Math.max(t1d, t1t),
-                    detail: detailD + detailT + detailHandoff
+                    detail: detailD + detailT,
+                    minApplied: (t1d === tMinAPI || t1t === tMinAPI)
                 });
 
                 prevTd = t1d; prevTt = t1t;
 
             } else {
-                // ===== 5.6.4.6 - 5.6.4.8 : virole supérieure, itérative =====
-                const resD = iterateUpperCourse(D, r, H_i, prevTd, true, G, Sd, CA, St);
-                const resT = iterateUpperCourse(D, r, H_i, prevTt, false, G, Sd, CA, St);
+                // Viroles supérieures (Itératif avec pression uniforme)
+                const resD = iterateUpperCourse(D, r, H_i, prevTd, true, G, Sd, CA, St, P);
+                const resT = iterateUpperCourse(D, r, H_i, prevTt, false, G, Sd, CA, St, 0); // P=0 pour le test hydro
 
                 let td = resD.thickness;
                 let tt = resT.thickness;
                 let extraDetail = '';
 
                 if (i === 2) {
-                    // ===== 5.6.4.5 : critère de transition pour la 2ème virole =====
                     const ratio_d = h1_mm / Math.sqrt(r * prevTd);
                     const ratio_t = h1_mm / Math.sqrt(r * prevTt);
 
@@ -475,29 +695,70 @@
                     else if (ratio_t >= 2.625) tt = resT.thickness;
                     else tt = resT.thickness + (prevTt - resT.thickness) * (2.1 - h1_mm / (1.25 * Math.sqrt(r * prevTt)));
 
-                    extraDetail = `<p class="iter-detail" style="color:#0056b3;"><strong>Critère 5.6.4.5 :</strong> ratio design=${ratio_d.toFixed(3)}, ratio test=${ratio_t.toFixed(3)} → t2d=${td.toFixed(2)} mm, t2t=${tt.toFixed(2)} mm</p>`;
+                    extraDetail = `<p class="iter-detail" style="color:#0056b3;"><strong>Continuité (5.6.4.5) :</strong> r_design=${ratio_d.toFixed(3)}, r_test=${ratio_t.toFixed(3)}</p>`;
                 }
 
-                const detailHandoffUpper = `<p class="iter-detail" style="color:#0056b3;">
-                    <strong>&rarr; t_L utilis&eacute; (issu de la virole ${i - 1}) :</strong>
-                    t_L,design = ${prevTd.toFixed(2)} mm ; t_L,test = ${prevTt.toFixed(2)} mm
-                </p>`;
+                let hasMin = false;
+                if (td < tMinAPI) { td = tMinAPI; hasMin = true; }
+                if (tt < tMinAPI) { tt = tMinAPI; hasMin = true; }
+
+                if (hasMin) {
+                    extraDetail += `<p class="iter-detail" style="color:#d97706;"><strong>Ajustement réglementaire :</strong> Relevé à l'épaisseur minimale (${tMinAPI} mm).</p>`;
+                }
 
                 courses.push({
-                    course: i, elevFrom, elevTo, H_i,
+                    course: i, height: cH, elevFrom, elevTo, H_i,
                     td, tt, governing: Math.max(td, tt),
-                    detail: detailHandoffUpper +
-                             `<strong>Design (t_L=${prevTd.toFixed(2)} mm) :</strong>${renderIterLog(resD.log)}
-                             <strong>Test (t_L=${prevTt.toFixed(2)} mm) :</strong>${renderIterLog(resT.log)}
-                             ${extraDetail}
-                             <p class="iter-detail" style="color:#0056b3;"><strong>&rarr; Transmis &agrave; la virole ${i + 1} comme t_L :</strong> t_L,design=${td.toFixed(2)} mm ; t_L,test=${tt.toFixed(2)} mm</p>`
+                    detail: extraDetail + `<strong>Design (itératif + P) :</strong>${renderIterLog(resD.log)}<strong>Test (itératif) :</strong>${renderIterLog(resT.log)}`,
+                    minApplied: hasMin
                 });
 
                 prevTd = td; prevTt = tt;
             }
         }
 
-        // ===== Rendu du tableau (virole du haut affichée en premier) =====
+        // 2. CACHING ET QUANTITÉS DE FABRICATION (MTO)
+        let totalWeightKg = 0;
+        let totalPlates = 0;
+        const circ = Math.PI * D;
+
+        courses.forEach(c => {
+            const platesPerCourse = Math.ceil(circ / plateLength);
+            const weightKg = circ * (c.governing / 1000) * c.height * steelDensity;
+            c.plates = platesPerCourse;
+            c.weightTonnes = weightKg / 1000;
+            totalWeightKg += weightKg;
+            totalPlates += platesPerCourse;
+        });
+
+        cachedResultsForExport = courses;
+
+        // 3. CALCUL DU WIND GIRDER (Section 5.9.7)
+        const t_top = courses[courses.length - 1].governing; // Épaisseur de la virole supérieure (Nominale)
+        const H_shell = H; // Hauteur totale de la robe
+        const H1_max = 9.47 * t_top * Math.sqrt(Math.pow(t_top / D, 3)) * Math.pow(190 / windV, 2);
+        const windGirderRequired = H_shell > H1_max;
+
+        const statusWindCont = document.getElementById('status-wind-container');
+        const statusWindDesc = document.getElementById('status-wind-desc');
+
+        if (windGirderRequired) {
+            statusWindCont.innerHTML = `<span class="status-pill status-danger">FAIL - Ceinture requise</span>`;
+            statusWindDesc.innerHTML = `L'épaisseur de la dernière virole est de <strong>${t_top.toFixed(1)} mm</strong>. Pour un vent de <strong>${windV} km/h</strong>, la hauteur non raidie maximale autorisée (H1) est de <strong>${H1_max.toFixed(2)} m</strong>. La hauteur réelle (${H_shell.toFixed(2)} m) dépasse ce seuil, une ceinture intermédiaire est obligatoire.`;
+        } else {
+            statusWindCont.innerHTML = `<span class="status-pill status-ok">PASS - Non requise</span>`;
+            statusWindDesc.innerHTML = `La hauteur maximale admissible non raidie de la robe est de <strong>${H1_max.toFixed(2)} m</strong>. La hauteur totale (${H_shell.toFixed(2)} m) est inférieure. La structure résiste intrinsèquement au flambement sous vent de conception.`;
+        }
+
+        // 4. RENDU MTO
+        const statusMtoCont = document.getElementById('status-mto-container');
+        statusMtoCont.innerHTML = `
+            * <strong>Poids total estimé de la robe :</strong> ${(totalWeightKg / 1000).toFixed(2)} tonnes<br>
+            * <strong>Nombre total de tôles de robe :</strong> ${totalPlates} tôles (${plateLength}m &times; ${cH}m)<br>
+            * <strong>Périmètre nominal :</strong> ${circ.toFixed(2)} m (${(circ / plateLength).toFixed(1)} plaques par tour)
+        `;
+
+        // 5. RENDU DU TABLEAU ET METRIQUES PRINCIPALES
         let maxGoverning = 0, maxCourseNum = 0, maxCase = '';
         let html = '';
         [...courses].reverse().forEach(c => {
@@ -511,10 +772,18 @@
                 <td>${c.elevFrom.toFixed(2)}</td>
                 <td>${c.elevTo.toFixed(2)}</td>
                 <td>${c.H_i.toFixed(2)}</td>
-                <td><span class="badge badge-design">${c.td.toFixed(2)}</span></td>
-                <td><span class="badge badge-test">${c.tt.toFixed(2)}</span></td>
-                <td style="font-weight:700;">${c.governing.toFixed(2)}</td>
-                <td><details><summary>voir</summary>${c.detail}</details></td>
+                <td>
+                    <span class="badge badge-design">${c.td.toFixed(2)}</span>
+                    ${(c.td === tMinAPI && c.minApplied) ? '<span class="badge badge-warning" title="Épaisseur minimale imposée">Min</span>' : ''}
+                </td>
+                <td>
+                    <span class="badge badge-test">${c.tt.toFixed(2)}</span>
+                    ${(c.tt === tMinAPI && c.minApplied) ? '<span class="badge badge-warning" title="Épaisseur minimale imposée">Min</span>' : ''}
+                </td>
+                <td style="font-weight:700; color: #1e293b;">${c.governing.toFixed(2)}</td>
+                <td>${c.weightTonnes.toFixed(2)} t</td>
+                <td>${c.plates}</td>
+                <td><details><summary>Analyse mathématique</summary>${c.detail}</details></td>
             </tr>`;
         });
         document.getElementById('courses-tbody').innerHTML = html;
@@ -525,24 +794,67 @@
         document.getElementById('m-cas').textContent = maxCase;
 
         document.getElementById('t_final').innerHTML = `
-            <p style="margin:0 0 5px 0; font-size:0.95em; color:#555;">Épaisseur nominale maximale requise (toutes viroles confondues) :</p>
+            <p style="margin:0 0 5px 0; font-size:0.95em; color:#555;">Résultat global — Épaisseur gouvernante maximale requise :</p>
             <strong style="font-size:1.5em; color:#0056b3;">${maxGoverning.toFixed(2)} mm</strong>
-            <p style="margin:5px 0 0 0; font-size:0.85em; color:#28a745;">Virole gouvernante : <strong>Virole ${maxCourseNum}</strong> — Cas : <strong>${maxCase}</strong></p>
+            <p style="margin:5px 0 0 0; font-size:0.85em; color:#28a745;">Déterminée sur la <strong>Virole ${maxCourseNum}</strong> en condition de <strong>${maxCase}</strong> (Pression de calcul incluse).</p>
         `;
 
         resBox.style.display = 'block';
+
+        // Mise à jour du schéma SVG
+        const virolesPourSVG = courses.map(c => ({
+            num: c.course,
+            height: c.height,
+            t: c.governing
+        }));
+        drawTankSketch(virolesPourSVG);
+        
+        // Synchro de l'URL
+        updateURLParams();
     }
 
-    /* ===== RÉCUPÉRATION AUTOMATIQUE DES VALEURS DEPUIS L'URL =====
-       Arrivée depuis le calculateur du pied fixe (D > 61m) : pré-remplit
-       D, H, G, CA, Sd, St puis lance le calcul complet automatiquement. */
+    // Export Excel au Format CSV étendu
+    function exportToCSV() {
+        if (!cachedResultsForExport || cachedResultsForExport.length === 0) {
+            alert("Aucun résultat disponible pour l'export.");
+            return;
+        }
+
+        let csvContent = "data:text/csv;charset=utf-8,";
+        csvContent += "Virole;Altitude Bas (m);Altitude Haut (m);H liquide restant (m);t design avec P (mm);t test (mm);t gouvernant (mm);Masse estimée (tonnes);Nombre de toles\r\n";
+        
+        [...cachedResultsForExport].reverse().forEach(c => {
+            const row = [
+                `Virole ${c.course}`,
+                c.elevFrom.toFixed(2),
+                c.elevTo.toFixed(2),
+                c.H_i.toFixed(2),
+                c.td.toFixed(2),
+                c.tt.toFixed(2),
+                c.governing.toFixed(2),
+                c.weightTonnes.toFixed(2),
+                c.plates
+            ].join(";");
+            csvContent += row + "\r\n";
+        });
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `API650_VDPM_NoteCalcul_D${document.getElementById('tankD').value}m.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    /* Initialisation */
     window.addEventListener('load', () => {
         autoFillRadius();
         autoCalcCourses();
 
         const params = new URLSearchParams(window.location.search);
         if (params.has('D')) {
-            const map = { D:'tankD', H:'tankH', G:'tankG', CA:'tankCA', Sd:'tankSd', St:'tankSt' };
+            const map = { D:'tankD', H:'tankH', G:'tankG', CA:'tankCA', Sd:'tankSd', St:'tankSt', P:'tankP', V_wind:'windV' };
             for (const [key, id] of Object.entries(map)) {
                 if (params.has(key)) document.getElementById(id).value = params.get(key);
             }
