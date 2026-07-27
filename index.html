@@ -3,179 +3,258 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pro Tank Calc - API 650 1-Foot Method</title>
-<link rel="icon" type="image/avif" href="JESA.avif">
+<title>JESA Tank Calc — API 650 Unified Platform</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <style>
-  :root {
-    --blue: #2563eb;
-    --blue-dark: #1d4ed8;
-    --blue-light: #eff6ff;
-    --gray-50: #f9fafb;
-    --gray-100: #f3f4f6;
-    --gray-200: #e5e7eb;
-    --gray-400: #9ca3af;
-    --gray-600: #4b5563;
-    --gray-800: #1f2937;
-    --gray-900: #111827;
-    --green: #16a34a;
-    --green-light: #dcfce7;
-    --orange: #ea580c;
-    --orange-light: #fff7ed;
-    --red: #dc2626;
-    --red-light: #fef2f2;
-    --white: #ffffff;
-    --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
-    --shadow-md: 0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.06);
-    --radius: 8px;
-    --radius-lg: 12px;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--gray-50); color: var(--gray-800); min-height: 100vh; }
+:root {
+  --blue:#2563eb;--blue-dark:#1d4ed8;--blue-light:#eff6ff;
+  --gray-50:#f9fafb;--gray-100:#f3f4f6;--gray-200:#e5e7eb;
+  --gray-400:#9ca3af;--gray-600:#4b5563;--gray-800:#1f2937;--gray-900:#111827;
+  --green:#16a34a;--green-light:#dcfce7;
+  --orange:#ea580c;--orange-light:#fff7ed;
+  --red:#dc2626;--red-light:#fef2f2;
+  --white:#ffffff;
+  --shadow:0 1px 3px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.06);
+  --shadow-md:0 4px 6px rgba(0,0,0,.07),0 2px 4px rgba(0,0,0,.06);
+  --radius:8px;--radius-lg:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--gray-50);color:var(--gray-800);min-height:100vh}
 
-  /* NAV */
-  nav { background: var(--white); border-bottom: 1px solid var(--gray-200); padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 60px; position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow); }
-  .nav-logo { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 700; color: var(--blue); }
-  .nav-logo svg { width: 32px; height: 32px; }
-  .nav-badge { background: var(--blue-light); color: var(--blue); font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 20px; }
-  .nav-links { display: flex; gap: 1.5rem; }
-  .nav-links a { color: var(--gray-600); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; }
-  .nav-links a:hover { color: var(--blue); }
+/* NAV */
+nav{background:var(--white);border-bottom:1px solid var(--gray-200);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100;box-shadow:var(--shadow)}
+.nav-logo{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:700;color:var(--blue)}
+.nav-logo svg{width:32px;height:32px}
+.nav-badge{background:var(--blue-light);color:var(--blue);font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px}
+.nav-links{display:flex;gap:1.5rem}
+.nav-links a{color:var(--gray-600);text-decoration:none;font-size:14px;font-weight:500;transition:color .2s}
+.nav-links a:hover{color:var(--blue)}
 
-  /* HERO */
-  .hero { background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 50%, #3b82f6 100%); color: white; padding: 2.5rem 2rem; text-align: center; }
-  .hero h1 { font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem; }
-  .hero p { font-size: 0.95rem; opacity: 0.85; max-width: 600px; margin: 0 auto 1.25rem; line-height: 1.5; }
-  .hero-badges { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
-  .hero-badge { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 4px 14px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+/* HERO */
+.hero{background:linear-gradient(135deg,#1e3a5f 0%,#2563eb 50%,#3b82f6 100%);color:#fff;padding:2.5rem 2rem;text-align:center}
+.hero h1{font-size:2rem;font-weight:800;margin-bottom:.5rem}
+.hero p{font-size:.95rem;opacity:.85;max-width:650px;margin:0 auto 1.25rem;line-height:1.5}
+.hero-badges{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+.hero-badge{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:500}
 
-  /* MAIN LAYOUT */
-  .container { max-width: 1280px; margin: 0 auto; padding: 2rem; }
-  .main-grid { display: grid; grid-template-columns: 400px 1fr; gap: 1.5rem; align-items: start; }
+/* METHOD TABS */
+.tab-bar{display:flex;gap:0;border-bottom:2px solid var(--gray-200);background:var(--white);padding:0 2rem;position:sticky;top:60px;z-index:99;box-shadow:var(--shadow)}
+.tab-btn{padding:.875rem 1.5rem;font-size:14px;font-weight:600;color:var(--gray-400);border:none;background:transparent;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s;display:flex;align-items:center;gap:8px}
+.tab-btn.active{color:var(--blue);border-bottom-color:var(--blue)}
+.tab-btn:hover{color:var(--gray-800)}
+.tab-badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:var(--gray-200);color:var(--gray-600)}
+.tab-btn.active .tab-badge{background:var(--blue-light);color:var(--blue)}
 
-  /* PANEL */
-  .panel { background: var(--white); border: 1px solid var(--gray-200); border-radius: var(--radius-lg); box-shadow: var(--shadow); overflow: hidden; }
-  .panel-header { background: var(--gray-50); border-bottom: 1px solid var(--gray-200); padding: 1rem 1.25rem; display: flex; align-items: center; justify-content: space-between; }
-  .panel-header h2 { font-size: 14px; font-weight: 600; color: var(--gray-800); display: flex; align-items: center; gap: 8px; }
-  .panel-header .icon { width: 24px; height: 24px; background: var(--blue-light); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; }
-  .panel-body { padding: 1.25rem; }
+/* CONTAINER */
+.container{max-width:1280px;margin:0 auto;padding:2rem}
+.tab-content{display:none}.tab-content.active{display:block}
 
-  /* FORM */
-  .section-label { font-size: 11px; font-weight: 700; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.75rem; margin-top: 1.25rem; border-bottom: 1px dashed var(--gray-200); padding-bottom: 4px; }
-  .section-label:first-child { margin-top: 0; }
-  .field { margin-bottom: 0.875rem; }
-  .field label { display: flex; justify-content: space-between; font-size: 13px; color: var(--gray-600); margin-bottom: 4px; font-weight: 500; }
-  .field label span.hint { font-size: 11px; color: var(--gray-400); font-weight: normal; }
-  .field-row { display: flex; gap: 6px; }
-  .field-row input, .field-row select { flex: 1; height: 38px; padding: 0 10px; border: 1px solid var(--gray-200); border-radius: var(--radius); font-size: 13px; color: var(--gray-800); outline: none; background: var(--white); transition: all 0.2s; }
-  .field-row input:focus, .field-row select:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
-  .field-row input.input-error { border-color: var(--red); box-shadow: 0 0 0 3px rgba(220,38,38,0.12); }
-  .field-row input[readonly] { background: var(--gray-100); color: var(--gray-600); cursor: not-allowed; }
-  .unit-tag { display: flex; align-items: center; padding: 0 10px; background: var(--gray-100); border: 1px solid var(--gray-200); border-radius: var(--radius); font-size: 12px; color: var(--gray-600); font-weight: 500; white-space: nowrap; height: 38px; min-width: 45px; justify-content: center; }
-  
-  .error-msg { color: var(--red); font-size: 12px; margin-top: 4px; display: none; font-weight: 500; }
+/* MAIN GRID */
+.main-grid{display:grid;grid-template-columns:400px 1fr;gap:1.5rem;align-items:start}
 
-  /* RED WARNING SIGN */
-  .error-banner { display: none; align-items: flex-start; gap: 10px; background: var(--red-light); border: 1px solid #fca5a5; border-left: 4px solid var(--red); border-radius: var(--radius); padding: 10px 12px; margin-top: 6px; }
-  .error-banner .sign { flex: none; width: 26px; height: 26px; border-radius: 6px; background: var(--red); color: white; font-weight: 800; font-size: 15px; display: flex; align-items: center; justify-content: center; }
-  .error-banner .msg { font-size: 12px; color: var(--red); font-weight: 600; line-height: 1.4; }
-  .error-banner .msg small { display: block; font-weight: 500; color: #991b1b; margin-top: 2px; }
-  .vdpm-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; background: var(--red); color: #fff !important; padding: 7px 14px; border-radius: 6px; text-decoration: none; font-weight: 700; font-size: 12px; transition: background 0.2s; }
-  .vdpm-link:hover { background: #b91c1c; }
+/* PANEL */
+.panel{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius-lg);box-shadow:var(--shadow);overflow:hidden}
+.panel-header{background:var(--gray-50);border-bottom:1px solid var(--gray-200);padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between}
+.panel-header h2{font-size:14px;font-weight:600;color:var(--gray-800);display:flex;align-items:center;gap:8px}
+.panel-header .icon{width:24px;height:24px;background:var(--blue-light);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px}
+.panel-body{padding:1.25rem}
 
-  /* MANUAL OVERRIDE CHECKBOX */
-  .manual-toggle { display: inline-flex; align-items: center; gap: 4px; font-weight: normal; font-size: 11px; color: var(--gray-400); cursor: pointer; }
-  .manual-toggle input { width: auto !important; height: auto !important; margin: 0; cursor: pointer; }
+/* FORM */
+.section-label{font-size:11px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.75rem;margin-top:1.25rem;border-bottom:1px dashed var(--gray-200);padding-bottom:4px}
+.section-label:first-child{margin-top:0}
+.field{margin-bottom:.875rem}
+.field label{display:flex;justify-content:space-between;font-size:13px;color:var(--gray-600);margin-bottom:4px;font-weight:500}
+.field label span.hint{font-size:11px;color:var(--gray-400);font-weight:normal}
+.field-row{display:flex;gap:6px}
+.field-row input,.field-row select{flex:1;height:38px;padding:0 10px;border:1px solid var(--gray-200);border-radius:var(--radius);font-size:13px;color:var(--gray-800);outline:none;background:var(--white);transition:all .2s}
+.field-row input:focus,.field-row select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+.field-row input.input-error{border-color:var(--red);box-shadow:0 0 0 3px rgba(220,38,38,.12)}
+.field-row input[readonly]{background:var(--gray-100);color:var(--gray-600);cursor:not-allowed}
+.unit-tag{display:flex;align-items:center;padding:0 10px;background:var(--gray-100);border:1px solid var(--gray-200);border-radius:var(--radius);font-size:12px;color:var(--gray-600);font-weight:500;white-space:nowrap;height:38px;min-width:45px;justify-content:center}
+.error-msg{color:var(--red);font-size:12px;margin-top:4px;display:none;font-weight:500}
+.error-banner{display:none;align-items:flex-start;gap:10px;background:var(--red-light);border:1px solid #fca5a5;border-left:4px solid var(--red);border-radius:var(--radius);padding:10px 12px;margin-top:6px}
+.error-banner .sign{flex:none;width:26px;height:26px;border-radius:6px;background:var(--red);color:#fff;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.error-banner .msg{font-size:12px;color:var(--red);font-weight:600;line-height:1.4}
+.error-banner .msg small{display:block;font-weight:500;color:#991b1b;margin-top:2px}
+.switch-method-btn{display:inline-flex;align-items:center;gap:6px;margin-top:10px;background:var(--blue);color:#fff;padding:7px 14px;border-radius:6px;border:none;cursor:pointer;font-weight:700;font-size:12px;transition:background .2s}
+.switch-method-btn:hover{background:var(--blue-dark)}
+.manual-toggle{display:inline-flex;align-items:center;gap:4px;font-weight:normal;font-size:11px;color:var(--gray-400);cursor:pointer}
+.manual-toggle input{width:auto!important;height:auto!important;margin:0;cursor:pointer}
+.mat-info-box{background:var(--blue-light);border-radius:var(--radius);padding:10px 12px;font-size:12px;color:var(--blue);font-weight:500;margin-bottom:1rem;line-height:1.4}
 
-  /* BUTTONS */
-  .btn-group { display: flex; gap: 8px; margin-top: 1.25rem; }
-  .calc-btn { flex: 2; height: 42px; background: var(--blue); color: white; border: none; border-radius: var(--radius); font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
-  .calc-btn:hover { background: var(--blue-dark); }
-  .calc-btn:disabled { background: var(--gray-400); cursor: not-allowed; }
-  .reset-btn { flex: 1; height: 42px; background: transparent; color: var(--gray-600); border: 1px solid var(--gray-200); border-radius: var(--radius); font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; }
-  .reset-btn:hover { background: var(--gray-100); color: var(--gray-900); }
-  .export-btn { background: transparent; border: 1px solid var(--gray-300); color: var(--gray-600); padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.2s; }
-  .export-btn:hover { background: var(--gray-50); color: var(--gray-900); border-color: var(--gray-400); }
+/* BUTTONS */
+.btn-group{display:flex;gap:8px;margin-top:1.25rem}
+.calc-btn{flex:2;height:42px;background:var(--blue);color:#fff;border:none;border-radius:var(--radius);font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.calc-btn:hover{background:var(--blue-dark)}
+.calc-btn:disabled{background:var(--gray-400);cursor:not-allowed}
+.reset-btn{flex:1;height:42px;background:transparent;color:var(--gray-600);border:1px solid var(--gray-200);border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;transition:all .2s}
+.reset-btn:hover{background:var(--gray-100);color:var(--gray-900)}
+.export-btn{background:transparent;border:1px solid var(--gray-300);color:var(--gray-600);padding:4px 10px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:4px;transition:all .2s}
+.export-btn:hover{background:var(--gray-50);color:var(--gray-900);border-color:var(--gray-400)}
 
-  /* RIGHT PANEL */
-  .right-col { display: flex; flex-direction: column; gap: 1.5rem; }
+/* RIGHT */
+.right-col{display:flex;flex-direction:column;gap:1.5rem}
 
-  /* 3D VIEWER */
-  .viewer-panel { background: var(--gray-900); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-md); }
-  .viewer-header { background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.08); padding: 0.875rem 1.25rem; display: flex; align-items: center; justify-content: space-between; }
-  .viewer-header h2 { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.8); }
-  .viewer-controls { display: flex; gap: 6px; }
-  .view-btn { background: rgba(255,255,255,0.08); border: none; color: rgba(255,255,255,0.7); padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: 500; cursor: pointer; transition: all 0.2s; }
-  .view-btn:hover, .view-btn.active { background: var(--blue); color: white; }
-  #canvas3d { width: 100%; height: 300px; display: block; cursor: grab; }
-  #canvas3d:active { cursor: grabbing; }
-  .viewer-info { padding: 0.75rem 1.25rem; background: rgba(255,255,255,0.02); border-top: 1px solid rgba(255,255,255,0.05); display: flex; gap: 1.5rem; flex-wrap: wrap; }
-  .vi-item { font-size: 12px; color: rgba(255,255,255,0.4) }
-  .vi-item span { color: rgba(255,255,255,0.9); font-weight: 600; margin-left: 4px; }
+/* 3D VIEWER */
+.viewer-panel{background:var(--gray-900);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-md)}
+.viewer-header{background:rgba(255,255,255,.03);border-bottom:1px solid rgba(255,255,255,.08);padding:.875rem 1.25rem;display:flex;align-items:center;justify-content:space-between}
+.viewer-header h2{font-size:13px;font-weight:600;color:rgba(255,255,255,.8)}
+.viewer-controls{display:flex;gap:6px}
+.view-btn{background:rgba(255,255,255,.08);border:none;color:rgba(255,255,255,.7);padding:5px 12px;border-radius:6px;font-size:11px;font-weight:500;cursor:pointer;transition:all .2s}
+.view-btn:hover,.view-btn.active{background:var(--blue);color:#fff}
+canvas{width:100%;height:300px;display:block;cursor:grab}
+canvas:active{cursor:grabbing}
+.viewer-info{padding:.75rem 1.25rem;background:rgba(255,255,255,.02);border-top:1px solid rgba(255,255,255,.05);display:flex;gap:1.5rem;flex-wrap:wrap}
+.vi-item{font-size:12px;color:rgba(255,255,255,.4)}
+.vi-item span{color:rgba(255,255,255,.9);font-weight:600;margin-left:4px}
 
-  /* METRICS */
-  .metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-  .metric-card { background: var(--white); border: 1px solid var(--gray-200); border-radius: var(--radius); padding: 1rem; text-align: center; box-shadow: var(--shadow); position: relative; overflow: hidden; }
-  .metric-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--gray-200); }
-  .metric-card.primary::before { background: var(--blue); }
-  .metric-val { font-size: 20px; font-weight: 700; color: var(--gray-900); letter-spacing: -0.02em; }
-  .metric-lbl { font-size: 11px; color: var(--gray-400); margin-top: 4px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.02em; }
-  .metric-unit { font-size: 11px; color: var(--blue); font-weight: 600; margin-top: 2px; }
+/* METRICS */
+.metrics-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.metric-card{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius);padding:1rem;text-align:center;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.metric-card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;background:var(--gray-200)}
+.metric-card.primary::before{background:var(--blue)}
+.metric-val{font-size:20px;font-weight:700;color:var(--gray-900);letter-spacing:-.02em}
+.metric-lbl{font-size:11px;color:var(--gray-400);margin-top:4px;text-transform:uppercase;font-weight:600;letter-spacing:.02em}
+.metric-unit{font-size:11px;color:var(--blue);font-weight:600;margin-top:2px}
 
-  /* TABLE */
-  .table-wrap { overflow-x: auto; }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
-  th { background: var(--gray-50); color: var(--gray-600); font-weight: 600; padding: 12px 14px; border-bottom: 1px solid var(--gray-200); font-size: 12px; }
-  td { padding: 12px 14px; border-bottom: 1px solid var(--gray-100); color: var(--gray-800); }
-  tr:hover td { background: var(--gray-50); }
-  tr:last-child td { border-bottom: none; }
-  .badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
-  .badge-ok { background: var(--green-light); color: var(--green); }
-  .badge-warn { background: var(--orange-light); color: var(--orange); }
+/* ENG CARDS */
+.eng-cards-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:1rem}
+.eng-card{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:1rem;box-shadow:var(--shadow)}
+.eng-card h4{margin-top:0;color:var(--blue);font-size:13px;border-bottom:1px solid var(--gray-200);padding-bottom:8px;margin-bottom:10px}
+.status-pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase}
+.status-ok{background:var(--green-light);color:var(--green)}
+.status-warn{background:var(--orange-light);color:var(--orange)}
+.status-danger{background:var(--red-light);color:var(--red)}
 
-  /* EMPTY STATE */
-  .empty-state { text-align: center; padding: 4rem 1rem; color: var(--gray-400); }
-  .empty-state svg { width: 48px; height: 48px; margin-bottom: 1rem; opacity: 0.4; color: var(--gray-400); }
-  .empty-state p { font-size: 13px; font-weight: 500; }
+/* TABLE */
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px;text-align:left}
+th{background:var(--gray-50);color:var(--gray-600);font-weight:600;padding:12px 14px;border-bottom:1px solid var(--gray-200);font-size:12px}
+td{padding:12px 14px;border-bottom:1px solid var(--gray-100);color:var(--gray-800)}
+tr:hover td{background:var(--gray-50)}
+tr:last-child td{border-bottom:none}
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600}
+.badge-ok{background:var(--green-light);color:var(--green)}
+.badge-warn{background:var(--orange-light);color:var(--orange)}
+.badge-design{background:var(--blue-light);color:var(--blue)}
+.badge-test{background:#fff3cd;color:#997404}
+.badge-warning{background:#fef3c7;color:#d97706;border:1px solid #f59e0b}
 
-  /* FOOTER */
-  footer { background: var(--gray-900); color: rgba(255,255,255,0.4); text-align: center; padding: 1.5rem; font-size: 12px; margin-top: 4rem; border-top: 4px solid var(--blue); }
-  footer strong { color: rgba(255,255,255,0.8); }
+/* ITER DETAILS */
+details{margin-top:4px}
+summary{cursor:pointer;font-size:11px;color:var(--blue);font-weight:600;padding:3px 0}
+.iter-detail{font-size:11px;color:var(--gray-600);margin:2px 0 2px 8px;font-family:'Consolas',monospace}
 
-  /* PRINT REPORT LAYOUT */
-  @media print {
-    body { background: white; color: black; }
-    nav, .hero, .panel-header .icon, .btn-group, .viewer-panel, .viewer-controls { display: none !important; }
-    .container { max-width: 100%; padding: 0; }
-    .main-grid { grid-template-columns: 1fr; gap: 0; }
-    .panel { border: none; box-shadow: none; }
-    .panel-body { padding: 0; }
-    .metrics-grid { grid-template-columns: repeat(4, 1fr); margin-bottom: 2rem; page-break-inside: avoid; }
-    .metric-card { border: 1px solid #ccc; box-shadow: none; }
-    table { border: 1px solid #aaa; page-break-inside: avoid; }
-    th { background: #f0f0f0 !important; color: black; border-bottom: 2px solid black; }
-    td, th { padding: 8px 10px; }
-    .section-label { margin-top: 2rem; color: black; border-bottom: 2px solid black; font-size: 14px; }
-    .field { display: inline-block; width: 32%; margin-bottom: 10px; vertical-align: top; }
-    .field-row input, .field-row select { border: none; padding: 0; font-weight: bold; background: transparent; }
-    .unit-tag { display: inline; padding: 0 2px; background: transparent; border: none; font-weight: normal; }
-    .badge { border: 1px solid #000; background: transparent !important; color: black !important; }
-  }
+/* FINAL HIGHLIGHT */
+.final-highlight{background:var(--green-light);padding:1rem;border-radius:var(--radius);text-align:center;border:1px dashed var(--green);margin-top:1rem}
 
-  /* RESPONSIVE */
-  @media (max-width: 960px) {
-    .main-grid { grid-template-columns: 1fr; }
-    .metrics-grid { grid-template-columns: repeat(2, 1fr); }
-  }
+/* EMPTY STATE */
+.empty-state{text-align:center;padding:4rem 1rem;color:var(--gray-400)}
+.empty-state svg{width:48px;height:48px;margin-bottom:1rem;opacity:.4}
+.empty-state p{font-size:13px;font-weight:500}
+
+/* SVG TANK */
+.tank-viz{background:#f8fafc;border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:1rem;margin-bottom:1rem}
+.tank-viz h3{font-size:13px;font-weight:600;color:var(--gray-600);text-align:center;margin-bottom:.75rem}
+#tank-sketch{display:block;margin:0 auto;max-width:480px}
+.shell-plate{fill:#475569;stroke:#1e293b;stroke-width:1;transition:fill .2s;cursor:pointer}
+.shell-plate:hover{fill:var(--blue)}
+.center-line{stroke:#94a3b8;stroke-dasharray:5,5}
+.ground-line{stroke:#334155;stroke-width:3}
+.dimension-text{font-size:10px;fill:#334155;font-weight:600}
+.shell-label{font-size:11px;fill:#fff;text-anchor:middle;font-weight:700;pointer-events:none}
+
+footer{background:var(--gray-900);color:rgba(255,255,255,.4);text-align:center;padding:1.5rem;font-size:12px;margin-top:4rem;border-top:4px solid var(--blue)}
+footer strong{color:rgba(255,255,255,.8)}
+
+@media print{
+  nav,.tab-bar,.hero,.btn-group,.viewer-panel,.viewer-controls,#print-datasheet~*{display:none!important}
+  #print-datasheet{display:block!important;position:absolute;top:0;left:0;width:100%}
+  @page{size:letter;margin:12mm}
+}
+.ds-page{font-family:'Times New Roman',Times,serif;color:#000;max-width:900px;margin:0 auto;border:2px solid #000;font-size:12px;line-height:1.5}
+.ds-header{display:grid;grid-template-columns:140px 1fr 220px;border-bottom:2px solid #000}
+.ds-header>div{padding:8px 12px}
+.ds-logo{display:flex;align-items:center;justify-content:center;border-right:1px solid #000;font-size:30px;font-weight:900}
+.ds-title{border-right:1px solid #000;text-align:center}
+.ds-title .t1{font-size:15px;font-weight:700}
+.ds-title .t2{font-size:13px;font-weight:700;margin-top:2px}
+.ds-section-title{background:#eaeaea;font-weight:700;text-decoration:underline;padding:4px 10px;border-bottom:1px solid #000;border-top:1px solid #000;font-size:12px}
+.ds-body{padding:8px 14px}
+.ds-row{margin:5px 0}
+.ds-fill{border-bottom:1px solid #000;padding:0 4px;font-weight:600;display:inline-block;min-width:60px}
+.ds-table{width:100%;border-collapse:collapse;margin:6px 0;font-size:11px}
+.ds-table th,.ds-table td{border:1px solid #000;padding:3px 6px;text-align:center}
+.ds-table th{background:#eaeaea;font-weight:700}
+.ds-footer{display:grid;grid-template-columns:1fr 1fr;border-top:2px solid #000}
+.ds-footer>div{padding:8px 12px}
+.ds-footer .left{border-right:1px solid #000}
+.ds-approvals-table{width:100%;border-collapse:collapse;font-size:11px;margin-top:4px}
+.ds-approvals-table td{border:1px solid #000;padding:10px 6px 4px;height:30px;vertical-align:bottom}
+.ds-approvals-table .hdr{background:#eaeaea;font-weight:700;text-align:center;padding:3px;height:auto}
+#print-datasheet{display:none}
+
+@media(max-width:960px){
+  .main-grid{grid-template-columns:1fr}
+  .metrics-grid{grid-template-columns:repeat(2,1fr)}
+  .eng-cards-grid{grid-template-columns:1fr}
+}
+
+/* LOGIN SCREEN */
+#login-screen{position:fixed;inset:0;z-index:1000;background:linear-gradient(135deg,#1e3a5f 0%,#2563eb 50%,#3b82f6 100%);display:flex;align-items:center;justify-content:center;padding:1rem}
+.login-card{background:var(--white);border-radius:var(--radius-lg);box-shadow:var(--shadow-md);padding:2.25rem 2rem;width:100%;max-width:380px;text-align:center}
+.login-card .login-logo{display:flex;align-items:center;justify-content:center;gap:10px;font-size:17px;font-weight:700;color:var(--blue);margin-bottom:.35rem}
+.login-card .login-logo svg{width:30px;height:30px}
+.login-card p.login-sub{font-size:12.5px;color:var(--gray-400);margin-bottom:1.5rem}
+.login-card .field{text-align:left}
+.login-card label{font-size:13px;color:var(--gray-600);font-weight:500;display:block;margin-bottom:4px}
+.login-card input{width:100%;height:42px;padding:0 12px;border:1px solid var(--gray-200);border-radius:var(--radius);font-size:14px;outline:none;transition:all .2s}
+.login-card input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+.login-card input.input-error{border-color:var(--red);box-shadow:0 0 0 3px rgba(220,38,38,.12)}
+.login-error{color:var(--red);font-size:12px;font-weight:500;margin-top:6px;display:none;text-align:left}
+.login-btn{width:100%;height:42px;margin-top:1.1rem;background:var(--blue);color:#fff;border:none;border-radius:var(--radius);font-size:14px;font-weight:600;cursor:pointer;transition:background .2s}
+.login-btn:hover{background:var(--blue-dark)}
+.login-note{font-size:11px;color:var(--gray-400);margin-top:1rem;line-height:1.4}
+#app-root{display:none}
+.nav-user{display:flex;align-items:center;gap:10px}
+.nav-user span{font-size:13px;color:var(--gray-600)}
+.logout-link{font-size:13px;color:var(--blue);text-decoration:none;font-weight:500;cursor:pointer}
+.logout-link:hover{text-decoration:underline}
 </style>
 </head>
 <body>
 
+<!-- ================================================================
+     LOGIN SCREEN (client-side email gate — no backend/password store)
+     ================================================================ -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <svg viewBox="0 0 32 32" fill="none">
+        <rect x="6" y="4" width="20" height="24" rx="3" fill="#2563eb" opacity=".15" stroke="#2563eb" stroke-width="1.5"/>
+        <ellipse cx="16" cy="4" rx="10" ry="3.5" fill="#2563eb" opacity=".4"/>
+        <ellipse cx="16" cy="28" rx="10" ry="3.5" fill="#2563eb"/>
+      </svg>
+      JESA TANK CALC
+    </div>
+    <p class="login-sub">Entrez votre e-mail professionnel pour accéder à l'outil.</p>
+    <div class="field">
+      <label for="login-email">Adresse e-mail</label>
+      <input type="email" id="login-email" placeholder="prenom.nom@jesa.com" autocomplete="email">
+      <div class="login-error" id="login-error">Veuillez saisir une adresse e-mail valide.</div>
+    </div>
+    <button class="login-btn" onclick="handleLogin()">Se connecter</button>
+    <p class="login-note">Accès réservé au personnel autorisé. Votre e-mail est utilisé pour identifier vos calculs (champ "Prepared by") et n'est stocké que sur cet appareil.</p>
+  </div>
+</div>
+
+<div id="app-root">
+
 <nav>
   <div class="nav-logo">
     <svg viewBox="0 0 32 32" fill="none">
-      <rect x="6" y="4" width="20" height="24" rx="3" fill="#2563eb" opacity="0.15" stroke="#2563eb" stroke-width="1.5"/>
-      <ellipse cx="16" cy="4" rx="10" ry="3.5" fill="#2563eb" opacity="0.4"/>
+      <rect x="6" y="4" width="20" height="24" rx="3" fill="#2563eb" opacity=".15" stroke="#2563eb" stroke-width="1.5"/>
+      <ellipse cx="16" cy="4" rx="10" ry="3.5" fill="#2563eb" opacity=".4"/>
       <ellipse cx="16" cy="28" rx="10" ry="3.5" fill="#2563eb"/>
     </svg>
     JESA TANK CALCULATION TOOL
@@ -185,682 +264,928 @@
     <a href="#">Materials DB</a>
     <a href="#">Documentation</a>
   </div>
-  <div class="nav-badge">v1.3 · API 650 Ed.13 Compliant</div>
+  <div class="nav-user">
+    <span id="nav-user-email"></span>
+    <a class="logout-link" onclick="handleLogout()">Déconnexion</a>
+    <div class="nav-badge">v2.0 · API 650 Ed.13 Unified</div>
+  </div>
 </nav>
 
 <div class="hero">
-  <h1>Professional API 650 Tank Sizing</h1>
-  <p>Engineering verification tool executing the <strong>1-Foot Method (Sec. 5.6.3)</strong>. Computes design and hydrostatic test shell thicknesses with dynamic variable $t_{min}$ validation.</p>
+  <h1>Professional API 650 Tank Sizing — Unified Platform</h1>
+  <p>Single platform combining the <strong>1-Foot Method (Sec. 5.6.3)</strong> and the <strong>Variable Design Point Method (Sec. 5.6.4)</strong> with 3D visualization, wind girder check and printable data sheet.</p>
   <div class="hero-badges">
-    <span class="hero-badge">API 650 Sec 5.6.3</span>
-    <span class="hero-badge">Dynamic Min. Thickness</span>
-    <span class="hero-badge">Auto Shell Courses</span>
-    <span class="hero-badge">Report Printing</span>
+    <span class="hero-badge">1-Foot Method</span>
+    <span class="hero-badge">VDPM Iterative</span>
+    <span class="hero-badge">3D Dynamic Render</span>
+    <span class="hero-badge">Wind Girder Check</span>
+    <span class="hero-badge">PDF Data Sheet</span>
+    <span class="hero-badge">CSV Export</span>
   </div>
+</div>
+
+<!-- METHOD TABS -->
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('onefoot',this)">
+    1-Foot Method <span class="tab-badge">Sec 5.6.3 · D ≤ 61m</span>
+  </button>
+  <button class="tab-btn" onclick="switchTab('vdpm',this)">
+    Variable Design Point (VDPM) <span class="tab-badge">Sec 5.6.4 · All D</span>
+  </button>
 </div>
 
 <div class="container">
-  <div class="main-grid">
+
+<!-- ================================================================
+     TAB 1 : ONE-FOOT METHOD
+     ================================================================ -->
+<div id="tab-onefoot" class="tab-content active">
+<div class="main-grid">
+
+  <!-- INPUTS -->
+  <div class="panel">
+    <div class="panel-header">
+      <h2><div class="icon">⚙️</div> Design Inputs — 1-Foot Method</h2>
+    </div>
+    <div class="panel-body">
+      <div class="section-label">Geometry & Shell Layout</div>
+      <div class="field">
+        <label>Nominal Diameter (D) <span class="hint">max 61m for this method</span></label>
+        <div class="field-row">
+          <input type="number" id="of-D" value="24" min="1" max="61" step=".1" oninput="of_checkDiameter()">
+          <div class="unit-tag">m</div>
+        </div>
+        <div class="error-msg" id="of-err-D">Diameter must be 1–61m.</div>
+        <div class="error-banner" id="of-err-banner">
+          <div class="sign">!</div>
+          <div class="msg">Diameter exceeds 61m — 1-Foot Method not applicable.
+            <small>Switch to VDPM for diameters above 61m.</small><br>
+            <button class="switch-method-btn" onclick="switchTab('vdpm',document.querySelectorAll('.tab-btn')[1]);syncInputsToVDPM()">→ Switch to VDPM</button>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Design Liquid Height (H)</label>
+        <div class="field-row">
+          <input type="number" id="of-H" value="14.5" min="1" max="50" step=".1" oninput="of_autoCalcCourses()">
+          <div class="unit-tag">m</div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Standard Plate Width</label>
+        <div class="field-row">
+          <select id="of-plateWidth" onchange="of_autoCalcCourses()">
+            <option value="1.5">1.5 m</option>
+            <option value="1.8">1.8 m (6 ft)</option>
+            <option value="2.0" selected>2.0 m</option>
+            <option value="2.44">2.44 m (8 ft)</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Shell Courses
+          <span class="hint"><label class="manual-toggle"><input type="checkbox" id="of-ncManual" onchange="of_toggleManual()"> Manual</label></span>
+        </label>
+        <div class="field-row">
+          <input type="number" id="of-nc" value="8" min="1" max="15" step="1" readonly>
+          <div class="unit-tag">—</div>
+        </div>
+      </div>
+
+      <div class="section-label">Product & Design</div>
+      <div class="field">
+        <label>Joint Efficiency (E) <span class="hint">Reference only</span></label>
+        <div class="field-row">
+          <select id="of-E">
+            <option value="1.00">Fully Radiographed (E=1.00)</option>
+            <option value="0.85" selected>Spot Radiographed (E=0.85)</option>
+            <option value="0.70">Not Radiographed (E=0.70)</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Specific Gravity (G)</label>
+        <div class="field-row">
+          <input type="number" id="of-G" value="0.85" min=".4" max="3" step=".01">
+          <div class="unit-tag">—</div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Corrosion Allowance (CA)</label>
+        <div class="field-row">
+          <input type="number" id="of-CA" value="2.0" min="0" max="12" step=".5">
+          <div class="unit-tag">mm</div>
+        </div>
+      </div>
+
+      <div class="section-label">Material</div>
+      <div class="field">
+        <div class="field-row"><select id="of-mat" onchange="of_updateMatInfo()"></select></div>
+      </div>
+      <div id="of-mat-info" class="mat-info-box">Loading…</div>
+
+      <div class="section-label">Project Info (Data Sheet)</div>
+      <div class="field"><label>Manufacturer</label><div class="field-row"><input type="text" id="of-mfr" value="JESA"></div></div>
+      <div class="field"><label>Client / Purchaser</label><div class="field-row"><input type="text" id="of-client"></div></div>
+      <div class="field"><label>Tank Tag</label><div class="field-row"><input type="text" id="of-tag"></div></div>
+      <div class="field"><label>Contract No.</label><div class="field-row"><input type="text" id="of-contract"></div></div>
+      <div class="field"><label>Prepared by / Checked by</label>
+        <div class="field-row">
+          <input type="text" id="of-by" placeholder="By">
+          <input type="text" id="of-ckd" placeholder="Ck'd">
+        </div>
+      </div>
+      <div class="field"><label>Wind Velocity</label><div class="field-row"><input type="number" id="of-wind" value="190" step="5"><div class="unit-tag">km/h</div></div></div>
+
+      <div class="btn-group">
+        <button class="calc-btn" id="of-calc-btn" onclick="of_calculate()">▶ Run Calculation</button>
+        <button class="reset-btn" onclick="of_reset()">Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="right-col">
+    <div class="viewer-panel">
+      <div class="viewer-header">
+        <h2>3D Dynamic Spatial Render</h2>
+        <div class="viewer-controls">
+          <button class="view-btn active" onclick="setView3D('perspective','of')">3D</button>
+          <button class="view-btn" onclick="setView3D('top','of')">Top</button>
+          <button class="view-btn" onclick="setView3D('front','of')">Front</button>
+          <button class="view-btn" onclick="toggleWire('of')">Wireframe</button>
+        </div>
+      </div>
+      <canvas id="of-canvas3d"></canvas>
+      <div class="viewer-info">
+        <div class="vi-item">D: <span id="of-vi-d">—</span></div>
+        <div class="vi-item">H: <span id="of-vi-h">—</span></div>
+        <div class="vi-item">Vol: <span id="of-vi-v">—</span></div>
+        <div class="vi-item">Courses: <span id="of-vi-n">—</span></div>
+        <div class="vi-item">t_min: <span id="of-vi-tmin" style="color:var(--orange)">—</span></div>
+      </div>
+    </div>
+
+    <div class="metrics-grid">
+      <div class="metric-card primary"><div class="metric-val" id="of-r-vol">—</div><div class="metric-unit">m³</div><div class="metric-lbl">Volume</div></div>
+      <div class="metric-card"><div class="metric-val" id="of-r-mass">—</div><div class="metric-unit">t</div><div class="metric-lbl">Product Mass</div></div>
+      <div class="metric-card"><div class="metric-val" id="of-r-pbot">—</div><div class="metric-unit">kPa</div><div class="metric-lbl">Hydrostatic Head</div></div>
+      <div class="metric-card"><div class="metric-val" id="of-r-tmax" style="color:var(--red)">—</div><div class="metric-unit">mm</div><div class="metric-lbl">Governing t</div></div>
+    </div>
 
     <div class="panel">
       <div class="panel-header">
-        <h2><div class="icon">⚙️</div> Design Inputs</h2>
-      </div>
-      <div class="panel-body">
-
-        <div class="section-label">Geometry & Shell Layout</div>
-        <div class="field">
-          <label>Nominal Diameter (D) <span class="hint">Inside shell · max 61 m</span></label>
-          <div class="field-row">
-            <input type="number" id="D" value="24" min="1" max="61" step="0.1" oninput="checkDiameter()">
-            <div class="unit-tag">m</div>
-          </div>
-          <div class="error-msg" id="err-D">Diameter must be between 1 and 61m.</div>
-          <div class="error-banner" id="err-D-banner">
-            <div class="sign">!</div>
-            <div class="msg">Diameter exceeds the 61 m limit
-              <small>Calculation blocked — the 1-Foot Method does not apply above 61 m. Use the Variable Design Point Method instead.</small>
-              <br>
-              <a class="vdpm-link" id="link-vdpm" href="TOTO.html" target="_blank" rel="noopener">
-                Ouvrir le calculateur Point Variable (VDPM) →
-              </a>
-            </div>
-          </div>
-        </div>
-        
-        <div class="field">
-          <label>Design Liquid Height (H)</label>
-          <div class="field-row">
-            <input type="number" id="H" value="14.5" min="1" max="50" step="0.1" oninput="autoCalcCourses()">
-            <div class="unit-tag">m</div>
-          </div>
-          <div class="error-msg" id="err-H">Height must be between 1 and 50m.</div>
-        </div>
-
-        <div class="field">
-          <label>Standard Plate Width <span class="hint">Mill course height</span></label>
-          <div class="field-row">
-            <select id="plateWidth" onchange="autoCalcCourses()">
-              <option value="1.5">1.5 m</option>
-              <option value="1.8">1.8 m (6 ft)</option>
-              <option value="2.0" selected>2.0 m</option>
-              <option value="2.44">2.44 m (8 ft)</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="field">
-          <label>Number of Courses (Shell Rows)
-            <span class="hint">
-              <label class="manual-toggle">
-                <input type="checkbox" id="ncManual" onchange="toggleManualCourses()">
-                Manual override
-              </label>
-            </span>
-          </label>
-          <div class="field-row">
-            <input type="number" id="nc" value="6" min="1" max="15" step="1" readonly>
-            <div class="unit-tag">—</div>
-          </div>
-        </div>
-
-        <div class="section-label">Joints & Product Properties</div>
-        <div class="field">
-          <label>Joint Efficiency Factor (E) <span class="hint">Ref. only — see note</span></label>
-          <div class="field-row">
-            <select id="E_factor">
-              <option value="1.00">Fully Radiographed (E = 1.00)</option>
-              <option value="0.85" selected>Spot Radiographed (E = 0.85)</option>
-              <option value="0.70">Not Radiographed (E = 0.70)</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="field">
-          <label>Product Specific Gravity (G)</label>
-          <div class="field-row">
-            <input type="number" id="G" value="0.85" min="0.4" max="3.0" step="0.01">
-            <div class="unit-tag">—</div>
-          </div>
-        </div>
-        
-        <div class="field">
-          <label>Corrosion Allowance (CA)</label>
-          <div class="field-row">
-            <input type="number" id="CA" value="2.0" min="0" max="12" step="0.5">
-            <div class="unit-tag">mm</div>
-          </div>
-        </div>
-
-        <div class="section-label">Material Selection</div>
-        <div class="field">
-          <label>Shell Carbon Steel Grade</label>
-          <div class="field-row">
-            <select id="mat" onchange="updateMatInfo()">
-              <optgroup label="ASTM Specifications">
-                <option value="A283M-C">ASTM A283M Gr.C</option>
-                <option value="A285M-C">ASTM A285M Gr.C</option>
-                <option value="A131M-AB">ASTM A131M Gr.A/B</option>
-                <option value="A36M" selected>ASTM A36M</option>
-                <option value="A131M-EH36">ASTM A131M Gr.EH36</option>
-                <option value="A573M-400">ASTM A573M Gr.400</option>
-                <option value="A573M-450">ASTM A573M Gr.450</option>
-                <option value="A573M-485">ASTM A573M Gr.485</option>
-                <option value="A516M-380">ASTM A516M Gr.380</option>
-                <option value="A516M-415">ASTM A516M Gr.415</option>
-                <option value="A516M-450">ASTM A516M Gr.450</option>
-                <option value="A516M-485">ASTM A516M Gr.485</option>
-                <option value="A662M-B">ASTM A662M Gr.B</option>
-                <option value="A662M-C">ASTM A662M Gr.C</option>
-                <option value="A537M-1">ASTM A537M Cl.1</option>
-                <option value="A537M-2">ASTM A537M Cl.2</option>
-                <option value="A633M-CD">ASTM A633M Gr.C/D</option>
-                <option value="A737M-B">ASTM A737M Gr.B</option>
-                <option value="A841M-1AB">ASTM A841M Cl.1 Gr.A/B</option>
-                <option value="A841M-2AB">ASTM A841M Cl.2 Gr.A/B</option>
-              </optgroup>
-              <optgroup label="CSA Specifications">
-                <option value="G40.21M-260W">CSA G40.21M 260W</option>
-                <option value="G40.21M-260WT">CSA G40.21M 260WT</option>
-                <option value="G40.21M-300W">CSA G40.21M 300W</option>
-                <option value="G40.21M-300WT">CSA G40.21M 300WT</option>
-                <option value="G40.21M-350W">CSA G40.21M 350W</option>
-                <option value="G40.21M-350WT">CSA G40.21M 350WT</option>
-              </optgroup>
-              <optgroup label="National Standards">
-                <option value="NS-235">National Std. 235</option>
-                <option value="NS-250">National Std. 250</option>
-                <option value="NS-275">National Std. 275</option>
-              </optgroup>
-              <optgroup label="ISO Specifications">
-                <option value="ISO630-S275CD-t16">ISO 630 S275C,D (t ≤ 16mm)</option>
-                <option value="ISO630-S275CD-t40">ISO 630 S275C,D (16–40mm)</option>
-                <option value="ISO630-S355CD-t16">ISO 630 S355C,D (t ≤ 16mm)</option>
-                <option value="ISO630-S355CD-t40">ISO 630 S355C,D (16–40mm)</option>
-                <option value="ISO630-S355CD-t50">ISO 630 S355C,D (40–50mm)</option>
-              </optgroup>
-              <optgroup label="EN Specifications">
-                <option value="EN10025-S275J0J2-t16">EN 10025 S275J0/J2 (t ≤ 16mm)</option>
-                <option value="EN10025-S275J0J2-t40">EN 10025 S275J0/J2 (16–40mm)</option>
-                <option value="EN10025-S355J0J2K2-t16">EN 10025 S355J0/J2/K2 (t ≤ 16mm)</option>
-                <option value="EN10025-S355J0J2K2-t40">EN 10025 S355J0/J2/K2 (16–40mm)</option>
-                <option value="EN10025-S355J0J2K2-t50">EN 10025 S355J0/J2/K2 (40–50mm)</option>
-              </optgroup>
-            </select>
-          </div>
-        </div>
-        <div id="mat-info" style="background:var(--blue-light); border-radius:var(--radius); padding:10px 12px; font-size:12px; color:var(--blue); font-weight:500; margin-bottom:1rem; line-height:1.4;">
-          Loading properties...
-        </div>
-
-        <div class="btn-group">
-          <button class="calc-btn" id="calc-btn" onclick="calculate()">
-            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/><path d="M2 1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H2zm1 2h10v10H3V3z"/></svg>
-            Run Calculation
-          </button>
-          <button class="reset-btn" onclick="resetForm()">Reset</button>
+        <h2>📋 Shell Calculations — 1-Foot Method</h2>
+        <div style="display:flex;gap:8px">
+          <button class="export-btn" onclick="of_exportCSV()">⬇ CSV</button>
+          <button class="export-btn" onclick="window.print()">🖨 Print</button>
         </div>
       </div>
-    </div>
-
-    <div class="right-col">
-
-      <div class="viewer-panel">
-        <div class="viewer-header">
-          <h2>3D Dynamic Spatial Render</h2>
-          <div class="viewer-controls">
-            <button class="view-btn active" onclick="setView('perspective')">3D Perspective</button>
-            <button class="view-btn" onclick="setView('top')">Top Plan</button>
-            <button class="view-btn" onclick="setView('front')">Elevation</button>
-            <button class="view-btn" onclick="toggleWire()">Wireframe</button>
-          </div>
-        </div>
-        <canvas id="canvas3d"></canvas>
-        <div class="viewer-info">
-          <div class="vi-item">D_nom: <span id="vi-d">—</span></div>
-          <div class="vi-item">H_total: <span id="vi-h">—</span></div>
-          <div class="vi-item">Calc Vol: <span id="vi-v">—</span></div>
-          <div class="vi-item">Courses: <span id="vi-n">—</span></div>
-          <div class="vi-item">Governing t_min: <span id="vi-tmin" style="color:var(--orange);">—</span></div>
-        </div>
+      <div class="panel-body" style="padding:0">
+        <div class="table-wrap" id="of-table"></div>
       </div>
-
-      <div class="metrics-grid">
-        <div class="metric-card primary">
-          <div class="metric-val" id="r-vol">—</div>
-          <div class="metric-unit">m³</div>
-          <div class="metric-lbl">Nominal Volume</div>
-        </div>
-        <div class="metric-card">
-          <div class="metric-val" id="r-mass">—</div>
-          <div class="metric-unit">Metric Tons</div>
-          <div class="metric-lbl">Product Mass</div>
-        </div>
-        <div class="metric-card">
-          <div class="metric-val" id="r-pbot">—</div>
-          <div class="metric-unit">kPa</div>
-          <div class="metric-lbl">Max Hydrostatic Head</div>
-        </div>
-        <div class="metric-card">
-          <div class="metric-val" id="r-tmax" style="color:var(--red);">—</div>
-          <div class="metric-unit">mm</div>
-          <div class="metric-lbl">Governing Thickness</div>
-        </div>
-      </div>
-
-      <div class="panel">
-        <div class="panel-header">
-          <h2>📋 Shell Calculations Data Record (Method 1-Foot)</h2>
-          <button class="export-btn" onclick="window.print()">
-            <svg width="12" height="12" fill="currentColor" viewBox="0 0 16 16"><path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/><path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2H5zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4V3zm1 5a2.5 2.5 0 1 1 5 0 2.5 2.5 0 0 1-5 0z"/></svg>
-            Print Report
-          </button>
-        </div>
-        <div class="panel-body" style="padding:0">
-          <div class="table-wrap">
-            <div id="table-content">
-              <div class="empty-state">
-                <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <rect x="12" y="8" width="40" height="48" rx="4" stroke="currentColor" stroke-width="1.5"/>
-                  <line x1="20" y1="24" x2="44" y2="24" stroke="currentColor" stroke-width="1.5"/>
-                  <line x1="20" y1="32" x2="44" y2="32" stroke="currentColor" stroke-width="1.5"/>
-                </svg>
-                <p>Define design inputs and process calculation execution.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
     </div>
   </div>
 </div>
+</div><!-- end tab-onefoot -->
+
+<!-- ================================================================
+     TAB 2 : VDPM
+     ================================================================ -->
+<div id="tab-vdpm" class="tab-content">
+<div class="main-grid">
+
+  <!-- INPUTS -->
+  <div class="panel">
+    <div class="panel-header">
+      <h2><div class="icon">📐</div> Design Inputs — VDPM (Sec 5.6.4)</h2>
+    </div>
+    <div class="panel-body">
+      <div class="section-label">Geometry</div>
+      <div class="field">
+        <label>Diameter (D)</label>
+        <div class="field-row"><input type="number" id="vd-D" value="85" step=".1" oninput="vd_autoRadius();vd_autoCalcCourses()"><div class="unit-tag">m</div></div>
+      </div>
+      <div class="field">
+        <label>Nominal Radius (r)</label>
+        <div class="field-row"><input type="number" id="vd-r" value="42500" step="1"><div class="unit-tag">mm</div></div>
+      </div>
+      <div class="field">
+        <label>Liquid Height (H)</label>
+        <div class="field-row"><input type="number" id="vd-H" value="19.2" step=".1" oninput="vd_autoCalcCourses()"><div class="unit-tag">m</div></div>
+      </div>
+      <div class="field">
+        <label>Plate Width</label>
+        <div class="field-row">
+          <select id="vd-plateWidth" onchange="vd_autoCalcCourses()">
+            <option value="1.5">1.5 m</option>
+            <option value="1.8">1.8 m</option>
+            <option value="2.0">2.0 m</option>
+            <option value="2.4" selected>2.4 m (8 ft)</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Shell Courses
+          <span class="hint"><label class="manual-toggle"><input type="checkbox" id="vd-ncManual" onchange="vd_toggleManual()"> Manual</label></span>
+        </label>
+        <div class="field-row"><input type="number" id="vd-nc" value="8" min="1" max="20" step="1" readonly><div class="unit-tag">—</div></div>
+      </div>
+      <div class="field">
+        <label>Plate Length</label>
+        <div class="field-row"><input type="number" id="vd-plateLength" value="8.0" step=".5"><div class="unit-tag">m</div></div>
+      </div>
+
+      <div class="section-label">Design Parameters</div>
+      <div class="field"><label>Specific Gravity (G)</label><div class="field-row"><input type="number" id="vd-G" value="1.0" step=".01"><div class="unit-tag">—</div></div></div>
+      <div class="field"><label>Design Pressure (P)</label><div class="field-row"><input type="number" id="vd-P" value="2.5" step=".1"><div class="unit-tag">kPa</div></div></div>
+      <div class="field"><label>Wind Velocity</label><div class="field-row"><input type="number" id="vd-wind" value="190" step="5"><div class="unit-tag">km/h</div></div></div>
+      <div class="field"><label>Corrosion Allowance (CA)</label><div class="field-row"><input type="number" id="vd-CA" value="0" step=".1"><div class="unit-tag">mm</div></div></div>
+      <div class="field"><label>Allowable Design Stress (Sd)</label><div class="field-row"><input type="number" id="vd-Sd" value="208" step="1"><div class="unit-tag">MPa</div></div></div>
+      <div class="field"><label>Hydrostatic Test Stress (St)</label><div class="field-row"><input type="number" id="vd-St" value="208" step="1"><div class="unit-tag">MPa</div></div></div>
+
+      <div class="section-label">Project Info</div>
+      <div class="field"><label>Manufacturer</label><div class="field-row"><input type="text" id="vd-mfr" value="JESA"></div></div>
+      <div class="field"><label>Client / Purchaser</label><div class="field-row"><input type="text" id="vd-client"></div></div>
+      <div class="field"><label>Tank Tag</label><div class="field-row"><input type="text" id="vd-tag"></div></div>
+      <div class="field"><label>Contract No.</label><div class="field-row"><input type="text" id="vd-contract"></div></div>
+      <div class="field"><label>Prepared by / Checked by</label>
+        <div class="field-row">
+          <input type="text" id="vd-by" placeholder="By">
+          <input type="text" id="vd-ckd" placeholder="Ck'd">
+        </div>
+      </div>
+      <div class="field"><label>Joint Efficiency (E)</label><div class="field-row"><input type="number" id="vd-E" value="1.00" step=".01"><div class="unit-tag">—</div></div></div>
+
+      <div class="btn-group">
+        <button class="calc-btn" onclick="vd_calculate()">▶ Run VDPM Calculation</button>
+        <button class="reset-btn" onclick="vd_reset()">Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT VDPM -->
+  <div class="right-col">
+    <div class="eng-cards-grid">
+      <div class="eng-card">
+        <h4>Method Compliance</h4>
+        <div id="vd-status-method"></div>
+        <p id="vd-status-method-desc" style="font-size:12px;margin-top:8px;color:var(--gray-600)"></p>
+      </div>
+      <div class="eng-card">
+        <h4>Wind Girder Check (5.9.7)</h4>
+        <div id="vd-status-wind"></div>
+        <p id="vd-status-wind-desc" style="font-size:12px;margin-top:8px;color:var(--gray-600)"></p>
+      </div>
+      <div class="eng-card">
+        <h4>MTO Summary</h4>
+        <div id="vd-status-mto" style="font-size:12px;color:var(--gray-800)"></div>
+      </div>
+    </div>
+
+    <div class="metrics-grid">
+      <div class="metric-card primary"><div class="metric-val" id="vd-m-nc">—</div><div class="metric-unit">courses</div><div class="metric-lbl">Shell Courses</div></div>
+      <div class="metric-card"><div class="metric-val" id="vd-m-tmax">—</div><div class="metric-unit">mm</div><div class="metric-lbl">Max Thickness</div></div>
+      <div class="metric-card"><div class="metric-val" id="vd-m-tmax-course">—</div><div class="metric-unit">course</div><div class="metric-lbl">Critical Course</div></div>
+      <div class="metric-card"><div class="metric-val" id="vd-m-case">—</div><div class="metric-unit">case</div><div class="metric-lbl">Critical Case</div></div>
+    </div>
+
+    <div class="tank-viz">
+      <h3>Shell Profile — Elevation View</h3>
+      <svg id="tank-sketch" viewBox="0 0 500 450" width="100%" height="350px"></svg>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <h2>📋 VDPM Shell Data Record</h2>
+        <div style="display:flex;gap:8px">
+          <button class="export-btn" onclick="vd_exportCSV()">⬇ CSV</button>
+          <button class="export-btn" onclick="window.print()">🖨 Print</button>
+        </div>
+      </div>
+      <div class="panel-body" style="padding:0">
+        <div class="table-wrap">
+          <div id="vd-table"><div class="empty-state"><svg viewBox="0 0 64 64" fill="none"><rect x="12" y="8" width="40" height="48" rx="4" stroke="currentColor" stroke-width="1.5"/><line x1="20" y1="24" x2="44" y2="24" stroke="currentColor" stroke-width="1.5"/><line x1="20" y1="32" x2="44" y2="32" stroke="currentColor" stroke-width="1.5"/></svg><p>Run calculation to see results.</p></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="final-highlight" id="vd-final" style="display:none"></div>
+  </div>
+</div>
+</div><!-- end tab-vdpm -->
+
+</div><!-- container -->
 
 <footer>
-  <strong>JESA DESIGN ENGINEERING GROUP</strong> · API STANDARD 650 COMPLIANT DESIGN VERIFICATION VERIFICATION REPORT · PRO-CALC DIVISION · SUITABLE FOR PRODUCTION INTERMEDIATE EVALUATION PRE-CHECK BY SASNI ELMEHDI
+  <strong>JESA DESIGN ENGINEERING GROUP</strong> · API 650 UNIFIED CALCULATION PLATFORM · 1-Foot Method (Sec. 5.6.3) + VDPM (Sec. 5.6.4) · Ed.13
 </footer>
 
+</div><!-- end app-root -->
+
+<div id="print-datasheet"></div>
+
 <script>
-/* ===== DESIGN MATERIAL METADATA DB (API 650 Table 5-2a / 5-2b) =====
-   Sd = Product Design Stress, St = Hydrostatic Test Stress (MPa)
-   Values taken from API 650 Table 5-2a/5-2b. Grades with two thickness
-   ranges (t ≤ 65mm vs 65 < t ≤ 100mm) default to the t ≤ 65mm value. */
-const MATS = {
-  // ASTM Specifications
-  'A283M-C':      { Sd: 137, St: 154 },
-  'A285M-C':      { Sd: 137, St: 154 },
-  'A131M-AB':     { Sd: 157, St: 171 },
-  'A36M':         { Sd: 160, St: 171 },
-  'A131M-EH36':   { Sd: 196, St: 210 },
-  'A573M-400':    { Sd: 147, St: 165 },
-  'A573M-450':    { Sd: 160, St: 180 },
-  'A573M-485':    { Sd: 193, St: 208 },
-  'A516M-380':    { Sd: 137, St: 154 },
-  'A516M-415':    { Sd: 147, St: 165 },
-  'A516M-450':    { Sd: 160, St: 180 },
-  'A516M-485':    { Sd: 173, St: 195 },
-  'A662M-B':      { Sd: 180, St: 193 },
-  'A662M-C':      { Sd: 194, St: 208 },
-  'A537M-1':      { Sd: 194, St: 208 },  // t ≤ 65mm (65<t≤100: Sd 180, St 193)
-  'A537M-2':      { Sd: 220, St: 236 },  // t ≤ 65mm (65<t≤100: Sd 206, St 221)
-  'A633M-CD':     { Sd: 194, St: 208 },  // t ≤ 65mm (65<t≤100: Sd 180, St 193)
-  'A737M-B':      { Sd: 194, St: 208 },
-  'A841M-1AB':    { Sd: 194, St: 208 },  // Class 1, Grades A and B
-  'A841M-2AB':    { Sd: 220, St: 236 },  // Class 2, Grades A and B
-
-  // CSA Specifications
-  'G40.21M-260W':  { Sd: 164, St: 176 },
-  'G40.21M-260WT': { Sd: 164, St: 176 },
-  'G40.21M-300W':  { Sd: 176, St: 189 },
-  'G40.21M-300WT': { Sd: 176, St: 189 },
-  'G40.21M-350W':  { Sd: 180, St: 193 },
-  'G40.21M-350WT': { Sd: 180, St: 193 }, // t ≤ 65mm
-
-  // National Standards (generic grades)
-  'NS-235': { Sd: 137, St: 154 },
-  'NS-250': { Sd: 157, St: 171 },
-  'NS-275': { Sd: 167, St: 184 },
-
-  // ISO Specifications (ISO 630)
-  'ISO630-S275CD-t16':   { Sd: 164, St: 176 }, // t ≤ 16mm
-  'ISO630-S275CD-t40':   { Sd: 164, St: 176 }, // 16 < t ≤ 40mm
-  'ISO630-S355CD-t16':   { Sd: 188, St: 201 }, // t ≤ 16mm
-  'ISO630-S355CD-t40':   { Sd: 188, St: 201 }, // 16 < t ≤ 40mm
-  'ISO630-S355CD-t50':   { Sd: 188, St: 201 }, // 40 < t ≤ 50mm
-
-  // EN Specifications (EN 10025)
-  'EN10025-S275J0J2-t16':   { Sd: 164, St: 176 }, // t ≤ 16mm
-  'EN10025-S275J0J2-t40':   { Sd: 164, St: 176 }, // 16 < t ≤ 40mm
-  'EN10025-S355J0J2K2-t16': { Sd: 188, St: 201 }, // t ≤ 16mm
-  'EN10025-S355J0J2K2-t40': { Sd: 188, St: 201 }, // 16 < t ≤ 40mm
-  'EN10025-S355J0J2K2-t50': { Sd: 188, St: 201 }  // 40 < t ≤ 50mm
-};
-
-/* Hard cap: diameters over 61 m are out of scope for this tool */
-const D_MAX = 61;
-
-/* ===== EVALUATE VARIABLE T_MIN VIA API 650 CLAUSE 5.6.1.1 ===== */
-function getMinimumAllowedThickness(diameter) {
-  if (diameter < 15) return 5.0;
-  if (diameter >= 15 && diameter < 36) return 6.0;
-  if (diameter >= 36 && diameter <= 60) return 8.0;
-  return 10.0; // Diameter > 60m
+/* ================================================================
+   LOGIN (client-side email gate)
+   No backend is involved: this only checks that the value entered
+   looks like an email address and remembers it in this browser via
+   localStorage. It is NOT a real authentication/security system.
+   ================================================================ */
+function isValidEmail(v){
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
 }
-
-/* ===== BUILD THE CROSS-LINK TO THE VDPM (POINT VARIABLE) TOOL =====
-   Carries the currently entered inputs over as URL query parameters so
-   the user doesn't have to retype anything on the other page. The VDPM
-   tool expects a single shell course height (h); we pass the height of
-   the bottom course (H / nc) as a sensible starting value. */
-function updateVdpmLink() {
-  const D  = parseFloat(document.getElementById('D').value);
-  const H  = parseFloat(document.getElementById('H').value);
-  const G  = parseFloat(document.getElementById('G').value);
-  const CA = parseFloat(document.getElementById('CA').value);
-  const nc = parseInt(document.getElementById('nc').value) || 1;
-  const m  = MATS[document.getElementById('mat').value];
-
-  const h_course = (!isNaN(H) && nc > 0) ? (H / nc) : '';
-
-  const params = new URLSearchParams();
-  if (!isNaN(D))  params.set('D', D);
-  if (!isNaN(H))  params.set('H', H);
-  if (!isNaN(G))  params.set('G', G);
-  if (!isNaN(CA)) params.set('CA', CA);
-  if (m) { params.set('Sd', m.Sd); params.set('St', m.St); }
-  if (h_course !== '') params.set('h', h_course.toFixed(2));
-
-  document.getElementById('link-vdpm').href = 'TOTO.html?' + params.toString();
+function showApp(email){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app-root').style.display='block';
+  document.getElementById('nav-user-email').textContent = email;
+  // Prefill "Prepared by" fields with the logged-in email if empty
+  const ofBy=document.getElementById('of-by'), vdBy=document.getElementById('vd-by');
+  if(ofBy && !ofBy.value) ofBy.value=email;
+  if(vdBy && !vdBy.value) vdBy.value=email;
 }
-
-/* ===== LIVE DIAMETER GUARD: 61m THRESHOLD ===== */
-function checkDiameter() {
-  const input = document.getElementById('D');
-  const D = parseFloat(input.value);
-  const banner = document.getElementById('err-D-banner');
-  const calcBtn = document.getElementById('calc-btn');
-  const overLimit = !isNaN(D) && D > D_MAX;
-
-  if (overLimit) {
-    banner.style.display = 'flex';
+function handleLogin(){
+  const input=document.getElementById('login-email');
+  const err=document.getElementById('login-error');
+  const email=input.value.trim();
+  if(!isValidEmail(email)){
     input.classList.add('input-error');
-    calcBtn.disabled = true;
-    updateVdpmLink();
-  } else {
-    banner.style.display = 'none';
-    input.classList.remove('input-error');
-    calcBtn.disabled = false;
+    err.style.display='block';
+    return;
   }
-  return !overLimit;
+  input.classList.remove('input-error');
+  err.style.display='none';
+  try{ localStorage.setItem('jesa_tankcalc_email', email); }catch(e){}
+  showApp(email);
 }
-
-/* ===== AUTO SHELL COURSE COUNT =====
-   Derives the minimum number of shell courses from the total design
-   liquid height and the selected standard mill plate width, so course
-   count reflects real fabrication constraints instead of a guess. */
-function autoCalcCourses() {
-  const ncField = document.getElementById('nc');
-  if (!ncField.readOnly) return; // manual override active, don't touch it
-
-  const H = parseFloat(document.getElementById('H').value);
-  const plateWidth = parseFloat(document.getElementById('plateWidth').value);
-
-  if (!isNaN(H) && H > 0 && plateWidth > 0) {
-    const nc = Math.ceil(H / plateWidth);
-    ncField.value = Math.min(Math.max(nc, 1), 15); // clamp to field's min/max
-  }
-  checkDiameter();
+function handleLogout(){
+  try{ localStorage.removeItem('jesa_tankcalc_email'); }catch(e){}
+  document.getElementById('app-root').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('login-email').value='';
 }
+document.getElementById('login-email').addEventListener('keydown', e=>{
+  if(e.key==='Enter') handleLogin();
+});
 
-function toggleManualCourses() {
-  const manual = document.getElementById('ncManual').checked;
-  const ncField = document.getElementById('nc');
-  ncField.readOnly = !manual;
-  if (!manual) autoCalcCourses(); // snap back to the auto value when unchecked
-  checkDiameter();
-}
+/* ================================================================
+   SHARED MATERIAL DATABASE (API 650 Table 5-2a)
+   ================================================================ */
+const MATS = {
+  'A283M-C':{Sd:137,St:154},'A285M-C':{Sd:137,St:154},'A131M-AB':{Sd:157,St:171},
+  'A36M':{Sd:160,St:171},'A131M-EH36':{Sd:196,St:210},
+  'A573M-400':{Sd:147,St:165},'A573M-450':{Sd:160,St:180},'A573M-485':{Sd:193,St:208},
+  'A516M-380':{Sd:137,St:154},'A516M-415':{Sd:147,St:165},
+  'A516M-450':{Sd:160,St:180},'A516M-485':{Sd:173,St:195},
+  'A662M-B':{Sd:180,St:193},'A662M-C':{Sd:194,St:208},
+  'A537M-1':{Sd:194,St:208},'A537M-2':{Sd:220,St:236},
+  'A633M-CD':{Sd:194,St:208},'A737M-B':{Sd:194,St:208},
+  'A841M-1AB':{Sd:194,St:208},'A841M-2AB':{Sd:220,St:236},
+  'G40.21M-260W':{Sd:164,St:176},'G40.21M-300W':{Sd:176,St:189},'G40.21M-350W':{Sd:180,St:193},
+  'NS-235':{Sd:137,St:154},'NS-250':{Sd:157,St:171},'NS-275':{Sd:167,St:184},
+  'ISO630-S275CD':{Sd:164,St:176},'ISO630-S355CD':{Sd:188,St:201},
+  'EN10025-S275':{Sd:164,St:176},'EN10025-S355':{Sd:188,St:201}
+};
+const MAT_GROUPS = [
+  {label:'ASTM',keys:['A283M-C','A285M-C','A131M-AB','A36M','A131M-EH36','A573M-400','A573M-450','A573M-485','A516M-380','A516M-415','A516M-450','A516M-485','A662M-B','A662M-C','A537M-1','A537M-2','A633M-CD','A737M-B','A841M-1AB','A841M-2AB']},
+  {label:'CSA',keys:['G40.21M-260W','G40.21M-300W','G40.21M-350W']},
+  {label:'National Std',keys:['NS-235','NS-250','NS-275']},
+  {label:'ISO',keys:['ISO630-S275CD','ISO630-S355CD']},
+  {label:'EN',keys:['EN10025-S275','EN10025-S355']}
+];
 
-function updateMatInfo() {
-  const m = MATS[document.getElementById('mat').value];
-  const D = parseFloat(document.getElementById('D').value) || 10;
-  const tmin = getMinimumAllowedThickness(D);
-  document.getElementById('mat-info').innerHTML =
-    `• Allowed Design Stress (S<sub>d</sub>): <strong>${m.Sd} MPa</strong><br>` +
-    `• Hydrotest Stress (S<sub>t</sub>): <strong>${m.St} MPa</strong><br>` +
-    `• Standard Governing min thickness (t<sub>min</sub>): <strong>${tmin} mm</strong>`;
-  checkDiameter();
-}
-
-function resetForm() {
-  document.getElementById('D').value  = 24;
-  document.getElementById('H').value  = 14.5;
-  document.getElementById('plateWidth').value = "2.0";
-  document.getElementById('ncManual').checked = false;
-  document.getElementById('nc').readOnly = true;
-  document.getElementById('G').value  = 0.85;
-  document.getElementById('CA').value = 2.0;
-  document.getElementById('E_factor').value = "0.85";
-  document.getElementById('mat').value = 'A36M';
-  checkDiameter();
-  autoCalcCourses();
-  updateMatInfo();
-}
-
-/* ===== MAIN DESIGN COMPUTATION LOGIC ===== */
-function calculate() {
-  const D  = parseFloat(document.getElementById('D').value);
-  const H  = parseFloat(document.getElementById('H').value);
-  const G  = parseFloat(document.getElementById('G').value);
-  const CA = parseFloat(document.getElementById('CA').value);
-  const nc = parseInt(document.getElementById('nc').value);
-  const m  = MATS[document.getElementById('mat').value];
-  // NOTE: Joint efficiency (E) is kept as a reference/reporting field only.
-  // Per API 650 Sec. 5.6.3.2, the 1-Foot Method equations (5.6.3.2-1 / -2)
-  // do NOT divide by E: Sd/St from Table 5-2a already govern the design
-  // condition. E is only used elsewhere (e.g. Annex A thin-shell tanks,
-  // Table 5.6.1.1 min thickness selection), not in this formula.
-
-  // Simple Front-End Validation Guards
-  let valid = true;
-
-  // Diameter: only execute if D is within 1–61m. Over 61m -> block + red sign.
-  if (!checkDiameter() || D < 1) {
-    document.getElementById('err-D').style.display = D < 1 ? 'block' : 'none';
-    valid = false;
-  } else {
-    document.getElementById('err-D').style.display = 'none';
-  }
-
-  if(H < 1 || H > 50) { document.getElementById('err-H').style.display='block'; valid=false; } else { document.getElementById('err-H').style.display='none'; }
-  if(!valid) return;
-
-  const V    = (Math.PI * Math.pow(D,2) / 4) * H;
-  const mass = V * G;
-  const Pbot = G * 9.80665 * H; // Strict grav acceleration constant
-  const cH   = H / nc; // Shell course structural interval height
-  const tmin = getMinimumAllowedThickness(D);
-
-  const rows = [];
-  let maxThicknessCalculated = 0;
-
-  // Compute sequentially from bottom course (Course 1) up to top course
-  for (let i = 0; i < nc; i++) {
-    const courseIndex = i + 1; // 1 = Bottom Course
-    
-    // Design hydrostatic liquid head height for specific shell course (H_i)
-    // For 1-Foot Method, compute pressure plane exactly 0.3m above the bottom edge of each specific course
-    const h_course = H - (i * cH);
-    const h_pressure_head = Math.max(h_course - 0.3, 0);
-
-    let td = 0;
-    let tt = 0;
-
-    if (h_pressure_head > 0) {
-      // API 650 Equation 5.6.3.2-1 — Design Shell Thickness (no E in denominator)
-      td = ((4.9 * D * h_pressure_head * G) / m.Sd) + CA;
-      // API 650 Equation 5.6.3.2-2 — Hydrostatic Test Shell Thickness (no E in denominator)
-      tt = (4.9 * D * h_pressure_head) / m.St;
-    }
-
-    // Evaluate governing thickness comparing calculated against dynamic t_min limit requirements
-    const t_governing = Math.max(td, tt, tmin);
-    if(t_governing > maxThicknessCalculated) maxThicknessCalculated = t_governing;
-
-    rows.push({
-      course: courseIndex,
-      hFrom: (i * cH).toFixed(2),
-      hTo: ((i + 1) * cH).toFixed(2),
-      td: td.toFixed(2),
-      tt: tt.toFixed(2),
-      tA: t_governing.toFixed(2),
-      ok: t_governing <= 45 // Flag atypical extreme thickness for structural check
+function buildMatSelect(selectId, defaultKey='A36M'){
+  const sel = document.getElementById(selectId);
+  sel.innerHTML = '';
+  MAT_GROUPS.forEach(g=>{
+    const og = document.createElement('optgroup');
+    og.label = g.label;
+    g.keys.forEach(k=>{
+      const o = document.createElement('option');
+      o.value = k; o.textContent = k + ` — Sd=${MATS[k].Sd} MPa`;
+      if(k===defaultKey) o.selected=true;
+      og.appendChild(o);
     });
-  }
-
-  /* Set Metrics Screen Readouts */
-  document.getElementById('r-vol').textContent  = V.toLocaleString('en-US', {maximumFractionDigits:1});
-  document.getElementById('r-mass').textContent = mass.toLocaleString('en-US', {maximumFractionDigits:1});
-  document.getElementById('r-pbot').textContent = Pbot.toFixed(1);
-  document.getElementById('r-tmax').textContent = maxThicknessCalculated.toFixed(2);
-
-  /* Set 3D Status Readouts */
-  document.getElementById('vi-d').textContent = ' ' + D + ' m';
-  document.getElementById('vi-h').textContent = ' ' + H + ' m';
-  document.getElementById('vi-v').textContent = ' ' + V.toFixed(0) + ' m³';
-  document.getElementById('vi-n').textContent = ' ' + nc;
-  document.getElementById('vi-tmin').textContent = ' ' + tmin + ' mm';
-
-  /* Construct Engineering Output Data Grid */
-  let html = `<table><thead><tr>
-    <th>Shell Course</th>
-    <th>Elevation From (m)</th>
-    <th>Elevation To (m)</th>
-    <th>t_design (mm)</th>
-    <th>t_hydrotest (mm)</th>
-    <th>Governing t (mm)</th>
-    <th>Compliance Status</th>
-  </tr></thead><tbody>`;
-  
-  // Display inverted array view matrix profile (Top course visually displayed on top row)
-  const displayRows = [...rows].reverse();
-  displayRows.forEach(r => {
-    html += `<tr>
-      <td><strong>Course ${r.course}</strong> (Shell Segment)</td>
-      <td>${r.hFrom}</td>
-      <td>${r.hTo}</td>
-      <td>${r.td}</td>
-      <td>${r.tt}</td>
-      <td style="font-weight:700; color:var(--gray-900);">${r.tA}</td>
-      <td><span class="badge ${r.ok?'badge-ok':'badge-warn'}">${r.ok?'✓ API Pass':'⚠ Review Thickness'}</span></td>
-    </tr>`;
+    sel.appendChild(og);
   });
-  html += '</tbody></table>';
-  document.getElementById('table-content').innerHTML = html;
-
-  update3D(D, H, nc);
 }
 
-/* ===== THREE.JS CORE 3D VISUALIZATION ENGINE ===== */
-let scene, camera, renderer, tankGroup, wireMode=false;
-let isDragging = false;
+function getMinT(D){
+  if(D<15)return 5;if(D<36)return 6;if(D<=60)return 8;return 10;
+}
 
-function initThree() {
-  const canvas = document.getElementById('canvas3d');
-  renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+/* ================================================================
+   TAB SWITCHING
+   ================================================================ */
+function switchTab(id, btn){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+function syncInputsToVDPM(){
+  document.getElementById('vd-D').value = document.getElementById('of-D').value;
+  document.getElementById('vd-H').value = document.getElementById('of-H').value;
+  document.getElementById('vd-G').value = document.getElementById('of-G').value;
+  document.getElementById('vd-CA').value = document.getElementById('of-CA').value;
+  const m = MATS[document.getElementById('of-mat').value];
+  if(m){ document.getElementById('vd-Sd').value=m.Sd; document.getElementById('vd-St').value=m.St; }
+  vd_autoRadius(); vd_autoCalcCourses();
+}
+
+/* ================================================================
+   THREE.JS — SHARED 3D ENGINE (used by the 1-Foot Method tab only)
+   ================================================================ */
+const THREE_INSTANCES = {};
+let wireModes = {of:false};
+let isDragging = {of:false};
+
+function init3D(prefix){
+  const canvas = document.getElementById(prefix+'-canvas3d');
+  const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
   renderer.setSize(canvas.clientWidth, 300);
-  renderer.setClearColor(0x111827, 1);
+  renderer.setClearColor(0x111827,1);
 
-  scene = new THREE.Scene();
-  scene.add(new THREE.AmbientLight(0xffffff, 0.4));
-  
-  const dl1 = new THREE.DirectionalLight(0xffffff, 0.8);
-  dl1.position.set(10, 20, 10);
-  scene.add(dl1);
-  const dl2 = new THREE.DirectionalLight(0x3b82f6, 0.3);
-  dl2.position.set(-10, -5, -10);
-  scene.add(dl2);
+  const scene = new THREE.Scene();
+  scene.add(new THREE.AmbientLight(0xffffff,.4));
+  const dl1 = new THREE.DirectionalLight(0xffffff,.8); dl1.position.set(10,20,10); scene.add(dl1);
+  const dl2 = new THREE.DirectionalLight(0x3b82f6,.3); dl2.position.set(-10,-5,-10); scene.add(dl2);
 
-  camera = new THREE.PerspectiveCamera(40, canvas.clientWidth / 300, 0.1, 1000);
-  camera.position.set(35, 20, 35);
-  camera.lookAt(0, 4, 0);
+  const camera = new THREE.PerspectiveCamera(40, canvas.clientWidth/300, .1, 1000);
+  camera.position.set(35,20,35);
+  camera.lookAt(0,4,0);
 
-  tankGroup = new THREE.Group();
+  const tankGroup = new THREE.Group();
   scene.add(tankGroup);
-  
-  buildTankGeometry(24, 14.5, 6);
 
-  let isDrag=false, prevX=0, prevY=0;
-  canvas.addEventListener('mousedown', e=>{ isDrag=true; isDragging=true; prevX=e.clientX; prevY=e.clientY; });
-  window.addEventListener('mouseup', ()=>{ isDrag=false; isDragging=false; });
+  THREE_INSTANCES[prefix] = {renderer, scene, camera, tankGroup};
+
+  let prevX=0, prevY=0;
+  canvas.addEventListener('mousedown', e=>{isDragging[prefix]=true; prevX=e.clientX; prevY=e.clientY;});
+  window.addEventListener('mouseup', ()=>isDragging[prefix]=false);
   canvas.addEventListener('mousemove', e=>{
-    if(!isDrag) return;
+    if(!isDragging[prefix]) return;
     const dx=e.clientX-prevX, dy=e.clientY-prevY;
-    tankGroup.rotation.y += dx*0.007;
-    tankGroup.rotation.x += dy*0.007;
+    tankGroup.rotation.y += dx*.007;
+    tankGroup.rotation.x += dy*.007;
     prevX=e.clientX; prevY=e.clientY;
   });
-  
   canvas.addEventListener('wheel', e=>{
-    camera.position.multiplyScalar(e.deltaY > 0 ? 1.05 : 0.95);
+    camera.position.multiplyScalar(e.deltaY>0?1.05:.95);
     e.preventDefault();
-  }, {passive:false});
+  },{passive:false});
 
-  animate();
-}
+  buildTankMesh(prefix, 24, 14.5, 6);
 
-function buildTankGeometry(D, H, nc) {
-  while(tankGroup.children.length) tankGroup.remove(tankGroup.children[0]);
-  
-  const R = D / 2;
-  const cH = H / nc;
-  
-  // Distinct visual engineering layout gradient colors 
-  const colors = [0x1e3a8a, 0x1d4ed8, 0x2563eb, 0x3b82f6, 0x60a5fa, 0x93c5fd];
-
-  // Scale visualization down to manageable spatial coordinate bounds
-  const scaleFactor = 10 / D; 
-  const sR = R * scaleFactor;
-  const sH = H * scaleFactor;
-  const scH = cH * scaleFactor;
-
-  for(let i=0; i<nc; i++){
-    const y = i * scH;
-    const color = colors[i % colors.length];
-    const mat = new THREE.MeshPhongMaterial({
-      color, 
-      transparent: true, 
-      opacity: 0.85,
-      side: THREE.DoubleSide,
-      wireframe: wireMode
-    });
-    
-    const geo = new THREE.CylinderGeometry(sR, sR, scH, 48, 1, true);
-    const mesh = new THREE.Mesh(geo, mat);
-    mesh.position.y = y + scH/2;
-    tankGroup.add(mesh);
-
-    // Structural weld ring indicator borders
-    const edgeMat = new THREE.LineBasicMaterial({color:0xffffff, opacity:0.25, transparent:true});
-    const edgeGeo = new THREE.EdgesGeometry(geo);
-    const edge = new THREE.LineSegments(edgeGeo, edgeMat);
-    edge.position.y = y + scH/2;
-    if(!wireMode) tankGroup.add(edge);
+  function animate(){
+    requestAnimationFrame(animate);
+    if(!isDragging[prefix]) tankGroup.rotation.y += .0015;
+    renderer.render(scene, camera);
   }
+  animate();
 
-  /* Bottom Base Annular Ring Plate Graphic representation */
-  const botGeo = new THREE.CircleGeometry(sR * 1.03, 48);
-  const botMat = new THREE.MeshPhongMaterial({color:0x374151, side:THREE.DoubleSide});
-  const bot = new THREE.Mesh(botGeo, botMat);
-  bot.rotation.x = -Math.PI/2;
-  bot.position.y = 0.005;
-  tankGroup.add(bot);
-
-  /* Fixed Cone Roof Graphic Profile representation */
-  const topGeo = new THREE.ConeGeometry(sR * 1.03, sH * 0.1, 48, 1, false);
-  const topMat = new THREE.MeshPhongMaterial({color:0x4b5563, side:THREE.DoubleSide});
-  const top = new THREE.Mesh(topGeo, topMat);
-  top.position.y = sH + (sH * 0.05);
-  tankGroup.add(top);
-
-  tankGroup.position.y = -sH / 2;
+  window.addEventListener('resize', ()=>{
+    renderer.setSize(canvas.clientWidth, 300);
+    camera.aspect = canvas.clientWidth/300;
+    camera.updateProjectionMatrix();
+  });
 }
 
-function update3D(D, H, nc) {
-  buildTankGeometry(D, H, nc);
-  tankGroup.rotation.set(0,0,0);
+function buildTankMesh(prefix, D, H, nc){
+  const {tankGroup, scene} = THREE_INSTANCES[prefix];
+  while(tankGroup.children.length) tankGroup.remove(tankGroup.children[0]);
+
+  const R=D/2, cH=H/nc;
+  const sf = 10/D, sR=R*sf, sH=H*sf, scH=cH*sf;
+  const colors=[0x1e3a8a,0x1d4ed8,0x2563eb,0x3b82f6,0x60a5fa,0x93c5fd,0xbfdbfe,0xdbeafe];
+
+  for(let i=0;i<nc;i++){
+    const mat=new THREE.MeshPhongMaterial({color:colors[i%colors.length],transparent:true,opacity:.85,side:THREE.DoubleSide,wireframe:wireModes[prefix]});
+    const geo=new THREE.CylinderGeometry(sR,sR,scH,48,1,true);
+    const mesh=new THREE.Mesh(geo,mat);
+    mesh.position.y=i*scH+scH/2;
+    tankGroup.add(mesh);
+    if(!wireModes[prefix]){
+      const eg=new THREE.LineSegments(new THREE.EdgesGeometry(geo),new THREE.LineBasicMaterial({color:0xffffff,opacity:.2,transparent:true}));
+      eg.position.y=i*scH+scH/2;
+      tankGroup.add(eg);
+    }
+  }
+  const bot=new THREE.Mesh(new THREE.CircleGeometry(sR*1.03,48),new THREE.MeshPhongMaterial({color:0x374151,side:THREE.DoubleSide}));
+  bot.rotation.x=-Math.PI/2; bot.position.y=.005; tankGroup.add(bot);
+  const top=new THREE.Mesh(new THREE.ConeGeometry(sR*1.03,sH*.1,48),new THREE.MeshPhongMaterial({color:0x4b5563,side:THREE.DoubleSide}));
+  top.position.y=sH+sH*.05; tankGroup.add(top);
+  tankGroup.position.y=-sH/2;
 }
 
-function animate() {
-  requestAnimationFrame(animate);
-  if(!isDragging) tankGroup.rotation.y += 0.0015; // Slow ambient diagnostic drift rotation
-  renderer.render(scene, camera);
-}
-
-function setView(v) {
-  document.querySelectorAll('.view-btn').forEach(b=>b.classList.remove('active'));
+function setView3D(v, prefix){
+  document.querySelectorAll(`#tab-${prefix==='of'?'onefoot':'vdpm'} .view-btn`).forEach(b=>b.classList.remove('active'));
   event.target.classList.add('active');
-  if(v==='perspective') camera.position.set(35, 20, 35);
-  if(v==='top')         camera.position.set(0, 45, 0);
-  if(v==='front')       camera.position.set(0, 0, 45);
-  camera.lookAt(0, 0, 0);
-  tankGroup.rotation.set(0,0,0);
+  const {camera} = THREE_INSTANCES[prefix];
+  if(v==='perspective') camera.position.set(35,20,35);
+  if(v==='top') camera.position.set(0,45,0);
+  if(v==='front') camera.position.set(0,0,45);
+  camera.lookAt(0,0,0);
+  THREE_INSTANCES[prefix].tankGroup.rotation.set(0,0,0);
 }
 
-function toggleWire() {
-  wireMode = !wireMode;
-  const D = parseFloat(document.getElementById('D').value)||24;
-  const H = parseFloat(document.getElementById('H').value)||14.5;
-  const nc = parseInt(document.getElementById('nc').value)||6;
-  buildTankGeometry(D, H, nc);
+function toggleWire(prefix){
+  wireModes[prefix]=!wireModes[prefix];
+  const D=parseFloat(document.getElementById(prefix+'-D').value)||24;
+  const H=parseFloat(document.getElementById(prefix+'-H').value)||12;
+  const nc=parseInt(document.getElementById(prefix+'-nc').value)||4;
+  buildTankMesh(prefix,D,H,nc);
 }
 
-window.addEventListener('load', ()=>{ initThree(); checkDiameter(); autoCalcCourses(); updateMatInfo(); calculate(); });
-window.addEventListener('resize', ()=>{
-  const canvas = document.getElementById('canvas3d');
-  renderer.setSize(canvas.clientWidth, 300);
-  camera.aspect = canvas.clientWidth / 300;
-  camera.updateProjectionMatrix();
+/* ================================================================
+   ONE-FOOT METHOD
+   ================================================================ */
+let of_cache=[];
+
+function of_checkDiameter(){
+  const D=parseFloat(document.getElementById('of-D').value);
+  const over = !isNaN(D) && D>61;
+  document.getElementById('of-err-banner').style.display = over?'flex':'none';
+  document.getElementById('of-D').classList.toggle('input-error', over);
+  document.getElementById('of-calc-btn').disabled = over;
+  return !over;
+}
+function of_autoCalcCourses(){
+  const f=document.getElementById('of-nc');
+  if(!f.readOnly) return;
+  const H=parseFloat(document.getElementById('of-H').value);
+  const pw=parseFloat(document.getElementById('of-plateWidth').value);
+  if(!isNaN(H)&&H>0&&pw>0) f.value=Math.min(Math.max(Math.ceil(H/pw),1),15);
+  of_checkDiameter();
+}
+function of_toggleManual(){
+  const m=document.getElementById('of-ncManual').checked;
+  document.getElementById('of-nc').readOnly=!m;
+  if(!m) of_autoCalcCourses();
+}
+function of_updateMatInfo(){
+  const m=MATS[document.getElementById('of-mat').value];
+  const D=parseFloat(document.getElementById('of-D').value)||10;
+  document.getElementById('of-mat-info').innerHTML=
+    `• Sd: <strong>${m.Sd} MPa</strong> · St: <strong>${m.St} MPa</strong> · t_min: <strong>${getMinT(D)} mm</strong>`;
+}
+function of_reset(){
+  document.getElementById('of-D').value=24; document.getElementById('of-H').value=14.5;
+  document.getElementById('of-G').value=.85; document.getElementById('of-CA').value=2;
+  document.getElementById('of-plateWidth').value='2.0';
+  document.getElementById('of-ncManual').checked=false;
+  document.getElementById('of-nc').readOnly=true;
+  document.getElementById('of-mat').value='A36M';
+  of_autoCalcCourses(); of_updateMatInfo();
+}
+
+function of_calculate(){
+  if(!of_checkDiameter()) return;
+  const D=parseFloat(document.getElementById('of-D').value);
+  const H=parseFloat(document.getElementById('of-H').value);
+  const G=parseFloat(document.getElementById('of-G').value);
+  const CA=parseFloat(document.getElementById('of-CA').value);
+  const nc=parseInt(document.getElementById('of-nc').value);
+  const wind=parseFloat(document.getElementById('of-wind').value)||190;
+  const m=MATS[document.getElementById('of-mat').value];
+  const tmin=getMinT(D);
+
+  const V=Math.PI*D*D/4*H, mass=V*G, Pbot=G*9.80665*H, cH=H/nc;
+  const rows=[]; let maxT=0, maxCourse=0, maxCase='';
+
+  for(let i=0;i<nc;i++){
+    const hBot=H-i*cH, h1=Math.max(hBot-.3,0);
+    let td=Math.max(h1>0?(4.9*D*h1*G/m.Sd)+CA:0, tmin);
+    let tt=Math.max(h1>0?(4.9*D*h1/m.St):0, tmin);
+    const tA=Math.max(td,tt,tmin);
+    if(tA>maxT){maxT=tA;maxCourse=nc-i;maxCase=td>=tt?'Design':'Test';}
+    rows.push({course:nc-i,hFrom:(i*cH).toFixed(2),hTo:((i+1)*cH).toFixed(2),td:td.toFixed(2),tt:tt.toFixed(2),tA:tA.toFixed(2),ok:tA<=45});
+  }
+  of_cache=rows.map((r,i)=>({...r,H_i:(H-i*(H/nc)).toFixed(2)}));
+
+  // Metrics
+  document.getElementById('of-r-vol').textContent=V.toFixed(1);
+  document.getElementById('of-r-mass').textContent=mass.toFixed(1);
+  document.getElementById('of-r-pbot').textContent=Pbot.toFixed(1);
+  document.getElementById('of-r-tmax').textContent=maxT.toFixed(2);
+  document.getElementById('of-vi-d').textContent=' '+D+'m';
+  document.getElementById('of-vi-h').textContent=' '+H+'m';
+  document.getElementById('of-vi-v').textContent=' '+V.toFixed(0)+'m³';
+  document.getElementById('of-vi-n').textContent=' '+nc;
+  document.getElementById('of-vi-tmin').textContent=' '+tmin+'mm';
+
+  // Table
+  let html=`<table><thead><tr><th>Course</th><th>From (m)</th><th>To (m)</th><th>t_d (mm)</th><th>t_t (mm)</th><th>Governing (mm)</th><th>Status</th></tr></thead><tbody>`;
+  rows.forEach(r=>{
+    html+=`<tr><td><strong>C${r.course}</strong></td><td>${r.hFrom}</td><td>${r.hTo}</td><td>${r.td}</td><td>${r.tt}</td><td style="font-weight:700">${r.tA}</td><td><span class="badge ${r.ok?'badge-ok':'badge-warn'}">${r.ok?'✓ Pass':'⚠ Review'}</span></td></tr>`;
+  });
+  html+='</tbody></table>';
+  document.getElementById('of-table').innerHTML=html;
+
+  // Wind girder
+  const tTop=parseFloat(rows[rows.length-1].tA);
+  const H1max=9.47*tTop*Math.sqrt(Math.pow(tTop/D,3))*Math.pow(190/wind,2);
+
+  // 3D
+  buildTankMesh('of',D,H,nc);
+  THREE_INSTANCES['of'].camera.position.set(D*2.5,H*1.2,D*2.5);
+  THREE_INSTANCES['of'].camera.lookAt(0,0,0);
+
+  // Datasheet
+  renderDatasheet(rows, {D,H,G,CA,P:0,Sd:m.Sd,St:m.St,windV:wind,H1max,windGirderRequired:H>H1max,maxT,maxCourse,maxCase,
+    mfr:document.getElementById('of-mfr').value,
+    client:document.getElementById('of-client').value,
+    tag:document.getElementById('of-tag').value,
+    contract:document.getElementById('of-contract').value,
+    by:document.getElementById('of-by').value,
+    ckd:document.getElementById('of-ckd').value,
+    E:document.getElementById('of-E').value
+  });
+}
+
+function of_exportCSV(){
+  if(!of_cache.length){alert('No results.');return;}
+  let csv='data:text/csv;charset=utf-8,Course;From(m);To(m);t_design(mm);t_test(mm);Governing(mm)\r\n';
+  of_cache.forEach(r=>csv+=`C${r.course};${r.hFrom};${r.hTo};${r.td};${r.tt};${r.tA}\r\n`);
+  const a=document.createElement('a');
+  a.href=encodeURI(csv);
+  a.download=`API650_1Foot_D${document.getElementById('of-D').value}m.csv`;
+  a.click();
+}
+
+/* ================================================================
+   VDPM METHOD
+   ================================================================ */
+const TOLERANCE=.0001, MAX_ITER=30;
+let vd_cache=[];
+
+function vd_autoRadius(){
+  const D=parseFloat(document.getElementById('vd-D').value);
+  if(!isNaN(D)) document.getElementById('vd-r').value=(D*500).toFixed(0);
+}
+function vd_autoCalcCourses(){
+  const f=document.getElementById('vd-nc');
+  if(!f.readOnly) return;
+  const H=parseFloat(document.getElementById('vd-H').value);
+  const pw=parseFloat(document.getElementById('vd-plateWidth').value);
+  if(!isNaN(H)&&H>0&&pw>0) f.value=Math.min(Math.max(Math.ceil(H/pw),1),20);
+}
+function vd_toggleManual(){
+  const m=document.getElementById('vd-ncManual').checked;
+  document.getElementById('vd-nc').readOnly=!m;
+  if(!m) vd_autoCalcCourses();
+}
+function vd_reset(){
+  document.getElementById('vd-D').value=85;document.getElementById('vd-H').value=19.2;
+  document.getElementById('vd-G').value=1;document.getElementById('vd-CA').value=0;
+  document.getElementById('vd-Sd').value=208;document.getElementById('vd-St').value=208;
+  document.getElementById('vd-P').value=2.5;document.getElementById('vd-wind').value=190;
+  document.getElementById('vd-plateWidth').value='2.4';
+  document.getElementById('vd-ncManual').checked=false;
+  document.getElementById('vd-nc').readOnly=true;
+  vd_autoRadius(); vd_autoCalcCourses();
+}
+
+function iterateUpper(D,r,H,tL,useDesign,G,Sd,CA,St){
+  let tu=useDesign?(4.9*D*(H-.3)*G/Sd)+CA:(4.9*D*(H-.3)/St);
+  let log=[],diff=1,iter=0,x=0,tx=tu;
+  while(diff>TOLERANCE&&iter<MAX_ITER){
+    const K=tL/tu;
+    const C=(Math.sqrt(K)*(K-1))/(1+Math.pow(K,1.5));
+    const srt=Math.sqrt(r*tu);
+    const x1=.61*srt+320*C*H, x2=1000*C*H, x3=1.22*srt;
+    x=Math.min(x1,x2,x3);
+    tx=useDesign?(4.9*D*(H-x/1000)*G/Sd)+CA:(4.9*D*(H-x/1000)/St);
+    diff=Math.abs(tx-tu); iter++; log.push({iter,tu:tu.toFixed(2),x:x.toFixed(1),tx:tx.toFixed(2)}); tu=tx;
+  }
+  return {thickness:tx,log,iterations:iter};
+}
+
+function renderIterLog(log){
+  return log.map(l=>`<p class="iter-detail">Iter ${l.iter}: t_u=${l.tu} → x=${l.x}mm → t_x=<strong>${l.tx}</strong></p>`).join('')||'<p class="iter-detail">Direct formula applied.</p>';
+}
+
+function vd_calculate(){
+  const D=parseFloat(document.getElementById('vd-D').value);
+  const r=parseFloat(document.getElementById('vd-r').value);
+  const H=parseFloat(document.getElementById('vd-H').value);
+  const G=parseFloat(document.getElementById('vd-G').value);
+  const CA=parseFloat(document.getElementById('vd-CA').value);
+  const Sd=parseFloat(document.getElementById('vd-Sd').value);
+  const St=parseFloat(document.getElementById('vd-St').value);
+  const wind=parseFloat(document.getElementById('vd-wind').value)||190;
+  const nc=parseInt(document.getElementById('vd-nc').value);
+  const plateLength=parseFloat(document.getElementById('vd-plateLength').value)||8;
+  const tmin=getMinT(D);
+  const cH=H/nc, h1mm=cH*1000;
+
+  const courses=[];
+  let prevTd, prevTt, maxT=0, maxCourse=0, maxCase='';
+  let totalKg=0, totalPlates=0;
+  const circ=Math.PI*D;
+
+  for(let i=1;i<=nc;i++){
+    const elevFrom=(i-1)*cH, elevTo=i*cH, H_i=H-elevFrom;
+    let td,tt,detail='';
+
+    if(i===1){
+      const DoverH=D/H_i;
+      const coef=.0696*DoverH;
+      let t1d=(1.06-(coef*Math.sqrt(H_i*G/Sd)))*(4.9*H_i*D*G/Sd)+CA;
+      let t1t=(1.06-(coef*Math.sqrt(H_i/St)))*(4.9*H_i*D/St);
+      const tpd=(4.9*D*(H_i-.3)*G/Sd)+CA, tpt=(4.9*D*(H_i-.3)/St);
+      if(t1d>tpd)t1d=tpd; if(t1t>tpt)t1t=tpt;
+      if(t1d<tmin)t1d=tmin; if(t1t<tmin)t1t=tmin;
+      td=t1d; tt=t1t;
+      detail=`<p class="iter-detail">Bottom course: t_d=${td.toFixed(2)}, t_t=${tt.toFixed(2)}</p>`;
+    } else {
+      const resD=iterateUpper(D,r,H_i,prevTd,true,G,Sd,CA,St);
+      const resT=iterateUpper(D,r,H_i,prevTt,false,G,Sd,CA,St);
+      td=resD.thickness; tt=resT.thickness;
+      if(i===2){
+        const rd=h1mm/Math.sqrt(r*prevTd), rt=h1mm/Math.sqrt(r*prevTt);
+        if(rd<=1.375)td=prevTd; else if(rd<2.625)td=resD.thickness+(prevTd-resD.thickness)*(2.1-h1mm/(1.25*Math.sqrt(r*prevTd)));
+        if(rt<=1.375)tt=prevTt; else if(rt<2.625)tt=resT.thickness+(prevTt-resT.thickness)*(2.1-h1mm/(1.25*Math.sqrt(r*prevTt)));
+      }
+      if(td<tmin)td=tmin; if(tt<tmin)tt=tmin;
+      detail=`<strong>Design:</strong>${renderIterLog(resD.log)}<strong>Test:</strong>${renderIterLog(resT.log)}`;
+    }
+
+    const gov=Math.max(td,tt,tmin);
+    if(gov>maxT){maxT=gov;maxCourse=i;maxCase=td>=tt?'Design':'Test';}
+    const plates=Math.ceil(circ/plateLength);
+    const wkg=circ*(gov/1000)*cH*7850;
+    totalKg+=wkg; totalPlates+=plates;
+    courses.push({course:i,height:cH,elevFrom,elevTo,H_i,td,tt,governing:gov,plates,weightT:wkg/1000,detail});
+    prevTd=td; prevTt=tt;
+  }
+  vd_cache=courses;
+
+  // Metrics
+  document.getElementById('vd-m-nc').textContent=nc;
+  document.getElementById('vd-m-tmax').textContent=maxT.toFixed(2);
+  document.getElementById('vd-m-tmax-course').textContent='C'+maxCourse;
+  document.getElementById('vd-m-case').textContent=maxCase;
+
+  // Status cards
+  document.getElementById('vd-status-method').innerHTML=
+    D>60?`<span class="status-pill status-ok">VDPM Required ✓</span>`:
+    `<span class="status-pill status-warn">VDPM Optimal (D≤60m: 1-Foot also valid)</span>`;
+  document.getElementById('vd-status-method-desc').textContent=
+    `D=${D}m — ${D>60?'Sec.5.6.4 mandatory.':'Both methods applicable. VDPM gives optimized thicknesses.'}`;
+
+  const tTop=courses[courses.length-1].governing;
+  const H1max=9.47*tTop*Math.sqrt(Math.pow(tTop/D,3))*Math.pow(190/wind,2);
+  const wgReq=H>H1max;
+  document.getElementById('vd-status-wind').innerHTML=
+    wgReq?`<span class="status-pill status-danger">FAIL — Girder Required</span>`:
+    `<span class="status-pill status-ok">PASS — Not Required</span>`;
+  document.getElementById('vd-status-wind-desc').textContent=
+    `H1_max=${H1max.toFixed(2)}m vs H=${H}m. ${wgReq?'Add intermediate wind girder.':'Structure OK.'}`;
+
+  document.getElementById('vd-status-mto').innerHTML=
+    `<strong>Shell weight:</strong> ${(totalKg/1000).toFixed(2)} t<br>
+     <strong>Total plates:</strong> ${totalPlates} (${plateLength}m × ${cH.toFixed(2)}m)<br>
+     <strong>Circumference:</strong> ${circ.toFixed(2)} m`;
+
+  // Table
+  let html=`<table><thead><tr><th>Course</th><th>From</th><th>To</th><th>H_i(m)</th><th>t_d(mm)</th><th>t_t(mm)</th><th>Governing</th><th>Weight(t)</th><th>Plates</th><th>Details</th></tr></thead><tbody>`;
+  [...courses].reverse().forEach(c=>{
+    html+=`<tr>
+      <td><strong>C${c.course}</strong></td>
+      <td>${c.elevFrom.toFixed(2)}</td><td>${c.elevTo.toFixed(2)}</td><td>${c.H_i.toFixed(2)}</td>
+      <td><span class="badge badge-design">${c.td.toFixed(2)}</span></td>
+      <td><span class="badge badge-test">${c.tt.toFixed(2)}</span></td>
+      <td style="font-weight:700">${c.governing.toFixed(2)}</td>
+      <td>${c.weightT.toFixed(2)}</td><td>${c.plates}</td>
+      <td><details><summary>Details</summary>${c.detail}</details></td>
+    </tr>`;
+  });
+  html+='</tbody></table>';
+  document.getElementById('vd-table').innerHTML=html;
+
+  // Final highlight
+  const fh=document.getElementById('vd-final');
+  fh.style.display='block';
+  fh.innerHTML=`<p style="color:var(--gray-600);margin-bottom:4px">Governing thickness overall:</p>
+    <strong style="font-size:1.5em;color:var(--blue)">${maxT.toFixed(2)} mm</strong>
+    <p style="color:var(--green);margin-top:4px">Course ${maxCourse} — ${maxCase} condition</p>`;
+
+  // SVG sketch
+  drawSVG(courses);
+
+  // Datasheet
+  renderDatasheet([...courses].reverse().map(c=>({
+    course:c.course,hFrom:c.elevFrom.toFixed(2),hTo:c.elevTo.toFixed(2),
+    td:c.td,tt:c.tt,tA:c.governing
+  })), {D,H,G,CA,P:parseFloat(document.getElementById('vd-P').value),Sd,St,windV:wind,H1max,windGirderRequired:wgReq,maxT,maxCourse,maxCase,
+    totalWeightT:totalKg/1000,totalPlates,
+    mfr:document.getElementById('vd-mfr').value,
+    client:document.getElementById('vd-client').value,
+    tag:document.getElementById('vd-tag').value,
+    contract:document.getElementById('vd-contract').value,
+    by:document.getElementById('vd-by').value,
+    ckd:document.getElementById('vd-ckd').value,
+    E:document.getElementById('vd-E').value
+  });
+}
+
+function vd_exportCSV(){
+  if(!vd_cache.length){alert('No results.');return;}
+  let csv='data:text/csv;charset=utf-8,Course;From(m);To(m);H_i(m);t_d(mm);t_t(mm);Governing(mm);Weight(t);Plates\r\n';
+  [...vd_cache].reverse().forEach(c=>csv+=`C${c.course};${c.elevFrom.toFixed(2)};${c.elevTo.toFixed(2)};${c.H_i.toFixed(2)};${c.td.toFixed(2)};${c.tt.toFixed(2)};${c.governing.toFixed(2)};${c.weightT.toFixed(2)};${c.plates}\r\n`);
+  const a=document.createElement('a');
+  a.href=encodeURI(csv);
+  a.download=`API650_VDPM_D${document.getElementById('vd-D').value}m.csv`;
+  a.click();
+}
+
+/* ================================================================
+   SVG TANK SKETCH (VDPM)
+   ================================================================ */
+function drawSVG(courses){
+  const svg=document.getElementById('tank-sketch'); if(!svg)return;
+  svg.innerHTML='';
+  const W=500,H=450,padY=50,cx=W/2,tR=90;
+  const totalH=courses.reduce((s,c)=>s+c.height,0);
+  const scY=(H-2*padY)/totalH;
+  const maxT=Math.max(...courses.map(c=>c.governing));
+  const scT=35/maxT;
+  const gY=H-padY;
+  svg.innerHTML+=`<line x1="40" y1="${gY}" x2="${W-40}" y2="${gY}" class="ground-line"/>`;
+  svg.innerHTML+=`<line x1="${cx}" y1="${padY-20}" x2="${cx}" y2="${gY+10}" class="center-line"/>`;
+  let curY=gY, curEl=0;
+  courses.forEach(c=>{
+    const bH=c.height*scY, tW=c.governing*scT, yPos=curY-bH;
+    svg.innerHTML+=`<rect x="${cx-tR-tW}" y="${yPos}" width="${tW}" height="${bH}" class="shell-plate"><title>C${c.course}: ${c.governing.toFixed(2)}mm</title></rect>`;
+    svg.innerHTML+=`<rect x="${cx+tR}" y="${yPos}" width="${tW}" height="${bH}" class="shell-plate"><title>C${c.course}: ${c.governing.toFixed(2)}mm</title></rect>`;
+    svg.innerHTML+=`<text x="${cx}" y="${yPos+bH/2+4}" class="shell-label">V${c.course}</text>`;
+    svg.innerHTML+=`<text x="${cx+tR+tW+6}" y="${yPos+bH/2+4}" class="dimension-text">${c.governing.toFixed(2)}mm</text>`;
+    curEl+=c.height;
+    svg.innerHTML+=`<text x="${cx-tR-tW-6}" y="${yPos+4}" class="dimension-text" text-anchor="end">+${curEl.toFixed(2)}m</text>`;
+    curY=yPos;
+  });
+}
+
+/* ================================================================
+   PRINTABLE DATA SHEET
+   ================================================================ */
+function renderDatasheet(rows, meta){
+  const today=new Date().toLocaleDateString('fr-FR');
+  const rowsHtml=rows.map(r=>`<tr><td>${r.course}</td><td>${typeof r.hFrom==='string'?r.hFrom:r.hFrom}</td><td>${parseFloat(r.td).toFixed(2)}</td><td>${parseFloat(r.tt).toFixed(2)}</td><td><strong>${parseFloat(r.tA).toFixed(2)}</strong></td></tr>`).join('');
+  document.getElementById('print-datasheet').innerHTML=`
+  <div class="ds-page">
+    <div class="ds-header">
+      <div class="ds-logo">API</div>
+      <div class="ds-title"><div class="t1">API Std 650 Storage Tank</div><div class="t2">Data Sheet — Shell Thickness Calculation</div></div>
+      <div class="ds-status">Status: Preliminary<br><span class="ds-fill">&nbsp;</span><div style="margin-top:8px">Date: ${today}</div></div>
+    </div>
+    <div class="ds-section-title">GENERAL</div>
+    <div class="ds-body">
+      <div class="ds-row">Manufacturer: <span class="ds-fill">${meta.mfr||'—'}</span> &nbsp; Contract: <span class="ds-fill">${meta.contract||'—'}</span></div>
+      <div class="ds-row">Client: <span class="ds-fill">${meta.client||'—'}</span> &nbsp; Tank Tag: <span class="ds-fill">${meta.tag||'—'}</span></div>
+      <div class="ds-row">Diameter: <span class="ds-fill">${meta.D} m</span> &nbsp; Shell Height: <span class="ds-fill">${meta.H} m</span> &nbsp; G: <span class="ds-fill">${meta.G}</span></div>
+    </div>
+    <div class="ds-section-title">DESIGN DATA</div>
+    <div class="ds-body">
+      <div class="ds-row">Sd: <span class="ds-fill">${meta.Sd} MPa</span> &nbsp; St: <span class="ds-fill">${meta.St} MPa</span> &nbsp; CA: <span class="ds-fill">${meta.CA} mm</span> &nbsp; E: <span class="ds-fill">${meta.E}</span></div>
+      <div class="ds-row">Design Pressure: <span class="ds-fill">${meta.P||0} kPa</span> &nbsp; Wind: <span class="ds-fill">${meta.windV} km/h</span></div>
+      <div class="ds-row">Wind Girder Required: <span class="ds-fill">${meta.windGirderRequired?'YES':'NO'}</span> &nbsp; H1_max: <span class="ds-fill">${meta.H1max?meta.H1max.toFixed(2):'-'} m</span></div>
+      <div class="ds-row">Governing t: <span class="ds-fill">${meta.maxT.toFixed(2)} mm</span> — Course <span class="ds-fill">${meta.maxCourse}</span> — Case <span class="ds-fill">${meta.maxCase}</span></div>
+    </div>
+    <div class="ds-section-title">SHELL COURSE THICKNESSES</div>
+    <div class="ds-body">
+      <table class="ds-table"><thead><tr><th>Course</th><th>From (m)</th><th>t_d (mm)</th><th>t_t (mm)</th><th>Governing (mm)</th></tr></thead><tbody>${rowsHtml}</tbody></table>
+    </div>
+    <div class="ds-footer">
+      <div class="left"><strong>Approvals:</strong>
+        <table class="ds-approvals-table">
+          <tr><td class="hdr">By</td><td class="hdr">Ck'd</td><td class="hdr">Date</td></tr>
+          <tr><td>${meta.by||''}</td><td>${meta.ckd||''}</td><td>${today}</td></tr>
+        </table>
+      </div>
+      <div><strong>JESA Design Engineering Group</strong><br>API 650 Ed.13 — Unified Calc Platform v2.0</div>
+    </div>
+  </div>`;
+}
+
+/* ================================================================
+   INIT
+   ================================================================ */
+window.addEventListener('load',()=>{
+  buildMatSelect('of-mat','A36M');
+  of_autoCalcCourses(); of_updateMatInfo();
+  of_checkDiameter();
+  vd_autoRadius(); vd_autoCalcCourses();
+  init3D('of');
+  of_calculate();
+
+  // If an email was already saved in this browser, skip the login screen
+  try{
+    const saved=localStorage.getItem('jesa_tankcalc_email');
+    if(saved && isValidEmail(saved)){ showApp(saved); }
+  }catch(e){}
 });
 </script>
 </body>
