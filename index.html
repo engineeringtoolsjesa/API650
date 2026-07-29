@@ -4,11 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>JESA Tank Calc — API 650 Unified Platform</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 :root {
   --blue:#2563eb;--blue-dark:#1d4ed8;--blue-light:#eff6ff;
@@ -21,21 +18,6 @@
   --shadow:0 1px 3px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.06);
   --shadow-md:0 4px 6px rgba(0,0,0,.07),0 2px 4px rgba(0,0,0,.06);
   --radius:8px;--radius-lg:12px;
-
-  /* --- Modern table design tokens --- */
-  --ink:#0b0b12;
-  --surface:#f7f7fb;
-  --line:#ececf3;
-  --indigo:#5b5bf6;
-  --indigo-light:#eeeeff;
-  --lime:#baff29;
-  --lime-ink:#3f5c00;
-  --rose:#ff4d6d;
-  --rose-light:#ffe9ee;
-  --muted:#8b8b9e;
-  --font-display:'Space Grotesk',-apple-system,sans-serif;
-  --font-body:'Inter',-apple-system,sans-serif;
-  --font-mono:'IBM Plex Mono',Consolas,monospace;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--gray-50);color:var(--gray-800);min-height:100vh}
@@ -74,7 +56,7 @@ nav{background:var(--white);border-bottom:1px solid var(--gray-200);padding:0 2r
 /* PANEL */
 .panel{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius-lg);box-shadow:var(--shadow);overflow:hidden}
 .panel-header{background:var(--gray-50);border-bottom:1px solid var(--gray-200);padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between}
-.panel-header h2{font-size:14px;font-weight:600;color:var(--gray-800);display:flex;align-items:center;gap:8px;font-family:var(--font-display)}
+.panel-header h2{font-size:14px;font-weight:600;color:var(--gray-800);display:flex;align-items:center;gap:8px}
 .panel-header .icon{width:24px;height:24px;background:var(--blue-light);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px}
 .panel-body{padding:1.25rem}
 
@@ -145,55 +127,19 @@ canvas:active{cursor:grabbing}
 .status-warn{background:var(--orange-light);color:var(--orange)}
 .status-danger{background:var(--red-light);color:var(--red)}
 
-/* TABLE — modern data-grid style */
-.table-wrap{overflow-x:auto;background:var(--white)}
-table{width:100%;border-collapse:collapse;font-size:13px;text-align:left;font-family:var(--font-body)}
-th{
-  background:var(--surface);
-  color:var(--muted);
-  font-weight:600;
-  font-family:var(--font-display);
-  padding:14px 16px;
-  border-bottom:1px solid var(--line);
-  font-size:11px;
-  text-transform:uppercase;
-  letter-spacing:.06em;
-}
-td{
-  padding:14px 16px;
-  border-bottom:1px solid var(--line);
-  color:var(--ink);
-  font-variant-numeric:tabular-nums;
-}
-/* numeric-looking cells get the mono face automatically via this helper class */
-td .num{font-family:var(--font-mono);font-weight:500;color:var(--ink)}
-tr{position:relative;transition:background .15s}
-tr:hover td{background:var(--indigo-light)}
+/* TABLE */
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px;text-align:left}
+th{background:var(--gray-50);color:var(--gray-600);font-weight:600;padding:12px 14px;border-bottom:1px solid var(--gray-200);font-size:12px}
+td{padding:12px 14px;border-bottom:1px solid var(--gray-100);color:var(--gray-800)}
+tr:hover td{background:var(--gray-50)}
 tr:last-child td{border-bottom:none}
-tr.row-critical td{background:var(--rose-light)}
-tr.row-critical:hover td{background:#ffdde4}
-
-.badge{
-  display:inline-flex;align-items:center;gap:5px;
-  padding:4px 10px;border-radius:20px;
-  font-size:11px;font-weight:600;font-family:var(--font-mono);
-}
-.badge::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor}
-.badge-ok{background:#eafbe0;color:#3f8f0f}
-.badge-warn{background:#fff2e0;color:#b5570a}
-.badge-design{background:var(--indigo-light);color:var(--indigo)}
-.badge-test{background:#fff8e1;color:#a3760a}
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600}
+.badge-ok{background:var(--green-light);color:var(--green)}
+.badge-warn{background:var(--orange-light);color:var(--orange)}
+.badge-design{background:var(--blue-light);color:var(--blue)}
+.badge-test{background:#fff3cd;color:#997404}
 .badge-warning{background:#fef3c7;color:#d97706;border:1px solid #f59e0b}
-
-/* governing-thickness pill — the signature element of the table */
-.t-governing{
-  display:inline-flex;align-items:baseline;gap:2px;
-  font-family:var(--font-mono);font-weight:600;font-size:13px;
-  padding:5px 10px;border-radius:8px;
-  background:var(--indigo-light);color:var(--indigo);
-}
-.t-governing.critical{background:var(--rose);color:#fff}
-.t-governing .unit{font-size:10px;opacity:.75;margin-left:2px}
 
 /* ITER DETAILS */
 details{margin-top:4px}
@@ -280,7 +226,7 @@ footer strong{color:rgba(255,255,255,.8)}
 <body>
 
 <!-- ================================================================
-     LOGIN SCREEN (Google Sign-In — client-side only, no backend)
+     LOGIN SCREEN (client-side email gate — no backend/password store)
      ================================================================ -->
 <div id="login-screen">
   <div class="login-card">
@@ -297,22 +243,25 @@ footer strong{color:rgba(255,255,255,.8)}
     <div id="g_id_onload"
          data-client_id="288313606369-53bbe6mkurc0rslhmkl8jvv2m8spof9a.apps.googleusercontent.com"
          data-callback="handleGoogleLogin"
-         data-auto_prompt="false">
+         data-auto_select="true"
+         data-itp_support="true">
     </div>
-    <div class="g_id_signin"
-         style="display:flex;justify-content:center;margin-top:.5rem"
-         data-type="standard"
-         data-shape="rectangular"
-         data-theme="outline"
-         data-text="signin_with"
-         data-size="large"
-         data-locale="fr">
+    <div style="display:flex;justify-content:center;margin-top:.25rem">
+      <div class="g_id_signin"
+           data-type="standard"
+           data-theme="outline"
+           data-size="large"
+           data-text="signin_with"
+           data-shape="rectangular"
+           data-logo_alignment="left">
+      </div>
     </div>
 
-    <div class="login-error" id="login-error">Erreur de connexion.</div>
-    <p class="login-note">Accès réservé au personnel JESA. Votre nom et e-mail Google sont utilisés pour identifier vos calculs (champ "Prepared by") et ne sont stockés que sur cet appareil.</p>
+    <div class="login-error" id="login-error">La connexion a échoué — merci de réessayer.</div>
+    <p class="login-note">Accès réservé au personnel autorisé. Votre e-mail Google est utilisé pour identifier vos calculs (champ "Prepared by") et n'est jamais envoyé à un serveur tiers.</p>
   </div>
 </div>
+
 <div id="app-root">
 
 <nav>
@@ -652,64 +601,53 @@ footer strong{color:rgba(255,255,255,.8)}
 
 <script>
 /* ================================================================
-   LOGIN (Google Sign-In — client-side only)
-   Google's script calls handleGoogleLogin() with a signed JWT after
-   the person picks their Google account. We decode it locally (no
-   backend) to read their name/email and remember the session
-   and remember the session in this browser via localStorage.
-   NOTE: this is convenience/traceability, not real server-side
-   security — someone with devtools could still bypass it, same as
-   any purely front-end gate.
+   LOGIN — Google Identity Services (real Google Sign-In)
+   The GIS script verifies the user's Google account and returns a
+   signed ID token (JWT). We only decode it client-side to read the
+   email/name for display — no backend is involved here, so treat
+   this as identification (who is using the tool) rather than a
+   secured multi-user authorization system.
    ================================================================ */
 function decodeJwt(token){
-  const payload = token.split('.')[1];
-  const json = decodeURIComponent(atob(payload.replace(/-/g,'+').replace(/_/g,'/'))
-    .split('').map(c=>'%'+('00'+c.charCodeAt(0).toString(16)).slice(-2)).join(''));
-  return JSON.parse(json);
+  try{
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g,'+').replace(/_/g,'/');
+    const json = decodeURIComponent(atob(base64).split('').map(c=>
+      '%'+('00'+c.charCodeAt(0).toString(16)).slice(-2)
+    ).join(''));
+    return JSON.parse(json);
+  }catch(e){ return null; }
+}
+
+function showApp(email){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app-root').style.display='block';
+  document.getElementById('nav-user-email').textContent = email;
+  // Prefill "Prepared by" fields with the logged-in email if empty
+  const ofBy=document.getElementById('of-by'), vdBy=document.getElementById('vd-by');
+  if(ofBy && !ofBy.value) ofBy.value=email;
+  if(vdBy && !vdBy.value) vdBy.value=email;
 }
 
 function handleGoogleLogin(response){
+  const payload = decodeJwt(response.credential);
   const err = document.getElementById('login-error');
-  let payload;
-  try{
-    payload = decodeJwt(response.credential);
-  }catch(e){
-    err.textContent = "Erreur de connexion. Réessayez.";
+  if(!payload || !payload.email){
     err.style.display='block';
     return;
   }
-
-  const email = payload.email;
-  const name = payload.name || email;
-  const picture = payload.picture || '';
-
   err.style.display='none';
-  try{
-    localStorage.setItem('jesa_tankcalc_user', JSON.stringify({email,name,picture}));
-  }catch(e){}
-  showApp(email, name, picture);
-}
-
-function showApp(email, name, picture){
-  document.getElementById('login-screen').style.display='none';
-  document.getElementById('app-root').style.display='block';
-  document.getElementById('nav-user-email').innerHTML =
-    (picture?`<img src="${picture}" alt="" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px">`:'') +
-    (name||email);
-  // Prefill "Prepared by" fields with the logged-in user's name if empty
-  const ofBy=document.getElementById('of-by'), vdBy=document.getElementById('vd-by');
-  if(ofBy && !ofBy.value) ofBy.value = name || email;
-  if(vdBy && !vdBy.value) vdBy.value = name || email;
+  try{ sessionStorage.setItem('jesa_tankcalc_email', payload.email); }catch(e){}
+  showApp(payload.email);
 }
 
 function handleLogout(){
-  try{ localStorage.removeItem('jesa_tankcalc_user'); }catch(e){}
-  document.getElementById('app-root').style.display='none';
-  document.getElementById('login-screen').style.display='flex';
-  // Also tell Google to forget the auto sign-in for this session
+  try{ sessionStorage.removeItem('jesa_tankcalc_email'); }catch(e){}
   if(window.google && google.accounts && google.accounts.id){
     google.accounts.id.disableAutoSelect();
   }
+  document.getElementById('app-root').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
 }
 
 /* ================================================================
@@ -943,8 +881,8 @@ function of_calculate(){
     let td=Math.max(h1>0?(4.9*D*h1*G/m.Sd)+CA:0, tmin);
     let tt=Math.max(h1>0?(4.9*D*h1/m.St):0, tmin);
     const tA=Math.max(td,tt,tmin);
-    if(tA>maxT){maxT=tA;maxCourse=i+1;maxCase=td>=tt?'Design':'Test';}
-    rows.push({course:i+1,hFrom:(i*cH).toFixed(2),hTo:((i+1)*cH).toFixed(2),td:td.toFixed(2),tt:tt.toFixed(2),tA:tA.toFixed(2),ok:tA<=45});
+    if(tA>maxT){maxT=tA;maxCourse=nc-i;maxCase=td>=tt?'Design':'Test';}
+    rows.push({course:nc-i,hFrom:(i*cH).toFixed(2),hTo:((i+1)*cH).toFixed(2),td:td.toFixed(2),tt:tt.toFixed(2),tA:tA.toFixed(2),ok:tA<=45});
   }
   of_cache=rows.map((r,i)=>({...r,H_i:(H-i*(H/nc)).toFixed(2)}));
 
@@ -962,8 +900,7 @@ function of_calculate(){
   // Table
   let html=`<table><thead><tr><th>Course</th><th>From (m)</th><th>To (m)</th><th>t_d (mm)</th><th>t_t (mm)</th><th>Governing (mm)</th><th>Status</th></tr></thead><tbody>`;
   rows.forEach(r=>{
-    const isCritical = parseFloat(r.tA)===maxT;
-    html+=`<tr class="${isCritical?'row-critical':''}"><td><strong>C${r.course}</strong></td><td class="num">${r.hFrom}</td><td class="num">${r.hTo}</td><td class="num">${r.td}</td><td class="num">${r.tt}</td><td><span class="t-governing ${isCritical?'critical':''}">${r.tA}<span class="unit">mm</span></span></td><td><span class="badge ${r.ok?'badge-ok':'badge-warn'}">${r.ok?'Pass':'Review'}</span></td></tr>`;
+    html+=`<tr><td><strong>C${r.course}</strong></td><td>${r.hFrom}</td><td>${r.hTo}</td><td>${r.td}</td><td>${r.tt}</td><td style="font-weight:700">${r.tA}</td><td><span class="badge ${r.ok?'badge-ok':'badge-warn'}">${r.ok?'✓ Pass':'⚠ Review'}</span></td></tr>`;
   });
   html+='</tbody></table>';
   document.getElementById('of-table').innerHTML=html;
@@ -1137,14 +1074,13 @@ function vd_calculate(){
   // Table
   let html=`<table><thead><tr><th>Course</th><th>From</th><th>To</th><th>H_i(m)</th><th>t_d(mm)</th><th>t_t(mm)</th><th>Governing</th><th>Weight(t)</th><th>Plates</th><th>Details</th></tr></thead><tbody>`;
   [...courses].reverse().forEach(c=>{
-    const isCritical = c.course===maxCourse;
-    html+=`<tr class="${isCritical?'row-critical':''}">
+    html+=`<tr>
       <td><strong>C${c.course}</strong></td>
-      <td class="num">${c.elevFrom.toFixed(2)}</td><td class="num">${c.elevTo.toFixed(2)}</td><td class="num">${c.H_i.toFixed(2)}</td>
+      <td>${c.elevFrom.toFixed(2)}</td><td>${c.elevTo.toFixed(2)}</td><td>${c.H_i.toFixed(2)}</td>
       <td><span class="badge badge-design">${c.td.toFixed(2)}</span></td>
       <td><span class="badge badge-test">${c.tt.toFixed(2)}</span></td>
-      <td><span class="t-governing ${isCritical?'critical':''}">${c.governing.toFixed(2)}<span class="unit">mm</span></span></td>
-      <td class="num">${c.weightT.toFixed(2)}</td><td class="num">${c.plates}</td>
+      <td style="font-weight:700">${c.governing.toFixed(2)}</td>
+      <td>${c.weightT.toFixed(2)}</td><td>${c.plates}</td>
       <td><details><summary>Details</summary>${c.detail}</details></td>
     </tr>`;
   });
@@ -1266,14 +1202,9 @@ window.addEventListener('load',()=>{
   vd_autoRadius(); vd_autoCalcCourses();
   init3D('of');
   of_calculate();
-
-  // If a Google session was already saved in this browser, skip the login screen
-  try{
-    const saved=JSON.parse(localStorage.getItem('jesa_tankcalc_user')||'null');
-    if(saved && saved.email){
-      showApp(saved.email, saved.name, saved.picture);
-    }
-  }catch(e){}
+  // Note: Google Identity Services (data-auto_select="true") will call
+  // handleGoogleLogin automatically on page load if the browser still
+  // has an active Google session for a previously-used account.
 });
 </script>
 </body>
