@@ -10,6 +10,161 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script>
+let scene, camera, renderer, controls;
+let tankGroup = new THREE.Group();
+
+// 1. Initialisation de la scène 3D WebGL
+function init3DRenderer() {
+    const container = document.getElementById('tank-3d-canvas');
+    if (!container || renderer) return; // Évite les réinitialisations multiples
+
+    // Force une hauteur si le container est vide
+    if (container.clientHeight === 0) {
+        container.style.height = '420px';
+    }
+
+    // Scène
+    scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x0f172a); // Fond sombre matching UI
+
+    // Caméra
+    camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 2000);
+
+    // Rendu
+    renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.shadowMap.enabled = true;
+    container.appendChild(renderer.domElement);
+
+    // Contrôles à la souris (Rotation, Zoom)
+    controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+
+    // Lumières
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+    scene.add(ambientLight);
+
+    const dirLight1 = new THREE.DirectionalLight(0xffffff, 0.9);
+    dirLight1.position.set(100, 150, 100);
+    scene.add(dirLight1);
+
+    const dirLight2 = new THREE.DirectionalLight(0x38bdf8, 0.4);
+    dirLight2.position.set(-100, -50, -100);
+    scene.add(dirLight2);
+
+    // Grille au sol
+    const grid = new THREE.GridHelper(200, 40, 0x334155, 0x1e293b);
+    grid.position.y = 0;
+    scene.add(grid);
+
+    scene.add(tankGroup);
+
+    // Boucle d'animation continue
+    function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+        renderer.render(scene, camera);
+    }
+    animate();
+
+    // Redimensionnement si la fenêtre change
+    window.addEventListener('resize', () => {
+        if (!container) return;
+        camera.aspect = container.clientWidth / container.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(container.clientWidth, container.clientHeight);
+    });
+}
+
+// 2. Génération du Bac 3D
+function draw3DTankSpatial(D, H, numCourses) {
+    init3DRenderer();
+
+    // Nettoyer l'ancien modèle 3D
+    while (tankGroup.children.length > 0) {
+        tankGroup.remove(tankGroup.children[0]);
+    }
+
+    const radius = D / 2;
+    const courseHeight = H / numCourses;
+    let currentY = 0;
+
+    for (let i = 0; i < numCourses; i++) {
+        // Cylindre de la virole
+        const geometry = new THREE.CylinderGeometry(radius, radius, courseHeight, 64, 1, true);
+
+        // Matériau métallique bleu
+        const material = new THREE.MeshStandardMaterial({
+            color: i % 2 === 0 ? 0x0284c7 : 0x0369a1,
+            side: THREE.DoubleSide,
+            metalness: 0.5,
+            roughness: 0.3
+        });
+
+        const courseMesh = new THREE.Mesh(geometry, material);
+        courseMesh.position.set(0, currentY + courseHeight / 2, 0);
+        tankGroup.add(courseMesh);
+
+        // Lignes de soudure (Bordures des viroles)
+        const edges = new THREE.EdgesGeometry(geometry);
+        const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x38bdf8 }));
+        line.position.copy(courseMesh.position);
+        tankGroup.add(line);
+
+        currentY += courseHeight;
+    }
+
+    // Centrer automatiquement la caméra sur le réservoir
+    const centerY = H / 2;
+    controls.target.set(0, centerY, 0);
+    camera.position.set(D * 1.8, H * 1.5, D * 1.8);
+    camera.lookAt(0, centerY, 0);
+}
+
+// 3. Boutons de changement de vue (3D, Top, Front, Wireframe)
+function setView(viewType) {
+    if (!controls) return;
+
+    // Récupérer D et H actuels
+    const D = parseFloat(document.getElementById('tankD')?.value) || 24;
+    const H = parseFloat(document.getElementById('tankH')?.value) || 14.5;
+    const centerY = H / 2;
+
+    // Mode Filaire (Wireframe)
+    tankGroup.traverse((child) => {
+        if (child.isMesh) {
+            child.material.wireframe = (viewType === 'wireframe');
+        }
+    });
+
+    switch(viewType) {
+        case '3d':
+        case 'wireframe':
+            camera.position.set(D * 1.8, H * 1.5, D * 1.8);
+            break;
+        case 'top':
+            camera.position.set(0, D * 2.5, 0.001); // Vue du dessus
+            break;
+        case 'front':
+            camera.position.set(0, centerY, D * 2.5); // Vue de face
+            break;
+    }
+    controls.target.set(0, centerY, 0);
+}
+
+// 4. CHARGEMENT AUTOMATIQUE DÈS L'OUVERTURE DE LA PAGE
+window.addEventListener('load', function() {
+    // Récupère les valeurs réelles des champs ou applique les valeurs par défaut
+    const D = parseFloat(document.getElementById('tankD')?.value) || 24;
+    const H = parseFloat(document.getElementById('tankH')?.value) || 14.5;
+    const nc = parseInt(document.getElementById('nc')?.value) || 8;
+
+    // Affiche la 3D immédiatement
+    draw3DTankSpatial(D, H, nc);
+});
+</script>
 <style>
 :root {
   --blue:#2563eb;--blue-dark:#1d4ed8;--blue-light:#eff6ff;
