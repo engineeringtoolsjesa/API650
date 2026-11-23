@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>JESA Tank Calc — API 650</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blue:#2563eb;--blue-dark:#1d4ed8;--blue-light:#eff6ff;
+  --gray-50:#f9fafb;--gray-100:#f3f4f6;--gray-200:#e5e7eb;--gray-300:#d1d5db;
+  --gray-400:#9ca3af;--gray-600:#4b5563;--gray-800:#1f2937;--gray-900:#111827;
+  --green:#16a34a;--green-light:#dcfce7;--orange:#ea580c;--orange-light:#fff7ed;
+  --red:#dc2626;--red-light:#fef2f2;--white:#fff;
+  --shadow:0 1px 3px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.06);
+  --shadow-md:0 4px 6px rgba(0,0,0,.07),0 2px 4px rgba(0,0,0,.06);
+  --radius:8px;--radius-lg:12px;
+  --ink:#0b0b12;--surface:#f7f7fb;--line:#ececf3;--indigo:#5b5bf6;--indigo-light:#eeeeff;
+  --rose:#ff4d6d;--rose-light:#ffe9ee;--muted:#8b8b9e;
+  --font-display:'Space Grotesk',-apple-system,sans-serif;
+  --font-body:'Inter',-apple-system,sans-serif;
+  --font-mono:'IBM Plex Mono',Consolas,monospace;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--gray-50);color:var(--gray-800);min-height:100vh}
+
+nav{background:var(--white);border-bottom:1px solid var(--gray-200);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:env(safe-area-inset-top,0px);z-index:100;box-shadow:var(--shadow)}
+.nav-logo{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:700;color:var(--blue)}
+.nav-logo svg{width:32px;height:32px}
+.nav-badge{background:var(--blue-light);color:var(--blue);font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px}
+.nav-links{display:flex;gap:1.5rem}
+.nav-links a{color:var(--gray-600);text-decoration:none;font-size:14px;font-weight:500}
+.nav-links a:hover{color:var(--blue)}
+
+.hero{background:linear-gradient(135deg,#1e3a5f 0%,#2563eb 50%,#3b82f6 100%);color:#fff;padding:2.5rem 2rem;text-align:center}
+.hero h1{font-size:2rem;font-weight:800;margin-bottom:.5rem}
+.hero p{font-size:.95rem;opacity:.85;max-width:650px;margin:0 auto 1.25rem;line-height:1.5}
+.hero-badges{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+.hero-badge{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:500}
+
+.tab-bar{display:flex;border-bottom:2px solid var(--gray-200);background:var(--white);padding:0 2rem;position:sticky;top:calc(60px + env(safe-area-inset-top,0px));z-index:99;box-shadow:var(--shadow);overflow-x:auto}
+.tab-btn{padding:.875rem 1.5rem;font-size:14px;font-weight:600;color:var(--gray-400);border:none;background:transparent;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;display:flex;align-items:center;gap:8px;white-space:nowrap}
+.tab-btn.active{color:var(--blue);border-bottom-color:var(--blue)}
+.tab-btn:hover{color:var(--gray-800)}
+.tab-badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:var(--gray-200);color:var(--gray-600)}
+.tab-btn.active .tab-badge{background:var(--blue-light);color:var(--blue)}
+
+.container{max-width:1280px;margin:0 auto;padding:2rem}
+.tab-content{display:none}.tab-content.active{display:block}
+.main-grid{display:grid;grid-template-columns:400px 1fr;gap:1.5rem;align-items:start}
+.panel{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius-lg);box-shadow:var(--shadow);overflow:hidden}
+.panel-header{background:var(--gray-50);border-bottom:1px solid var(--gray-200);padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between}
+.panel-header h2{font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px;font-family:var(--font-display)}
+.panel-header .icon{width:24px;height:24px;background:var(--blue-light);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px}
+.panel-body{padding:1.25rem}
+
+.section-label{font-size:11px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.08em;margin:1.25rem 0 .75rem;border-bottom:1px dashed var(--gray-200);padding-bottom:4px}
+.section-label:first-child{margin-top:0}
+.field{margin-bottom:.875rem}
+.field label{display:flex;justify-content:space-between;font-size:13px;color:var(--gray-600);margin-bottom:4px;font-weight:500}
+.field label span.hint{font-size:11px;color:var(--gray-400);font-weight:normal}
+.field-row{display:flex;gap:6px}
+.field-row input,.field-row select{flex:1;min-width:0;height:38px;padding:0 10px;border:1px solid var(--gray-200);border-radius:var(--radius);font-size:13px;color:var(--gray-800);outline:none;background:var(--white)}
+.field-row input:focus,.field-row select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+.field-row input.input-error{border-color:var(--red);box-shadow:0 0 0 3px rgba(220,38,38,.12)}
+.field-row input[readonly]{background:var(--gray-100);color:var(--gray-600);cursor:not-allowed}
+.unit-tag{display:flex;align-items:center;padding:0 10px;background:var(--gray-100);border:1px solid var(--gray-200);border-radius:var(--radius);font-size:12px;color:var(--gray-600);font-weight:500;white-space:nowrap;height:38px;min-width:45px;justify-content:center}
+.error-banner{display:none;align-items:flex-start;gap:10px;background:var(--red-light);border:1px solid #fca5a5;border-left:4px solid var(--red);border-radius:var(--radius);padding:10px 12px;margin-top:6px}
+.error-banner .sign{flex:none;width:26px;height:26px;border-radius:6px;background:var(--red);color:#fff;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.error-banner .msg{font-size:12px;color:var(--red);font-weight:600;line-height:1.4}
+.error-banner .msg small{display:block;font-weight:500;color:#991b1b;margin-top:2px}
+.switch-method-btn{display:inline-flex;margin-top:10px;background:var(--blue);color:#fff;padding:7px 14px;border-radius:6px;border:none;cursor:pointer;font-weight:700;font-size:12px}
+.switch-method-btn:hover{background:var(--blue-dark)}
+.manual-toggle{display:inline-flex;align-items:center;gap:4px;font-weight:normal;font-size:11px;color:var(--gray-400);cursor:pointer}
+.manual-toggle input{width:auto!important;height:auto!important;margin:0}
+.mat-info-box{background:var(--blue-light);border-radius:var(--radius);padding:10px 12px;font-size:12px;color:var(--blue);font-weight:500;margin-bottom:1rem;line-height:1.4}
+
+.btn-group{display:flex;gap:8px;margin-top:1.25rem}
+.calc-btn{flex:2;height:42px;background:var(--blue);color:#fff;border:none;border-radius:var(--radius);font-size:14px;font-weight:600;cursor:pointer}
+.calc-btn:hover{background:var(--blue-dark)}
+.calc-btn:disabled{background:var(--gray-400);cursor:not-allowed}
+.reset-btn{flex:1;height:42px;background:transparent;color:var(--gray-600);border:1px solid var(--gray-200);border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer}
+.reset-btn:hover{background:var(--gray-100)}
+.export-btn{background:transparent;border:1px solid var(--gray-300);color:var(--gray-600);padding:4px 10px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer}
+.export-btn:hover{background:var(--gray-50);border-color:var(--gray-400)}
+
+.right-col{display:flex;flex-direction:column;gap:1.5rem;min-width:0}
+
+.schem-panel{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius-lg);box-shadow:var(--shadow);overflow:hidden}
+.schem-body{padding:.75rem 1rem;background:#f8fafc}
+#of-schem{display:block;width:100%;height:auto;max-height:440px}
+#of-schem text{font-family:var(--font-body)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;padding:.75rem 1.25rem;border-top:1px solid var(--gray-200)}
+.chip{font-size:12px;background:var(--gray-100);border:1px solid var(--gray-200);border-radius:20px;padding:3px 10px;color:var(--gray-600)}
+.chip b{color:var(--gray-900);font-weight:600;margin-left:3px}
+.chip.warn{background:var(--orange-light);border-color:#fdba74;color:var(--orange)}
+.chip.ok{background:var(--green-light);border-color:#86efac;color:var(--green)}
+
+.metrics-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.metric-card{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius);padding:1rem;text-align:center;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.metric-card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;background:var(--gray-200)}
+.metric-card.primary::before{background:var(--blue)}
+.metric-val{font-size:20px;font-weight:700;color:var(--gray-900)}
+.metric-lbl{font-size:11px;color:var(--gray-400);margin-top:4px;text-transform:uppercase;font-weight:600}
+.metric-unit{font-size:11px;color:var(--blue);font-weight:600;margin-top:2px}
+
+.eng-cards-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.eng-card{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:1rem;box-shadow:var(--shadow)}
+.eng-card h4{color:var(--blue);font-size:13px;border-bottom:1px solid var(--gray-200);padding-bottom:8px;margin-bottom:10px}
+.status-pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase}
+.status-ok{background:var(--green-light);color:var(--green)}
+.status-warn{background:var(--orange-light);color:var(--orange)}
+.status-danger{background:var(--red-light);color:var(--red)}
+
+.table-wrap{overflow-x:auto;background:var(--white)}
+table{width:100%;border-collapse:collapse;font-size:13px;text-align:left;font-family:var(--font-body)}
+th{background:var(--surface);color:var(--muted);font-weight:600;font-family:var(--font-display);padding:14px 16px;border-bottom:1px solid var(--line);font-size:11px;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+td{padding:14px 16px;border-bottom:1px solid var(--line);color:var(--ink);font-variant-numeric:tabular-nums}
+td.num{font-family:var(--font-mono);font-weight:500}
+tr:hover td{background:var(--indigo-light)}
+tr:last-child td{border-bottom:none}
+tr.row-critical td{background:var(--rose-light)}
+.badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;font-family:var(--font-mono)}
+.badge::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor}
+.badge-ok{background:#eafbe0;color:#3f8f0f}
+.badge-warn{background:#fff2e0;color:#b5570a}
+.badge-design{background:var(--indigo-light);color:var(--indigo)}
+.badge-test{background:#fff8e1;color:#a3760a}
+.t-governing{display:inline-flex;align-items:baseline;gap:2px;font-family:var(--font-mono);font-weight:600;font-size:13px;padding:5px 10px;border-radius:8px;background:var(--indigo-light);color:var(--indigo)}
+.t-governing.critical{background:var(--rose);color:#fff}
+.t-governing .unit{font-size:10px;opacity:.75;margin-left:2px}
+details{margin-top:4px}
+summary{cursor:pointer;font-size:11px;color:var(--blue);font-weight:600;padding:3px 0}
+.iter-detail{font-size:11px;color:var(--gray-600);margin:2px 0 2px 8px;font-family:Consolas,monospace}
+.final-highlight{background:var(--green-light);padding:1rem;border-radius:var(--radius);text-align:center;border:1px dashed var(--green)}
+.empty-state{text-align:center;padding:4rem 1rem;color:var(--gray-400);font-size:13px}
+
+.tank-viz{background:#f8fafc;border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:1rem}
+.tank-viz h3{font-size:13px;font-weight:600;color:var(--gray-600);text-align:center;margin-bottom:.75rem}
+#tank-sketch{display:block;margin:0 auto;max-width:480px}
+.shell-plate{fill:#475569;stroke:#1e293b;stroke-width:1}
+.shell-plate:hover{fill:var(--blue)}
+.center-line{stroke:#94a3b8;stroke-dasharray:5,5}
+.ground-line{stroke:#334155;stroke-width:3}
+.dimension-text{font-size:10px;fill:#334155;font-weight:600}
+.shell-label{font-size:11px;fill:#fff;text-anchor:middle;font-weight:700;pointer-events:none}
+
+footer{background:var(--gray-900);color:rgba(255,255,255,.4);text-align:center;padding:1.5rem;font-size:12px;margin-top:4rem;border-top:4px solid var(--blue)}
+footer strong{color:rgba(255,255,255,.8)}
+
+@media(max-width:960px){
+  .main-grid{grid-template-columns:1fr}
+  .metrics-grid{grid-template-columns:repeat(2,1fr)}
+  .eng-cards-grid{grid-template-columns:1fr}
+  nav{padding:0 1rem}.nav-links{display:none}.container{padding:1rem}
+}
+
+#login-screen{position:fixed;inset:0;z-index:1000;background:linear-gradient(135deg,#1e3a5f 0%,#2563eb 50%,#3b82f6 100%);display:flex;align-items:center;justify-content:center;padding:1rem}
+.login-card{background:var(--white);border-radius:var(--radius-lg);box-shadow:var(--shadow-md);padding:2.25rem 2rem;width:100%;max-width:380px;text-align:center}
+.login-card .login-logo{display:flex;align-items:center;justify-content:center;gap:10px;font-size:17px;font-weight:700;color:var(--blue);margin-bottom:.35rem}
+.login-card .login-logo svg{width:30px;height:30px}
+.login-card p.login-sub{font-size:12.5px;color:var(--gray-400);margin-bottom:1.5rem}
+.login-error{color:var(--red);font-size:12px;font-weight:500;margin-top:6px;display:none;text-align:left}
+.login-note{font-size:11px;color:var(--gray-400);margin-top:1rem;line-height:1.4}
+.login-credit{font-size:11px;color:var(--gray-600);margin-top:.9rem;padding-top:.8rem;border-top:1px solid var(--gray-200)}
+#app-root{display:none}
+.nav-user{display:flex;align-items:center;gap:10px}
+.nav-user span{font-size:13px;color:var(--gray-600)}
+.logout-link{font-size:13px;color:var(--blue);font-weight:500;cursor:pointer}
+.logout-link:hover{text-decoration:underline}
+.footer-credit{margin-top:.6rem;font-size:13px;color:rgba(255,255,255,.55)}
+.footer-credit strong{color:#fff;letter-spacing:.04em}
+
+/* TOAST */
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--gray-900);color:#fff;padding:12px 20px;border-radius:8px;font-size:13px;font-weight:500;box-shadow:var(--shadow-md);opacity:0;transition:all .25s ease;z-index:2000;pointer-events:none}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ===== DATA SHEET (trame normée) ===== */
+#print-datasheet{display:none}
+.ds-page{font-family:'Times New Roman',Times,serif;color:#000;font-size:11px;line-height:1.35;max-width:190mm;margin:0 auto;background:#fff}
+.ds-cartouche{width:100%;border-collapse:collapse;border:2px solid #000}
+.ds-cartouche td{border:1px solid #000;padding:4px 6px;vertical-align:middle}
+.ds-cell-logo{width:70px;text-align:center;font-weight:900;font-size:18px}
+.ds-cell-title{text-align:center;font-weight:700;font-size:12px}
+.ds-cell-meta{width:90px;font-size:10px;text-align:left}
+.ds-cell-sub{text-align:center;font-weight:700;font-size:11px;background:#eaeaea}
+.ds-cell-meta2{font-size:10px}
+.ds-sec{background:#000;color:#fff;font-weight:700;padding:3px 8px;margin-top:8px;font-size:11px;letter-spacing:.05em}
+.ds-grid{width:100%;border-collapse:collapse;margin-top:2px}
+.ds-grid td{border:1px solid #000;padding:3px 6px;font-size:10.5px}
+.ds-grid td:nth-child(odd){background:#f2f2f2;width:30%;font-weight:600}
+.ds-table{width:100%;border-collapse:collapse;margin-top:2px;font-size:10.5px}
+.ds-table th,.ds-table td{border:1px solid #000;padding:3px 6px;text-align:center}
+.ds-table th{background:#eaeaea;font-weight:700}
+.ds-note{font-size:10.5px;margin:4px 0}
+.ds-approvals{width:100%;border-collapse:collapse;margin-top:2px;font-size:10.5px}
+.ds-approvals td{border:1px solid #000;padding:4px 6px}
+.ds-approvals-hdr td{background:#eaeaea;font-weight:700;text-align:center}
+.ds-approvals-sign td{height:34px;vertical-align:bottom;text-align:center}
+.ds-footer{margin-top:10px;border-top:1px solid #000;padding-top:4px;font-size:9.5px;text-align:center}
+
+@media print{
+  body > *:not(#print-datasheet){display:none!important}
+  #print-datasheet{display:block!important}
+  @page{size:A4 portrait;margin:12mm}
+}
+</style>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <svg viewBox="0 0 32 32" fill="none">
+        <rect x="6" y="4" width="20" height="24" rx="3" fill="#2563eb" opacity=".15" stroke="#2563eb" stroke-width="1.5"/>
+        <ellipse cx="16" cy="4" rx="10" ry="3.5" fill="#2563eb" opacity=".4"/>
+        <ellipse cx="16" cy="28" rx="10" ry="3.5" fill="#2563eb"/>
+      </svg>
+      JESA TANK CALC
+    </div>
+    <p class="login-sub">Connectez-vous avec votre compte Google pour accéder à l'outil.</p>
+    <div id="g_id_onload" data-client_id="288313606369-53bbe6mkurc0rslhmkl8jvv2m8spof9a.apps.googleusercontent.com" data-callback="handleGoogleLogin" data-auto_prompt="false"></div>
+    <div class="g_id_signin" style="display:flex;justify-content:center;margin-top:.5rem" data-type="standard" data-shape="rectangular" data-theme="outline" data-text="signin_with" data-size="large" data-locale="fr"></div>
+    <div class="login-error" id="login-error">Erreur de connexion.</div>
+    <p class="login-note">Accès réservé au personnel JESA. Votre nom et e-mail Google sont utilisés pour identifier vos calculs (champ « Prepared by ») et ne sont stockés que sur cet appareil.</p>
+    <p class="login-credit">Site réalisé par <strong>ELMEHDI SASNI</strong></p>
+  </div>
+</div>
+
+<div id="app-root">
+
+<nav>
+  <div class="nav-logo">
+    <svg viewBox="0 0 32 32" fill="none">
+      <rect x="6" y="4" width="20" height="24" rx="3" fill="#2563eb" opacity=".15" stroke="#2563eb" stroke-width="1.5"/>
+      <ellipse cx="16" cy="4" rx="10" ry="3.5" fill="#2563eb" opacity=".4"/>
+      <ellipse cx="16" cy="28" rx="10" ry="3.5" fill="#2563eb"/>
+    </svg>
+    JESA TANK CALCULATION TOOL
+  </div>
+  <div class="nav-links"><a href="#">API 650</a><a href="#">Materials DB</a><a href="#">Documentation</a></div>
+  <div class="nav-user">
+    <span id="nav-user-email"></span>
+    <a class="logout-link" onclick="handleLogout()">Déconnexion</a>
+    <div class="nav-badge">v2.1 · API 650 Ed.13 Unified</div>
+  </div>
+</nav>
+
+<div class="hero">
+  <h1>Professional API 650 Tank Sizing — Unified Platform</h1>
+  <p>Single platform combining the <strong>1-Foot Method (Sec. 5.6.3)</strong> and the <strong>Variable Design Point Method (Sec. 5.6.4)</strong> with a live schematic, wind girder check and printable data sheet.</p>
+  <div class="hero-badges">
+    <span class="hero-badge">1-Foot Method</span><span class="hero-badge">VDPM Iterative</span>
+    <span class="hero-badge">Live Schematic</span><span class="hero-badge">Wind Girder Check</span>
+    <span class="hero-badge">PDF Data Sheet</span><span class="hero-badge">CSV Export</span>
+  </div>
+</div>
+
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('onefoot',this)">1-Foot Method <span class="tab-badge">Sec 5.6.3 · D ≤ 61m</span></button>
+  <button class="tab-btn" onclick="switchTab('vdpm',this)">Variable Design Point (VDPM) <span class="tab-badge">Sec 5.6.4 · All D</span></button>
+</div>
+
+<div class="container">
+
+<!-- TAB 1 : ONE-FOOT -->
+<div id="tab-onefoot" class="tab-content active">
+<div class="main-grid">
+  <div class="panel">
+    <div class="panel-header"><h2><div class="icon">⚙️</div> Design Inputs — 1-Foot Method</h2></div>
+    <div class="panel-body">
+      <div class="section-label">Geometry & Shell Layout</div>
+      <div class="field">
+        <label>Nominal Diameter (D) <span class="hint">max 61m for this method</span></label>
+        <div class="field-row"><input type="number" id="of-D" value="24" min="1" max="61" step=".1" oninput="of_checkDiameter()"><div class="unit-tag">m</div></div>
+        <div class="error-banner" id="of-err-banner">
+          <div class="sign">!</div>
+          <div class="msg">Diameter exceeds 61m — 1-Foot Method not applicable.
+            <small>Switch to VDPM for diameters above 61m.</small>
+            <button class="switch-method-btn" onclick="switchTab('vdpm',document.querySelectorAll('.tab-btn')[1]);syncInputsToVDPM()">→ Switch to VDPM</button>
+          </div>
+        </div>
+      </div>
+      <div class="field"><label>Design Liquid Height (H)</label>
+        <div class="field-row"><input type="number" id="of-H" value="14.5" min="1" max="50" step=".1" oninput="of_autoCalcCourses()"><div class="unit-tag">m</div></div></div>
+      <div class="field"><label>Standard Plate Width</label>
+        <div class="field-row"><select id="of-plateWidth" onchange="of_autoCalcCourses()">
+          <option value="1.5">1.5 m</option><option value="1.8">1.8 m (6 ft)</option>
+          <option value="2.0" selected>2.0 m</option><option value="2.44">2.44 m (8 ft)</option></select></div></div>
+      <div class="field"><label>Shell Courses
+        <span class="hint"><label class="manual-toggle"><input type="checkbox" id="of-ncManual" onchange="of_toggleManual()"> Manual</label></span></label>
+        <div class="field-row"><input type="number" id="of-nc" value="8" min="1" max="15" step="1" readonly><div class="unit-tag">—</div></div></div>
+
+      <div class="section-label">Product & Design</div>
+      <div class="field"><label>Joint Efficiency (E) <span class="hint">Reference only</span></label>
+        <div class="field-row"><select id="of-E">
+          <option value="1.00">Fully Radiographed (E=1.00)</option>
+          <option value="0.85" selected>Spot Radiographed (E=0.85)</option>
+          <option value="0.70">Not Radiographed (E=0.70)</option></select></div></div>
+      <div class="field"><label>Specific Gravity (G)</label>
+        <div class="field-row"><input type="number" id="of-G" value="0.85" min=".4" max="3" step=".01"><div class="unit-tag">—</div></div></div>
+      <div class="field"><label>Corrosion Allowance (CA)</label>
+        <div class="field-row"><input type="number" id="of-CA" value="2.0" min="0" max="12" step=".5"><div class="unit-tag">mm</div></div></div>
+
+      <div class="section-label">Material</div>
+      <div class="field"><div class="field-row"><select id="of-mat" onchange="of_updateMatInfo()"></select></div></div>
+      <div id="of-mat-info" class="mat-info-box">Loading…</div>
+
+      <div class="section-label">Project Info (Data Sheet)</div>
+      <div class="field"><label>Manufacturer</label><div class="field-row"><input type="text" id="of-mfr" value="JESA"></div></div>
+      <div class="field"><label>Client / Purchaser</label><div class="field-row"><input type="text" id="of-client"></div></div>
+      <div class="field"><label>Tank Tag</label><div class="field-row"><input type="text" id="of-tag"></div></div>
+      <div class="field"><label>Contract No.</label><div class="field-row"><input type="text" id="of-contract"></div></div>
+      <div class="field"><label>Prepared by / Checked by</label>
+        <div class="field-row"><input type="text" id="of-by" placeholder="By"><input type="text" id="of-ckd" placeholder="Ck'd"></div></div>
+      <div class="field"><label>Wind Velocity</label><div class="field-row"><input type="number" id="of-wind" value="190" step="5"><div class="unit-tag">km/h</div></div></div>
+
+      <div class="btn-group">
+        <button class="calc-btn" id="of-calc-btn" onclick="of_calculate()">▶ Run Calculation</button>
+        <button class="reset-btn" onclick="of_reset()">Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="right-col">
+    <div class="schem-panel">
+      <div class="panel-header"><h2>Tank Schematic — Selected Parameters</h2></div>
+      <div class="schem-body"><svg id="of-schem" viewBox="0 0 700 430" role="img" aria-label="Elevation schematic of the tank"></svg></div>
+      <div class="chips" id="of-chips"></div>
+    </div>
+
+    <div class="metrics-grid">
+      <div class="metric-card primary"><div class="metric-val" id="of-r-vol">—</div><div class="metric-unit">m³</div><div class="metric-lbl">Volume</div></div>
+      <div class="metric-card"><div class="metric-val" id="of-r-mass">—</div><div class="metric-unit">t</div><div class="metric-lbl">Product Mass</div></div>
+      <div class="metric-card"><div class="metric-val" id="of-r-pbot">—</div><div class="metric-unit">kPa</div><div class="metric-lbl">Hydrostatic Head</div></div>
+      <div class="metric-card"><div class="metric-val" id="of-r-tmax" style="color:var(--red)">—</div><div class="metric-unit">mm</div><div class="metric-lbl">Governing t</div></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header"><h2>📋 Shell Calculations — 1-Foot Method</h2>
+        <div style="display:flex;gap:8px"><button class="export-btn" onclick="of_exportCSV()">⬇ CSV</button><button class="export-btn" onclick="window.print()">🖨 Print</button></div></div>
+      <div class="panel-body" style="padding:0"><div class="table-wrap" id="of-table"></div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- TAB 2 : VDPM -->
+<div id="tab-vdpm" class="tab-content">
+<div class="main-grid">
+  <div class="panel">
+    <div class="panel-header"><h2><div class="icon">📐</div> Design Inputs — VDPM (Sec 5.6.4)</h2></div>
+    <div class="panel-body">
+      <div class="section-label">Geometry</div>
+      <div class="field"><label>Diameter (D)</label><div class="field-row"><input type="number" id="vd-D" value="85" step=".1" oninput="vd_autoRadius();vd_autoCalcCourses()"><div class="unit-tag">m</div></div></div>
+      <div class="field"><label>Nominal Radius (r)</label><div class="field-row"><input type="number" id="vd-r" value="42500" step="1"><div class="unit-tag">mm</div></div></div>
+      <div class="field"><label>Liquid Height (H)</label><div class="field-row"><input type="number" id="vd-H" value="19.2" step=".1" oninput="vd_autoCalcCourses()"><div class="unit-tag">m</div></div></div>
+      <div class="field"><label>Plate Width</label>
+        <div class="field-row"><select id="vd-plateWidth" onchange="vd_autoCalcCourses()">
+          <option value="1.5">1.5 m</option><option value="1.8">1.8 m</option><option value="2.0">2.0 m</option><option value="2.4" selected>2.4 m (8 ft)</option></select></div></div>
+      <div class="field"><label>Shell Courses
+        <span class="hint"><label class="manual-toggle"><input type="checkbox" id="vd-ncManual" onchange="vd_toggleManual()"> Manual</label></span></label>
+        <div class="field-row"><input type="number" id="vd-nc" value="8" min="1" max="20" step="1" readonly><div class="unit-tag">—</div></div></div>
+      <div class="field"><label>Plate Length</label><div class="field-row"><input type="number" id="vd-plateLength" value="8.0" step=".5"><div class="unit-tag">m</div></div></div>
+
+      <div class="section-label">Design Parameters</div>
+      <div class="field"><label>Specific Gravity (G)</label><div class="field-row"><input type="number" id="vd-G" value="1.0" step=".01"><div class="unit-tag">—</div></div></div>
+      <div class="field"><label>Design Pressure (P)</label><div class="field-row"><input type="number" id="vd-P" value="2.5" step=".1"><div class="unit-tag">kPa</div></div></div>
+      <div class="field"><label>Wind Velocity</label><div class="field-row"><input type="number" id="vd-wind" value="190" step="5"><div class="unit-tag">km/h</div></div></div>
+      <div class="field"><label>Corrosion Allowance (CA)</label><div class="field-row"><input type="number" id="vd-CA" value="0" step=".1"><div class="unit-tag">mm</div></div></div>
+      <div class="field"><label>Allowable Design Stress (Sd)</label><div class="field-row"><input type="number" id="vd-Sd" value="208" step="1"><div class="unit-tag">MPa</div></div></div>
+      <div class="field"><label>Hydrostatic Test Stress (St)</label><div class="field-row"><input type="number" id="vd-St" value="208" step="1"><div class="unit-tag">MPa</div></div></div>
+
+      <div class="section-label">Project Info</div>
+      <div class="field"><label>Manufacturer</label><div class="field-row"><input type="text" id="vd-mfr" value="JESA"></div></div>
+      <div class="field"><label>Client / Purchaser</label><div class="field-row"><input type="text" id="vd-client"></div></div>
+      <div class="field"><label>Tank Tag</label><div class="field-row"><input type="text" id="vd-tag"></div></div>
+      <div class="field"><label>Contract No.</label><div class="field-row"><input type="text" id="vd-contract"></div></div>
+      <div class="field"><label>Prepared by / Checked by</label>
+        <div class="field-row"><input type="text" id="vd-by" placeholder="By"><input type="text" id="vd-ckd" placeholder="Ck'd"></div></div>
+      <div class="field"><label>Joint Efficiency (E)</label><div class="field-row"><input type="number" id="vd-E" value="1.00" step=".01"><div class="unit-tag">—</div></div></div>
+
+      <div class="btn-group">
+        <button class="calc-btn" onclick="vd_calculate()">▶ Run VDPM Calculation</button>
+        <button class="reset-btn" onclick="vd_reset()">Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="right-col">
+    <div class="eng-cards-grid">
+      <div class="eng-card"><h4>Method Compliance</h4><div id="vd-status-method"></div><p id="vd-status-method-desc" style="font-size:12px;margin-top:8px;color:var(--gray-600)"></p></div>
+      <div class="eng-card"><h4>Wind Girder Check (5.9.7)</h4><div id="vd-status-wind"></div><p id="vd-status-wind-desc" style="font-size:12px;margin-top:8px;color:var(--gray-600)"></p></div>
+      <div class="eng-card"><h4>MTO Summary</h4><div id="vd-status-mto" style="font-size:12px"></div></div>
+    </div>
+    <div class="metrics-grid">
+      <div class="metric-card primary"><div class="metric-val" id="vd-m-nc">—</div><div class="metric-unit">courses</div><div class="metric-lbl">Shell Courses</div></div>
+      <div class="metric-card"><div class="metric-val" id="vd-m-tmax">—</div><div class="metric-unit">mm</div><div class="metric-lbl">Max Thickness</div></div>
+      <div class="metric-card"><div class="metric-val" id="vd-m-tmax-course">—</div><div class="metric-unit">course</div><div class="metric-lbl">Critical Course</div></div>
+      <div class="metric-card"><div class="metric-val" id="vd-m-case">—</div><div class="metric-unit">case</div><div class="metric-lbl">Critical Case</div></div>
+    </div>
+    <div class="tank-viz"><h3>Shell Profile — Elevation View</h3><svg id="tank-sketch" viewBox="0 0 500 450" width="100%" height="350px"></svg></div>
+    <div class="panel">
+      <div class="panel-header"><h2>📋 VDPM Shell Data Record</h2>
+        <div style="display:flex;gap:8px"><button class="export-btn" onclick="vd_exportCSV()">⬇ CSV</button><button class="export-btn" onclick="window.print()">🖨 Print</button></div></div>
+      <div class="panel-body" style="padding:0"><div class="table-wrap"><div id="vd-table"><div class="empty-state">Run calculation to see results.</div></div></div></div>
+    </div>
+    <div class="final-highlight" id="vd-final" style="display:none"></div>
+  </div>
+</div>
+</div>
+
+</div>
+
+<footer><strong>JESA DESIGN ENGINEERING GROUP</strong> · API 650 UNIFIED CALCULATION PLATFORM · 1-Foot Method (Sec. 5.6.3) + VDPM (Sec. 5.6.4) · Ed.13
+  <div class="footer-credit">Site réalisé par <strong>ELMEHDI SASNI</strong></div>
+</footer>
+</div><!-- end app-root -->
+
+<div id="print-datasheet"></div>
+<div id="toast"></div>
+
+<script>
+/* ===== CONSTANTES ===== */
+const REQUIRE_LOGIN = true;
+const GRAVITY = 9.80665;
+const STEEL_DENSITY = 7850;
+const MIN_EFF_WELD = .70;
+const TOLERANCE = .0001, MAX_ITER = 30;
+const LS_KEY = 'jesa_tankcalc_proj';
+const SVGNS = 'http://www.w3.org/2000/svg';
+
+/* ===== UTILS ===== */
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function toast(msg){
+  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'),2400);
+}
+function download(csv,name){
+  const url=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}));
+  const a=document.createElement('a'); a.href=url; a.download=name; a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),1500);
+}
+
+/* ===== LOGIN ===== */
+function decodeJwt(token){
+  const payload=token.split('.')[1];
+  const json=decodeURIComponent(atob(payload.replace(/-/g,'+').replace(/_/g,'/')).split('').map(c=>'%'+('00'+c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+  return JSON.parse(json);
+}
+function handleGoogleLogin(response){
+  const err=document.getElementById('login-error'); let payload;
+  try{ payload=decodeJwt(response.credential); }
+  catch(e){ err.textContent='Erreur de connexion. Réessayez.'; err.style.display='block'; return; }
+  const email=payload.email, name=payload.name||email, picture=payload.picture||'';
+  err.style.display='none';
+  try{ localStorage.setItem('jesa_tankcalc_user',JSON.stringify({email,name,picture})); }catch(e){}
+  showApp(email,name,picture);
+}
+function showApp(email,name,picture){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app-root').style.display='block';
+  const safeName=esc(name||email||'');
+  const safePic=/^https:\/\//.test(picture||'')?picture.replace(/["<>]/g,''):'';
+  document.getElementById('nav-user-email').innerHTML=(safePic?`<img src="${safePic}" alt="" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px">`:'')+safeName;
+  ['of-by','vd-by'].forEach(id=>{const el=document.getElementById(id); if(el&&!el.value) el.value=name||email;});
+  if(typeof of_calculate==='function') of_calculate();
+}
+function handleLogout(){
+  try{ localStorage.removeItem('jesa_tankcalc_user'); }catch(e){}
+  document.getElementById('app-root').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+  if(window.google&&google.accounts&&google.accounts.id) google.accounts.id.disableAutoSelect();
+}
+function initSession(){
+  if(!REQUIRE_LOGIN){
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('app-root').style.display='block';
+    return;
+  }
+  try{
+    const saved=JSON.parse(localStorage.getItem('jesa_tankcalc_user')||'null');
+    if(saved&&saved.email) showApp(saved.email,saved.name,saved.picture);
+  }catch(e){}
+}
+
+/* ===== MATERIALS (API 650 Table 5-2a) ===== */
+const MATS = {
+  'A283M-C':{Sd:137,St:154},'A285M-C':{Sd:137,St:154},'A131M-AB':{Sd:157,St:171},
+  'A36M':{Sd:160,St:171},'A131M-EH36':{Sd:196,St:210},
+  'A573M-400':{Sd:147,St:165},'A573M-450':{Sd:160,St:180},'A573M-485':{Sd:193,St:208},
+  'A516M-380':{Sd:137,St:154},'A516M-415':{Sd:147,St:165},'A516M-450':{Sd:160,St:180},'A516M-485':{Sd:173,St:195},
+  'A662M-B':{Sd:180,St:193},'A662M-C':{Sd:194,St:208},
+  'A537M-1':{Sd:194,St:208},'A537M-2':{Sd:220,St:236},
+  'A633M-CD':{Sd:194,St:208},'A737M-B':{Sd:194,St:208},
+  'A841M-1AB':{Sd:194,St:208},'A841M-2AB':{Sd:220,St:236},
+  'G40.21M-260W':{Sd:164,St:176},'G40.21M-300W':{Sd:176,St:189},'G40.21M-350W':{Sd:180,St:193},
+  'NS-235':{Sd:137,St:154},'NS-250':{Sd:157,St:171},'NS-275':{Sd:167,St:184},
+  'ISO630-S275CD':{Sd:164,St:176},'ISO630-S355CD':{Sd:188,St:201},
+  'EN10025-S275':{Sd:164,St:176},'EN10025-S355':{Sd:188,St:201}
+};
+const MAT_GROUPS = [
+  {label:'ASTM',keys:['A283M-C','A285M-C','A131M-AB','A36M','A131M-EH36','A573M-400','A573M-450','A573M-485','A516M-380','A516M-415','A516M-450','A516M-485','A662M-B','A662M-C','A537M-1','A537M-2','A633M-CD','A737M-B','A841M-1AB','A841M-2AB']},
+  {label:'CSA',keys:['G40.21M-260W','G40.21M-300W','G40.21M-350W']},
+  {label:'National Std',keys:['NS-235','NS-250','NS-275']},
+  {label:'ISO',keys:['ISO630-S275CD','ISO630-S355CD']},
+  {label:'EN',keys:['EN10025-S275','EN10025-S355']}
+];
+function buildMatSelect(id, def){
+  const sel=document.getElementById(id); sel.innerHTML='';
+  MAT_GROUPS.forEach(g=>{
+    const og=document.createElement('optgroup'); og.label=g.label;
+    g.keys.forEach(k=>{const o=document.createElement('option');o.value=k;o.textContent=k+` — Sd=${MATS[k].Sd} MPa`;if(k===def)o.selected=true;og.appendChild(o);});
+    sel.appendChild(og);
+  });
+}
+function getMinT(D){ if(D<15)return 5; if(D<36)return 6; if(D<=60)return 8; return 10; }
+
+/* ===== TABS ===== */
+function switchTab(id,btn){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active'); btn.classList.add('active');
+}
+function syncInputsToVDPM(){
+  ['D','H','G','CA'].forEach(k=>document.getElementById('vd-'+k).value=document.getElementById('of-'+k).value);
+  const m=MATS[document.getElementById('of-mat').value];
+  if(m){document.getElementById('vd-Sd').value=m.Sd;document.getElementById('vd-St').value=m.St;}
+  vd_autoRadius(); vd_autoCalcCourses();
+}
+
+/* ===== VALIDATION ===== */
+function numVal(id){ const v=parseFloat(document.getElementById(id).value); return isNaN(v)?null:v; }
+function markError(id,bad){ document.getElementById(id).classList.toggle('input-error',bad); }
+
+/* ===== WIND GIRDER (§5.9.7.1) ===== */
+/* W requis (cm³) et nombre de raidisseurs intermédiaires */
+function windGirderRequirement(D,H,tTop,V){
+  const H1max = 9.47*tTop*Math.sqrt(Math.pow(tTop/D,3))*Math.pow(190/V,2);
+  const required = H > H1max;
+  if(!required) return {H1max, required, Wreq:0, nGirders:0};
+  const n = Math.max(1, Math.ceil(H/H1max)-1);          // raidisseurs intermédiaires nécessaires
+  const H1 = H/(n+1);                                    // espacement réel
+  // Module de section requis (formule API 650 5.9.7.1, impérial converti)
+  const Wreq = (H1*H1*V*V*D)/(1000*Math.pow(10,6))*1e6/1000; // cm³ approx.
+  return {H1max, required, Wreq, nGirders:n};
+}
+
+/* ===== ONE-FOOT SCHEMATIC ===== */
+function of_drawSchematic(p){
+  const svg=document.getElementById('of-schem');
+  const W=700, gY=345;
+  const s=Math.min(380/p.D, 250/p.H);
+  const Dpx=p.D*s, Hpx=p.H*s, cx=310, x0=cx-Dpx/2, x1=x0+Dpx, top=gY-Hpx;
+  const cHpx=Hpx/p.nc, maxT=Math.max(...p.rows.map(r=>parseFloat(r.tA)));
+  const tw=t=>3+t*1.1;
+  let o=`<defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#334155"/></marker>
+    <pattern id="liq" width="10" height="10" patternUnits="userSpaceOnUse"><rect width="10" height="10" fill="#dbeafe"/><path d="M0,5 Q2.5,2 5,5 T10,5" fill="none" stroke="#93c5fd" stroke-width="1"/></pattern>
+  </defs>`;
+  o+=`<line x1="30" y1="${gY+5}" x2="${W-20}" y2="${gY+5}" stroke="#334155" stroke-width="3"/>`;
+  o+=`<rect x="${x0}" y="${top}" width="${Dpx}" height="${Hpx}" fill="url(#liq)"/>`;
+  o+=`<text x="${cx}" y="${top+Hpx/2+4}" text-anchor="middle" font-size="13" font-weight="600" fill="#1e40af">G = ${p.G}</text>`;
+  const rh=Math.min(34,Hpx*.13);
+  o+=`<polygon points="${x0-4},${top} ${cx},${top-rh} ${x1+4},${top}" fill="#e2e8f0" stroke="#475569" stroke-width="1.5"/>`;
+  o+=`<rect x="${x0-10}" y="${gY}" width="${Dpx+20}" height="6" fill="#334155"/>`;
+  p.rows.forEach((r,i)=>{
+    const t=parseFloat(r.tA), y=gY-(i+1)*cHpx, w=tw(t), crit=t===maxT;
+    const light=78-38*(t/maxT);
+    const fill=`hsl(215,65%,${light}%)`, stroke=crit?'#dc2626':'#1e3a8a', sw=crit?2:1;
+    o+=`<rect x="${x0-w}" y="${y}" width="${w}" height="${cHpx}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"><title>C${r.course} — ${r.tA} mm</title></rect>`;
+    o+=`<rect x="${x1}" y="${y}" width="${w}" height="${cHpx}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"><title>C${r.course} — ${r.tA} mm</title></rect>`;
+    if(i<p.nc-1) o+=`<line x1="${x0}" y1="${y}" x2="${x1}" y2="${y}" stroke="#93c5fd" stroke-width="1" stroke-dasharray="4,4"/>`;
+    const ly=y+cHpx/2+4;
+    if(cHpx>=14){
+      o+=`<line x1="${x1+w+4}" y1="${ly-4}" x2="${x1+w+22}" y2="${ly-4}" stroke="#94a3b8"/>`;
+      o+=`<text x="${x1+w+28}" y="${ly}" font-size="12" font-weight="${crit?700:500}" fill="${crit?'#dc2626':'#334155'}">C${r.course} · ${r.tA} mm${crit?' (critical)':''}</text>`;
+    }
+  });
+  if(p.wgReq){
+    const yg=top+p.H1max*s;
+    o+=`<line x1="${x0-50}" y1="${yg}" x2="${x1+50}" y2="${yg}" stroke="#ea580c" stroke-width="2.5" stroke-dasharray="8,4"/>`;
+    o+=`<text x="${x0-54}" y="${yg-5}" font-size="11" font-weight="600" fill="#ea580c">Intermediate wind girder · H1max = ${p.H1max.toFixed(2)} m</text>`;
+  }
+  const dx=x0-tw(maxT)-34;
+  o+=`<line x1="${dx}" y1="${top}" x2="${dx}" y2="${gY}" stroke="#334155" marker-start="url(#arr)" marker-end="url(#arr)"/>`;
+  o+=`<line x1="${dx-5}" y1="${top}" x2="${x0-tw(maxT)-4}" y2="${top}" stroke="#94a3b8" stroke-dasharray="2,3"/>`;
+  o+=`<text transform="translate(${dx-8},${top+Hpx/2}) rotate(-90)" text-anchor="middle" font-size="12" font-weight="700" fill="#334155">H = ${p.H} m</text>`;
+  const dy=gY+34;
+  o+=`<line x1="${x0}" y1="${dy}" x2="${x1}" y2="${dy}" stroke="#334155" marker-start="url(#arr)" marker-end="url(#arr)"/>`;
+  o+=`<line x1="${x0}" y1="${gY+8}" x2="${x0}" y2="${dy+5}" stroke="#94a3b8" stroke-dasharray="2,3"/><line x1="${x1}" y1="${gY+8}" x2="${x1}" y2="${dy+5}" stroke="#94a3b8" stroke-dasharray="2,3"/>`;
+  o+=`<text x="${cx}" y="${dy+18}" text-anchor="middle" font-size="12" font-weight="700" fill="#334155">D = ${p.D} m</text>`;
+  o+=`<text x="${cx}" y="${dy+36}" text-anchor="middle" font-size="11" fill="#64748b">${p.nc} courses × ${(p.H/p.nc).toFixed(2)} m (plate width ${p.pw} m) · CA ${p.CA} mm</text>`;
+  svg.innerHTML=o;
+
+  const chip=(l,v,c='')=>`<span class="chip ${c}">${l}<b>${v}</b></span>`;
+  document.getElementById('of-chips').innerHTML=
+    chip('Material',p.mat)+chip('Sd',p.Sd+' MPa')+chip('St',p.St+' MPa')+chip('E',p.E)+chip('t_min',p.tmin+' mm')+
+    chip('Wind',p.wind+' km/h')+
+    (p.wgReq?chip('Wind girder','required','warn'):chip('Wind girder','not required','ok'));
+}
+
+/* ===== ONE-FOOT METHOD ===== */
+let of_cache=[];
+function of_checkDiameter(){
+  const D=parseFloat(document.getElementById('of-D').value);
+  const over=!isNaN(D)&&D>61;
+  document.getElementById('of-err-banner').style.display=over?'flex':'none';
+  markError('of-D',over);
+  document.getElementById('of-calc-btn').disabled=over;
+  return !over;
+}
+function of_autoCalcCourses(){
+  const f=document.getElementById('of-nc'); if(!f.readOnly){of_checkDiameter();return;}
+  const H=parseFloat(document.getElementById('of-H').value);
+  const pw=parseFloat(document.getElementById('of-plateWidth').value);
+  if(!isNaN(H)&&H>0&&pw>0) f.value=Math.min(Math.max(Math.ceil(H/pw),1),15);
+  of_checkDiameter();
+}
+function of_toggleManual(){
+  const m=document.getElementById('of-ncManual').checked;
+  document.getElementById('of-nc').readOnly=!m;
+  if(!m) of_autoCalcCourses();
+}
+function of_updateMatInfo(){
+  const m=MATS[document.getElementById('of-mat').value];
+  const D=parseFloat(document.getElementById('of-D').value)||10;
+  document.getElementById('of-mat-info').innerHTML=`• Sd: <strong>${m.Sd} MPa</strong> · St: <strong>${m.St} MPa</strong> · t_min: <strong>${getMinT(D)} mm</strong>`;
+}
+function of_reset(){
+  document.getElementById('of-D').value=24; document.getElementById('of-H').value=14.5;
+  document.getElementById('of-G').value=.85; document.getElementById('of-CA').value=2;
+  document.getElementById('of-plateWidth').value='2.0';
+  document.getElementById('of-ncManual').checked=false;
+  document.getElementById('of-nc').readOnly=true;
+  document.getElementById('of-mat').value='A36M';
+  of_autoCalcCourses(); of_updateMatInfo(); of_calculate();
+}
+
+function of_calculate(){
+  if(!of_checkDiameter()) return;
+  const D=numVal('of-D'), H=numVal('of-H'), G=numVal('of-G'), CA=numVal('of-CA')||0;
+  const nc=parseInt(document.getElementById('of-nc').value);
+  const pw=document.getElementById('of-plateWidth').value;
+  const wind=numVal('of-wind')||190;
+  const matKey=document.getElementById('of-mat').value, m=MATS[matKey];
+  const E=parseFloat(document.getElementById('of-E').value);
+  // validation
+  let bad=false;
+  if(!(D>0)){markError('of-D',true);bad=true;}
+  if(!(H>0)){markError('of-H',true);bad=true;}
+  if(!(G>0)){markError('of-G',true);bad=true;}
+  if(!(nc>0)){bad=true;}
+  if(bad){toast('Vérifiez les valeurs en rouge');return;}
+  const tmin=getMinT(D);
+
+  const V=Math.PI*D*D/4*H, mass=V*G, Pbot=G*GRAVITY*H, cH=H/nc;
+  // E agit sur le calcul réel (divise Sd et St) — au-delà du plafond table
+  const SdEff=m.Sd*E, StEff=m.St*E;
+  const rows=[]; let maxT=0,maxCourse=0,maxCase='';
+  for(let i=0;i<nc;i++){
+    // hauteur du liquide au-dessus du bas du cours, tronquée au sommet du réservoir
+    const hBot=Math.min(H, (i+1)*cH);
+    const h1=Math.max(hBot-0.3,0);
+    const td=Math.max(h1>0?(4.9*D*h1*G/SdEff)+CA:0,tmin);
+    const tt=Math.max(h1>0?(4.9*D*h1/StEff):0,tmin);
+    const tA=Math.max(td,tt,tmin);
+    if(tA>maxT){maxT=tA;maxCourse=i+1;maxCase=td>=tt?'Design':'Test';}
+    rows.push({course:i+1,hFrom:(i*cH).toFixed(2),hTo:Math.min((i+1)*cH,H).toFixed(2),td:td.toFixed(2),tt:tt.toFixed(2),tA:tA.toFixed(2),ok:tA<=45});
+  }
+  of_cache=rows;
+
+  document.getElementById('of-r-vol').textContent=V.toFixed(1);
+  document.getElementById('of-r-mass').textContent=mass.toFixed(1);
+  document.getElementById('of-r-pbot').textContent=Pbot.toFixed(1);
+  document.getElementById('of-r-tmax').textContent=maxT.toFixed(2);
+
+  let html=`<table><thead><tr><th>Course</th><th>From (m)</th><th>To (m)</th><th>t_d (mm)</th><th>t_t (mm)</th><th>Governing (mm)</th><th>Status</th></tr></thead><tbody>`;
+  [...rows].reverse().forEach(r=>{
+    const crit=parseFloat(r.tA)===maxT;
+    html+=`<tr class="${crit?'row-critical':''}"><td><strong>C${r.course}</strong></td><td class="num">${r.hFrom}</td><td class="num">${r.hTo}</td><td class="num">${r.td}</td><td class="num">${r.tt}</td><td><span class="t-governing ${crit?'critical':''}">${r.tA}<span class="unit">mm</span></span></td><td><span class="badge ${r.ok?'badge-ok':'badge-warn'}">${r.ok?'Pass':'Review'}</span></td></tr>`;
+  });
+  document.getElementById('of-table').innerHTML=html+'</tbody></table>';
+
+  const tTop=parseFloat(rows[rows.length-1].tA);
+  const wg=windGirderRequirement(D,H,tTop,wind);
+
+  of_drawSchematic({D,H,G,CA,nc,pw,rows,tmin,mat:matKey,Sd:m.Sd,St:m.St,E,H1max:wg.H1max,wgReq:wg.required});
+
+  renderDatasheet([...rows].reverse(),{method:'1-Foot (5.6.3)',D,H,G,CA,P:0,Sd:SdEff.toFixed(0),St:StEff.toFixed(0),mat:matKey,tmin,E,windV:wind,
+    H1max:wg.H1max,windGirderRequired:wg.required,windGirderW:wg.Wreq,windGirderCount:wg.nGirders,
+    maxT,maxCourse,maxCase,
+    mfr:document.getElementById('of-mfr').value,client:document.getElementById('of-client').value,
+    tag:document.getElementById('of-tag').value,contract:document.getElementById('of-contract').value,
+    by:document.getElementById('of-by').value,ckd:document.getElementById('of-ckd').value});
+  saveProject();
+}
+
+function of_exportCSV(){
+  if(!of_cache.length){toast('Aucun résultat.');return;}
+  let csv='Course;From(m);To(m);t_design(mm);t_test(mm);Governing(mm)\r\n';
+  of_cache.forEach(r=>csv+=`C${r.course};${r.hFrom};${r.hTo};${r.td};${r.tt};${r.tA}\r\n`);
+  download(csv,`API650_1Foot_D${document.getElementById('of-D').value}m.csv`);
+}
+
+/* ===== VDPM ===== */
+let vd_cache=[];
+function vd_autoRadius(){const D=parseFloat(document.getElementById('vd-D').value);if(!isNaN(D))document.getElementById('vd-r').value=(D*500).toFixed(0);}
+function vd_autoCalcCourses(){
+  const f=document.getElementById('vd-nc'); if(!f.readOnly) return;
+  const H=parseFloat(document.getElementById('vd-H').value), pw=parseFloat(document.getElementById('vd-plateWidth').value);
+  if(!isNaN(H)&&H>0&&pw>0) f.value=Math.min(Math.max(Math.ceil(H/pw),1),20);
+}
+function vd_toggleManual(){
+  const m=document.getElementById('vd-ncManual').checked;
+  document.getElementById('vd-nc').readOnly=!m; if(!m) vd_autoCalcCourses();
+}
+function vd_reset(){
+  document.getElementById('vd-D').value=85;document.getElementById('vd-H').value=19.2;
+  document.getElementById('vd-G').value=1;document.getElementById('vd-CA').value=0;
+  document.getElementById('vd-Sd').value=208;document.getElementById('vd-St').value=208;
+  document.getElementById('vd-P').value=2.5;document.getElementById('vd-wind').value=190;
+  document.getElementById('vd-plateWidth').value='2.4';
+  document.getElementById('vd-ncManual').checked=false;document.getElementById('vd-nc').readOnly=true;
+  vd_autoRadius();vd_autoCalcCourses();
+}
+function iterateUpper(D,r,H,tL,useDesign,G,Sd,CA,St){
+  let tu=useDesign?(4.9*D*Math.max(H-.3,0)*G/Sd)+CA:(4.9*D*Math.max(H-.3,0)/St);
+  tu=Math.max(tu,tL);
+  const log=[]; let diff=1,prevDiff=Infinity,iter=0,x=0,tx=tu;
+  while(diff>TOLERANCE&&iter<MAX_ITER){
+    const K=tL/tu, C=(Math.sqrt(K)*(K-1))/(1+Math.pow(K,1.5)), srt=Math.sqrt(r*tu);
+    x=Math.min(.61*srt+320*C*H,1000*C*H,1.22*srt);
+    tx=useDesign?(4.9*D*Math.max(H-x/1000,0)*G/Sd)+CA:(4.9*D*Math.max(H-x/1000,0)/St);
+    tx=Math.max(tx,tL);
+    diff=Math.abs(tx-tu); iter++; log.push({iter,tu:tu.toFixed(2),x:x.toFixed(1),tx:tx.toFixed(2)});
+    if(iter>6 && diff>prevDiff){break;} prevDiff=diff; tu=tx;
+  }
+  return {thickness:tx,log,iterations:iter};
+}
+function renderIterLog(log){
+  return log.map(l=>`<p class="iter-detail">Iter ${l.iter}: t_u=${l.tu} → x=${l.x}mm → t_x=<strong>${l.tx}</strong></p>`).join('')||'<p class="iter-detail">Direct formula applied.</p>';
+}
+function vd_calculate(){
+  const g=id=>numVal(id);
+  const D=g('vd-D'),r=g('vd-r'),H=g('vd-H'),G=g('vd-G'),CA=g('vd-CA')||0,Sd=g('vd-Sd'),St=g('vd-St');
+  const wind=g('vd-wind')||190, nc=parseInt(document.getElementById('vd-nc').value), plateLength=g('vd-plateLength')||8;
+  let bad=false;
+  ['vd-D','vd-r','vd-H','vd-G','vd-Sd','vd-St'].forEach(id=>{const v=g(id);const b=!(v>0);markError(id,b);if(b)bad=true;});
+  if(!(nc>0))bad=true;
+  if(bad){toast('Vérifiez les valeurs en rouge');return;}
+  const tmin=getMinT(D), cH=H/nc, h1mm=cH*1000;
+  const courses=[]; let prevTd,prevTt,maxT=0,maxCourse=0,maxCase='',totalKg=0,totalPlates=0;
+  const circ=Math.PI*D;
+
+  for(let i=1;i<=nc;i++){
+    const elevFrom=(i-1)*cH, elevTo=Math.min(i*cH,H), H_i=Math.max(H-elevFrom,0);
+    let td,tt,detail='';
+    if(i===1){
+      const coef=.0696*(D/H_i);
+      let t1d=(1.06-(coef*Math.sqrt(H_i*G/Sd)))*(4.9*H_i*D*G/Sd)+CA;
+      let t1t=(1.06-(coef*Math.sqrt(H_i/St)))*(4.9*H_i*D/St);
+      const tpd=(4.9*D*Math.max(H_i-.3,0)*G/Sd)+CA, tpt=(4.9*D*Math.max(H_i-.3,0)/St);
+      if(t1d>tpd)t1d=tpd; if(t1t>tpt)t1t=tpt;
+      if(t1d<tmin)t1d=tmin; if(t1t<tmin)t1t=tmin;
+      td=t1d; tt=t1t;
+      detail=`<p class="iter-detail">Bottom course: t_d=${td.toFixed(2)}, t_t=${tt.toFixed(2)}</p>`;
+    } else {
+      const resD=iterateUpper(D,r,H_i,prevTd,true,G,Sd,CA,St), resT=iterateUpper(D,r,H_i,prevTt,false,G,Sd,St);
+      td=resD.thickness; tt=resT.thickness;
+      if(i===2){
+        const rd=h1mm/Math.sqrt(r*prevTd), rt=h1mm/Math.sqrt(r*prevTt);
+        if(rd<=1.375)td=prevTd; else if(rd<2.625)td=resD.thickness+(prevTd-resD.thickness)*(2.1-h1mm/(1.25*Math.sqrt(r*prevTd)));
+        if(rt<=1.375)tt=prevTt; else if(rt<2.625)tt=resT.thickness+(prevTt-resT.thickness)*(2.1-h1mm/(1.25*Math.sqrt(r*prevTt)));
+      }
+      if(td<tmin)td=tmin; if(tt<tmin)tt=tmin;
+      detail=`<strong>Design:</strong>${renderIterLog(resD.log)}<strong>Test:</strong>${renderIterLog(resT.log)}`;
+    }
+    const gov=Math.max(td,tt,tmin);
+    if(gov>maxT){maxT=gov;maxCourse=i;maxCase=td>=tt?'Design':'Test';}
+    const plates=Math.ceil(circ/plateLength), wkg=circ*(gov/1000)*cH*STEEL_DENSITY;
+    totalKg+=wkg; totalPlates+=plates;
+    courses.push({course:i,height:cH,elevFrom,elevTo,H_i,td,tt,governing:gov,plates,weightT:wkg/1000,detail});
+    prevTd=td; prevTt=tt;
+  }
+  vd_cache=courses;
+
+  document.getElementById('vd-m-nc').textContent=nc;
+  document.getElementById('vd-m-tmax').textContent=maxT.toFixed(2);
+  document.getElementById('vd-m-tmax-course').textContent='C'+maxCourse;
+  document.getElementById('vd-m-case').textContent=maxCase;
+  document.getElementById('vd-status-method').innerHTML=D>60?`<span class="status-pill status-ok">VDPM Required ✓</span>`:`<span class="status-pill status-warn">VDPM Optimal (D≤60m: 1-Foot also valid)</span>`;
+  document.getElementById('vd-status-method-desc').textContent=`D=${D}m — ${D>60?'Sec.5.6.4 mandatory.':'Both methods applicable. VDPM gives optimized thicknesses.'}`;
+
+  const tTop=courses[courses.length-1].governing;
+  const wg=windGirderRequirement(D,H,tTop,wind);
+  document.getElementById('vd-status-wind').innerHTML=wg.required?`<span class="status-pill status-danger">FAIL — ${wg.nGirders} Girder(s) Required</span>`:`<span class="status-pill status-ok">PASS — Not Required</span>`;
+  document.getElementById('vd-status-wind-desc').textContent=`H1_max=${wg.H1max.toFixed(2)}m vs H=${H}m. ${wg.required?'Add '+wg.nGirders+' intermediate girder(s), W req ≈ '+wg.Wreq.toFixed(0)+' cm³.':'Structure OK.'}`;
+  document.getElementById('vd-status-mto').innerHTML=`<strong>Shell weight:</strong> ${(totalKg/1000).toFixed(2)} t<br><strong>Total plates:</strong> ${totalPlates} (${plateLength}m × ${cH.toFixed(2)}m)<br><strong>Circumference:</strong> ${circ.toFixed(2)} m`;
+
+  let html=`<table><thead><tr><th>Course</th><th>From</th><th>To</th><th>H_i(m)</th><th>t_d(mm)</th><th>t_t(mm)</th><th>Governing</th><th>Weight(t)</th><th>Plates</th><th>Details</th></tr></thead><tbody>`;
+  [...courses].reverse().forEach(c=>{
+    const crit=c.course===maxCourse;
+    html+=`<tr class="${crit?'row-critical':''}"><td><strong>C${c.course}</strong></td>
+      <td class="num">${c.elevFrom.toFixed(2)}</td><td class="num">${c.elevTo.toFixed(2)}</td><td class="num">${c.H_i.toFixed(2)}</td>
+      <td><span class="badge badge-design">${c.td.toFixed(2)}</span></td><td><span class="badge badge-test">${c.tt.toFixed(2)}</span></td>
+      <td><span class="t-governing ${crit?'critical':''}">${c.governing.toFixed(2)}<span class="unit">mm</span></span></td>
+      <td class="num">${c.weightT.toFixed(2)}</td><td class="num">${c.plates}</td>
+      <td><details><summary>Details</summary>${c.detail}</details></td></tr>`;
+  });
+  document.getElementById('vd-table').innerHTML=html+'</tbody></table>';
+
+  const fh=document.getElementById('vd-final'); fh.style.display='block';
+  fh.innerHTML=`<p style="color:var(--gray-600);margin-bottom:4px">Governing thickness overall:</p><strong style="font-size:1.5em;color:var(--blue)">${maxT.toFixed(2)} mm</strong><p style="color:var(--green);margin-top:4px">Course ${maxCourse} — ${maxCase} condition</p>`;
+
+  drawSVG(courses);
+  renderDatasheet([...courses].reverse().map(c=>({course:c.course,hFrom:c.elevFrom.toFixed(2),hTo:c.elevTo.toFixed(2),td:c.td,tt:c.tt,tA:c.governing})),
+    {method:'VDPM (5.6.4)',D,H,G,CA,P:g('vd-P'),Sd,St,mat:'—',tmin,E:document.getElementById('vd-E').value,windV:wind,
+    H1max:wg.H1max,windGirderRequired:wg.required,windGirderW:wg.Wreq,windGirderCount:wg.nGirders,
+    maxT,maxCourse,maxCase,totalWeightT:totalKg/1000,totalPlates,
+    mfr:document.getElementById('vd-mfr').value,client:document.getElementById('vd-client').value,tag:document.getElementById('vd-tag').value,
+    contract:document.getElementById('vd-contract').value,by:document.getElementById('vd-by').value,ckd:document.getElementById('vd-ckd').value});
+  saveProject();
+}
+function vd_exportCSV(){
+  if(!vd_cache.length){toast('Aucun résultat.');return;}
+  let csv='Course;From(m);To(m);H_i(m);t_d(mm);t_t(mm);Governing(mm);Weight(t);Plates\r\n';
+  [...vd_cache].reverse().forEach(c=>csv+=`C${c.course};${c.elevFrom.toFixed(2)};${c.elevTo.toFixed(2)};${c.H_i.toFixed(2)};${c.td.toFixed(2)};${c.tt.toFixed(2)};${c.governing.toFixed(2)};${c.weightT.toFixed(2)};${c.plates}\r\n`);
+  download(csv,`API650_VDPM_D${document.getElementById('vd-D').value}m.csv`);
+}
+
+/* ===== VDPM SVG PROFILE ===== */
+function drawSVG(courses){
+  const svg=document.getElementById('tank-sketch'); if(!svg) return;
+  const W=500,H=450,padY=50,cx=W/2,tR=90;
+  const totalH=courses.reduce((s,c)=>s+c.height,0), scY=(H-2*padY)/totalH;
+  const maxT=Math.max(...courses.map(c=>c.governing)), scT=35/maxT, gY=H-padY;
+  let o=`<line x1="40" y1="${gY}" x2="${W-40}" y2="${gY}" class="ground-line"/><line x1="${cx}" y1="${padY-20}" x2="${cx}" y2="${gY+10}" class="center-line"/>`;
+  let curY=gY,curEl=0;
+  courses.forEach(c=>{
+    const bH=c.height*scY,tW=c.governing*scT,yPos=curY-bH;
+    o+=`<rect x="${cx-tR-tW}" y="${yPos}" width="${tW}" height="${bH}" class="shell-plate"><title>C${c.course}: ${c.governing.toFixed(2)}mm</title></rect>`;
+    o+=`<rect x="${cx+tR}" y="${yPos}" width="${tW}" height="${bH}" class="shell-plate"><title>C${c.course}: ${c.governing.toFixed(2)}mm</title></rect>`;
+    o+=`<text x="${cx}" y="${yPos+bH/2+4}" class="shell-label" fill="#475569" style="fill:#475569">C${c.course}</text>`;
+    o+=`<text x="${cx+tR+tW+6}" y="${yPos+bH/2+4}" class="dimension-text">${c.governing.toFixed(2)}mm</text>`;
+    curEl+=c.height;
+    o+=`<text x="${cx-tR-tW-6}" y="${yPos+4}" class="dimension-text" text-anchor="end">+${curEl.toFixed(2)}m</text>`;
+    curY=yPos;
+  });
+  svg.innerHTML=o;
+}
+
+/* ===== PERSISTENCE PROJET ===== */
+function saveProject(){
+  try{
+    const data={};
+    document.querySelectorAll('#tab-onefoot input, #tab-onefoot select, #tab-vdpm input, #tab-vdpm select').forEach(el=>{
+      if(el.type==='checkbox') data[el.id]=el.checked; else data[el.id]=el.value;
+    });
+    localStorage.setItem(LS_KEY,JSON.stringify(data));
+  }catch(e){}
+}
+function loadProject(){
+  try{
+    const data=JSON.parse(localStorage.getItem(LS_KEY)||'null'); if(!data) return;
+    Object.keys(data).forEach(id=>{
+      const el=document.getElementById(id); if(!el) return;
+      if(el.type==='checkbox') el.checked=data[id]; else el.value=data[id];
+    });
+  }catch(e){}
+}
+
+/* ===== DATA SHEET (trame normée) ===== */
+function renderDatasheet(rows,meta){
+  const today=new Date().toLocaleDateString('fr-FR');
+  const rowsHtml=rows.map(r=>`<tr>
+    <td>${esc(r.course)}</td><td>${esc(r.hFrom)}</td><td>${esc(r.hTo)}</td>
+    <td>${parseFloat(r.td).toFixed(2)}</td><td>${parseFloat(r.tt).toFixed(2)}</td>
+    <td><strong>${parseFloat(r.tA).toFixed(2)}</strong></td></tr>`).join('');
+
+  document.getElementById('print-datasheet').innerHTML=`
+  <div class="ds-page">
+    <table class="ds-cartouche">
+      <tr>
+        <td class="ds-cell-logo" rowspan="3">JESA</td>
+        <td class="ds-cell-title">API STANDARD 650<br>WELDED STEEL TANKS FOR OIL STORAGE</td>
+        <td class="ds-cell-meta">Rev: <u>&nbsp;</u><br>Page: 1/1<br>Date: ${today}</td>
+      </tr>
+      <tr><td class="ds-cell-sub" colspan="2">DATA SHEET — SHELL THICKNESS CALCULATION</td></tr>
+      <tr><td class="ds-cell-meta2" colspan="2">
+        Project: <u>${esc(meta.client)||'&nbsp;'}</u> &nbsp; Tag: <u>${esc(meta.tag)||'&nbsp;'}</u> &nbsp; Contract: <u>${esc(meta.contract)||'&nbsp;'}</u>
+      </td></tr>
+    </table>
+
+    <div class="ds-sec">1. GENERAL</div>
+    <table class="ds-grid">
+      <tr><td>Manufacturer</td><td><u>${esc(meta.mfr)||'&nbsp;'}</u></td><td>Code / Edition</td><td>API 650 Ed.13</td></tr>
+      <tr><td>Service</td><td><u>&nbsp;</u></td><td>Calc. method</td><td>${esc(meta.method)||'—'}</td></tr>
+      <tr><td>Nominal diameter D</td><td><u>${esc(meta.D)} m</u></td><td>Shell height H</td><td><u>${esc(meta.H)} m</u></td></tr>
+      <tr><td>Specific gravity G</td><td><u>${esc(meta.G)}</u></td><td>Design pressure</td><td><u>${esc(meta.P)||'0'} kPa</u></td></tr>
+      <tr><td>Corrosion allowance</td><td><u>${esc(meta.CA)} mm</u></td><td>Wind velocity</td><td><u>${esc(meta.windV)} km/h</u></td></tr>
+    </table>
+
+    <div class="ds-sec">2. MATERIALS OF CONSTRUCTION</div>
+    <table class="ds-grid">
+      <tr><td>Shell plates</td><td><u>${esc(meta.mat)||'&nbsp;'}</u></td><td>Bottom plates</td><td><u>&nbsp;</u></td></tr>
+      <tr><td>Roof plates</td><td><u>&nbsp;</u></td><td>Structural</td><td><u>&nbsp;</u></td></tr>
+      <tr><td>Sd (design)</td><td><u>${esc(meta.Sd)} MPa</u></td><td>St (hydrotest)</td><td><u>${esc(meta.St)} MPa</u></td></tr>
+      <tr><td>Joint efficiency E</td><td><u>${esc(meta.E)}</u></td><td>Min. thickness</td><td><u>${esc(meta.tmin)} mm</u></td></tr>
+    </table>
+
+    <div class="ds-sec">3. SHELL COURSE THICKNESSES</div>
+    <table class="ds-table">
+      <thead><tr><th>Course</th><th>From bottom (m)</th><th>To (m)</th><th>t_d design (mm)</th><th>t_t test (mm)</th><th>Governing (mm)</th></tr></thead>
+      <tbody>${rowsHtml}</tbody>
+    </table>
+    <p class="ds-note">Governing overall: <strong>${meta.maxT.toFixed(2)} mm</strong> — Course ${esc(meta.maxCourse)} — ${esc(meta.maxCase)} case.</p>
+
+    <div class="ds-sec">4. WIND GIRDER (5.9.7)</div>
+    <table class="ds-grid">
+      <tr><td>H1 max without girder</td><td><u>${meta.H1max?meta.H1max.toFixed(2):'-'} m</u></td><td>Girder required</td><td><u>${meta.windGirderRequired?'YES':'NO'}</u></td></tr>
+      <tr><td>Number of intermediate girders</td><td><u>${meta.windGirderRequired?esc(meta.windGirderCount):'0'}</u></td><td>Section modulus W</td><td><u>${meta.windGirderRequired?meta.windGirderW.toFixed(0):'-'} cm³</u></td></tr>
+    </table>
+
+    <div class="ds-sec">5. APPROVALS</div>
+    <table class="ds-approvals">
+      <tr class="ds-approvals-hdr"><td>Prepared by</td><td>Checked by</td><td>Approved by</td><td>Date</td></tr>
+      <tr class="ds-approvals-sign"><td>${esc(meta.by)}</td><td>${esc(meta.ckd)}</td><td>&nbsp;</td><td>${today}</td></tr>
+    </table>
+
+    <div class="ds-footer">JESA Design Engineering Group — API 650 Ed.13 · Calculation platform v2.1 · Document non contractuel</div>
+  </div>`;
+}
+
+/* ===== INIT ===== */
+window.addEventListener('load',()=>{
+  buildMatSelect('of-mat','A36M');
+  loadProject();
+  of_autoCalcCourses(); of_updateMatInfo();
+  vd_autoRadius(); vd_autoCalcCourses();
+  of_calculate();
+  initSession();
+  document.querySelectorAll('#tab-onefoot input, #tab-onefoot select').forEach(el=>{
+    const h=()=>{ if(el.id==='of-D'||el.id==='of-H'||el.id==='of-plateWidth'||el.id==='of-ncManual') of_autoCalcCourses(); if(el.id==='of-mat') of_updateMatInfo(); of_calculate(); };
+    el.addEventListener('input',h); el.addEventListener('change',h);
+  });
+});
+</script>
+</body>
+</html>
